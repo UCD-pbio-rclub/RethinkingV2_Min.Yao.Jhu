@@ -280,7 +280,7 @@ precis( globe.qa )
 
 ```
 ##        mean        sd      5.5%     94.5%
-## p 0.6666667 0.1571338 0.4155365 0.9177968
+## p 0.6666663 0.1571339 0.4155361 0.9177966
 ```
 
 
@@ -329,21 +329,24 @@ curve( dbeta( x , W+1 , L+1 ) , lty=2 , add=TRUE )
 
 ### 2E1 Which of the expressions below correspond to the statement: the probability of rain on Monday?
 
-(1) Pr(rain)
+(2) Pr(rain|Monday) & (4) Pr(rain, Monday)/ Pr(Monday)
 
 
-### 2E2
+### 2E2 Which of the following statements corresponds to the expression: Pr(Mondayjrain)?
 
 (3) Th e probability that it is Monday, given that it is raining.
 
 
-### 2E3
+### 2E3 Which of the expressions below correspond to the statement: the probability that it is Monday, given that it is raining?
 
-(1) Pr(Mondayjrain)
-(4) Pr(rainjMonday) Pr(Monday)= Pr(rain)
+(1) Pr(Monday|rain) & (4) Pr(rain|Monday) Pr(Monday)/ Pr(rain)
 
 
-### 2M1-(1)
+### 2M1-(1) Recall the globe tossing model from the chapter. Compute and plot the grid approximate posterior distribution for each of the following sets of observations. In each case, assume a uniform prior for p.
+(1) W, W, W
+(2) W, W, W, L
+(3) L, W, W, L, W, W, W
+
 
 ```r
 data1 <- c('W','W','W')
@@ -434,7 +437,7 @@ plot_posterior(x = p_grid, y = posterior)
 
 ![](chapter_2_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
 
-### 2M2-(1)
+### 2M2-(1) Now assume a prior for p that is equal to zero when p < 0:5 and is a positive constant when p < 0:5. Again compute and plot the grid approximate posterior distribution for each of the sets of observations in the problem just above.
 
 ```r
 data1 <- c('W','W','W')
@@ -529,7 +532,7 @@ plot_posterior(x = p_grid, y = posterior)
 
 ![](chapter_2_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
 
-### 2M3
+### 2M3. Suppose there are two globes, one for Earth and one for Mars. Th e Earth globe is 70% covered in water. Th e Mars globe is 100% land. Further suppose that one of these globes¡Xyou don¡¦t know which¡Xwas tossed in the air and produced a ¡§land¡¨ observation. Assume that each globe was equally likely to be tossed. Show that the posterior probability that the globe was the Earth, conditional on seeing ¡§land¡¨ (Pr(Earthjland)), is 0.23.
 
 
 ```r
@@ -560,7 +563,8 @@ p_Earth_land
 ## [1] 0.2307692
 ```
 
-### 2M4
+### 2M4. Suppose you have a deck with only three cards. Each card has two sides, and each side is either black or white. One card has two black sides. Th e second card has one black and one white side. The third card has two white sides. Now suppose all three cards are placed in a bag and shuffl ed. Someone reaches into the bag and pulls out a card and places it fl at on a table. A black side is shown facing up, but you don¡¦t know the color of the side facing down. Show that the probability that the other side is also black is 2/3. Use the counting method (Section 2 of the chapter) to approach this problem. Th is means counting up the ways that each card could produce the observed data (a black side facing up on the table).
+
 
 ```r
 # Use the counting method
@@ -593,9 +597,11 @@ posterior[1] == 2/3
 ## [1] TRUE
 ```
 
+$$P(2=B|1=B) = P(2=B,1=B) / P(1=B) = P(BB) / (P(BB) + P(WB) * P(1=B|WB)) = (1/3) / (1/3 + 1/3 * 1/2) = 2/3 = 0.667$$
 
 
-### 2M5
+### 2M5. Now suppose there are four cards: B/B, B/W, W/W, and another B/B. Again suppose a card is drawn from the bag and a black side appears face up. Again calculate the probability that the other side is black.
+
 
 ```r
 # Use the counting method
@@ -630,3 +636,4 @@ result
 ## [1] 0.8
 ```
 
+$$P(2=B|1=B) = P(2=B,1=B) / P(1=B) = P(BB) / (P(BB) + P(WB)*P(1=B|WB)) =  (1/2) / (1/2 + 1/4 * 1/2) = 4/5 = 0.8$$
