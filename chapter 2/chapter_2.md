@@ -279,8 +279,8 @@ precis( globe.qa )
 ```
 
 ```
-##        mean        sd     5.5%     94.5%
-## p 0.6666518 0.1571373 0.415516 0.9177875
+##        mean        sd      5.5%     94.5%
+## p 0.6666667 0.1571338 0.4155365 0.9177968
 ```
 
 
@@ -343,19 +343,290 @@ curve( dbeta( x , W+1 , L+1 ) , lty=2 , add=TRUE )
 (4) Pr(rainjMonday) Pr(Monday)= Pr(rain)
 
 
-### 2M1
+### 2M1-(1)
 
+```r
+data1 <- c('W','W','W')
+# total number of tosses
+n = length(data1) 
+# observed number of water
+w = sum(data1=='W')  
 
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=100)
+length_of_grid = length(p_grid)
+# prior probability of p
+prior <- rep( 1 , length_of_grid ) 
 
-### 2M2
+# compute likelihood at each value in grid
+likelihood <- dbinom( w , size=n , prob=p_grid )
+
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+plot_posterior <- function(x, y) {
+  plot(x = x, y = y, type="b", xlab = "Probability of Water", ylab = "Posterior Probability")
+  title <- paste( length(x), "Points")
+  mtext(title)
+}
+plot_posterior(x = p_grid, y = posterior)
+```
+
+![](chapter_2_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
+### 2M1-(2)
+
+```r
+data1 <- c('W','W','W','L')
+# total number of tosses
+n = length(data1) 
+# observed number of water
+w = sum(data1=='W')  
+
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=100)
+length_of_grid = length(p_grid)
+# prior probability of p
+prior <- rep( 1 , length_of_grid ) 
+
+# compute likelihood at each value in grid
+likelihood <- dbinom( w , size=n , prob=p_grid )
+
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+plot_posterior(x = p_grid, y = posterior)
+```
+
+![](chapter_2_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+
+### 2M1-(3)
+
+```r
+data1 <- c('L', 'W', 'W', 'L', 'W', 'W', 'W')
+# total number of tosses
+n = length(data1)
+# observed number of water
+w = sum(data1=='W') 
+
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=100)
+length_of_grid = length(p_grid)
+# prior probability of p
+prior <- rep( 1 , length_of_grid ) 
+
+# compute likelihood at each value in grid
+likelihood <- dbinom( w , size=n , prob=p_grid )
+
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+plot_posterior(x = p_grid, y = posterior)
+```
+
+![](chapter_2_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
+
+### 2M2-(1)
+
+```r
+data1 <- c('W','W','W')
+# total number of tosses
+n = length(data1) 
+# observed number of water
+w = sum(data1=='W')  
+
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=100)
+length_of_grid = length(p_grid)
+
+# prior probability of p
+prior <- ifelse( p_grid < 0.5 , 0 , 1 ) 
+
+# compute likelihood at each value in grid
+likelihood <- dbinom( w , size=n , prob=p_grid )
+
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+plot_posterior <- function(x, y) {
+  plot(x = x, y = y, type="b", xlab = "Probability of Water", ylab = "Posterior Probability")
+  title <- paste( length(x), "Points")
+  mtext(title)
+}
+plot_posterior(x = p_grid, y = posterior)
+```
+
+![](chapter_2_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
+
+### 2M2-(2)
+
+```r
+data1 <- c('W','W','W','L')
+# total number of tosses
+n = length(data1) 
+# observed number of water
+w = sum(data1=='W')  
+
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=100)
+length_of_grid = length(p_grid)
+
+# prior probability of p
+prior <- ifelse( p_grid < 0.5 , 0 , 1 ) 
+
+# compute likelihood at each value in grid
+likelihood <- dbinom( w , size=n , prob=p_grid )
+
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+plot_posterior(x = p_grid, y = posterior)
+```
+
+![](chapter_2_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
+
+### 2M2-(3)
+
+```r
+data1 <- c('L', 'W', 'W', 'L', 'W', 'W', 'W')
+# total number of tosses
+n = length(data1)
+# observed number of water
+w = sum(data1=='W') 
+
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=100)
+length_of_grid = length(p_grid)
+
+# prior probability of p
+prior <- ifelse( p_grid < 0.5 , 0 , 1 )  
+
+# compute likelihood at each value in grid
+likelihood <- dbinom( w , size=n , prob=p_grid )
+
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+plot_posterior(x = p_grid, y = posterior)
+```
+
+![](chapter_2_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
 
 ### 2M3
 
+
+```r
+# p(Earth) and p(Mars)
+p_Earth = 0.5  
+p_Mars = 0.5 
+
+# p(land|Earth) and p(land|Mars)
+p_land_E = 0.3  
+p_land_M = 1.0 
+
+# p(land)
+p_land = p_Earth*p_land_E + p_Mars*p_land_M
+p_land
+```
+
+```
+## [1] 0.65
+```
+
+```r
+# p(Earth|land) = (p(land|Earth) * p(Earth)) / p(land)
+p_Earth_land = (p_land_E * p_Earth)/p_land 
+p_Earth_land
+```
+
+```
+## [1] 0.2307692
+```
+
 ### 2M4
+
+```r
+# Use the counting method
+BB.likelihood <- 2
+BW.likelihood <- 1
+WW.likelihood <- 0
+
+likelihood <- c(BB.likelihood, BW.likelihood, WW.likelihood)
+
+# prior probability
+prior <- rep(1, length = length(likelihood))
+
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+posterior
+```
+
+```
+## [1] 0.6666667 0.3333333 0.0000000
+```
+
+```r
+posterior[1] == 2/3
+```
+
+```
+## [1] TRUE
+```
+
+
 
 ### 2M5
 
+```r
+# Use the counting method
+BB.likelihood <- 2
+BW.likelihood <- 1
+WW.likelihood <- 0
 
+likelihood2 <- c(BB.likelihood, BW.likelihood, WW.likelihood, BB.likelihood)
 
+# prior probability
+prior <- rep(1, length = length(likelihood2))
 
+# compute product of likelihood and prior
+unstd.posterior <- likelihood2 * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+posterior
+```
+
+```
+## [1] 0.4 0.2 0.0 0.4
+```
+
+```r
+# we may draw card 1 or 4
+result = posterior[1]+posterior[4]
+result
+```
+
+```
+## [1] 0.8
+```
 
