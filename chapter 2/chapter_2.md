@@ -1,7 +1,7 @@
 ---
 title: "chapter 2"
 author: "Min-Yao"
-date: "2019¦~4¤ë11¤é"
+date: "2019?~4??11??"
 output: 
   html_document: 
     keep_md: yes
@@ -280,7 +280,7 @@ precis( globe.qa )
 
 ```
 ##        mean        sd      5.5%     94.5%
-## p 0.6666663 0.1571339 0.4155361 0.9177966
+## p 0.6666671 0.1571337 0.4155371 0.9177971
 ```
 
 
@@ -532,7 +532,7 @@ plot_posterior(x = p_grid, y = posterior)
 
 ![](chapter_2_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
 
-### 2M3. Suppose there are two globes, one for Earth and one for Mars. Th e Earth globe is 70% covered in water. Th e Mars globe is 100% land. Further suppose that one of these globes¡Xyou don¡¦t know which¡Xwas tossed in the air and produced a ¡§land¡¨ observation. Assume that each globe was equally likely to be tossed. Show that the posterior probability that the globe was the Earth, conditional on seeing ¡§land¡¨ (Pr(Earthjland)), is 0.23.
+### 2M3. Suppose there are two globes, one for Earth and one for Mars. Th e Earth globe is 70% covered in water. Th e Mars globe is 100% land. Further suppose that one of these globes?Xyou don??t know which?Xwas tossed in the air and produced a ??land?? observation. Assume that each globe was equally likely to be tossed. Show that the posterior probability that the globe was the Earth, conditional on seeing ??land?? (Pr(Earthjland)), is 0.23.
 
 
 ```r
@@ -563,7 +563,22 @@ p_Earth_land
 ## [1] 0.2307692
 ```
 
-### 2M4. Suppose you have a deck with only three cards. Each card has two sides, and each side is either black or white. One card has two black sides. Th e second card has one black and one white side. The third card has two white sides. Now suppose all three cards are placed in a bag and shuffl ed. Someone reaches into the bag and pulls out a card and places it fl at on a table. A black side is shown facing up, but you don¡¦t know the color of the side facing down. Show that the probability that the other side is also black is 2/3. Use the counting method (Section 2 of the chapter) to approach this problem. Th is means counting up the ways that each card could produce the observed data (a black side facing up on the table).
+### other methods
+
+```r
+prior <- c(0.5 , 0.5) # first is for earth, second is for mars
+prob <- c(0.7, 0) # prob of water for earth, and for mars
+likelihood <- dbinom(0, 1, prob) # likelihood for earth and for mars
+unstd.post <- likelihood * prior
+post <- unstd.post / sum(unstd.post)
+post
+```
+
+```
+## [1] 0.2307692 0.7692308
+```
+
+### 2M4. Suppose you have a deck with only three cards. Each card has two sides, and each side is either black or white. One card has two black sides. Th e second card has one black and one white side. The third card has two white sides. Now suppose all three cards are placed in a bag and shuffl ed. Someone reaches into the bag and pulls out a card and places it fl at on a table. A black side is shown facing up, but you don??t know the color of the side facing down. Show that the probability that the other side is also black is 2/3. Use the counting method (Section 2 of the chapter) to approach this problem. Th is means counting up the ways that each card could produce the observed data (a black side facing up on the table).
 
 
 ```r
@@ -637,3 +652,44 @@ result
 ```
 
 $$P(2=B|1=B) = P(2=B,1=B) / P(1=B) = P(BB) / (P(BB) + P(WB)*P(1=B|WB)) =  (1/2) / (1/2 + 1/4 * 1/2) = 4/5 = 0.8$$
+
+
+### 2H1. Suppose there are two species of panda bear. Both are equally common in the wild and live in the same places. Th ey look exactly alike and eat the same food, and there is yet no genetic assay capable of telling them apart. Th ey diff er however in their family sizes. Species A gives birth to twins 10% of the time, otherwise birthing a single infant. Species B births twins 20% of the time, otherwise birthing singleton infants. Assume these numbers are known with certainty, from many years of fi eld research.
+
+```r
+prior <- c(0.5 , 0.5)
+prob <- c(0.1, 0.2)
+#likelihood <- dbinom(2, 2, prob)
+unstd.post <- prob * prior
+unstd.post
+```
+
+```
+## [1] 0.05 0.10
+```
+
+```r
+post <- unstd.post / sum(unstd.post)
+post
+```
+
+```
+## [1] 0.3333333 0.6666667
+```
+
+```r
+twins.prob.given.twins <- post * prob
+twins.prob.given.twins
+```
+
+```
+## [1] 0.03333333 0.13333333
+```
+
+```r
+sum(twins.prob.given.twins)
+```
+
+```
+## [1] 0.1666667
+```
