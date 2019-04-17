@@ -7,6 +7,8 @@ output:
     keep_md: yes
 ---
 
+# Sampling the Imaginary
+
 ```{r}
 ## R code 3.1
 Pr_Positive_Vampire <- 0.95
@@ -15,7 +17,11 @@ Pr_Vampire <- 0.001
 Pr_Positive <- Pr_Positive_Vampire * Pr_Vampire +
                Pr_Positive_Mortal * ( 1 - Pr_Vampire )
 ( Pr_Vampire_Positive <- Pr_Positive_Vampire*Pr_Vampire / Pr_Positive )
+```
 
+
+
+```{r}
 ## R code 3.2
 p_grid <- seq( from=0 , to=1 , length.out=1000 )
 prob_p <- rep( 1 , 1000 )
