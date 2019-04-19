@@ -120,7 +120,7 @@ sum( samples < 0.5 ) / 1e4
 ```
 
 ```
-## [1] 0.1704
+## [1] 0.1718
 ```
 
 ```r
@@ -129,7 +129,7 @@ sum( samples > 0.5 & samples < 0.75 ) / 1e4
 ```
 
 ```
-## [1] 0.6071
+## [1] 0.6051
 ```
 
 ```r
@@ -149,7 +149,7 @@ quantile( samples , c( 0.1 , 0.9 ) )
 
 ```
 ##       10%       90% 
-## 0.4494494 0.8098098
+## 0.4504505 0.8128128
 ```
 
 
@@ -168,7 +168,7 @@ PI( samples , prob=0.5 )
 
 ```
 ##       25%       75% 
-## 0.7017017 0.9299299
+## 0.7037037 0.9299299
 ```
 
 ```r
@@ -178,7 +178,7 @@ HPDI( samples , prob=0.5 )
 
 ```
 ##      |0.5      0.5| 
-## 0.8368368 0.9979980
+## 0.8408408 1.0000000
 ```
 
 
@@ -197,7 +197,7 @@ chainmode( samples , adj=0.01 )
 ```
 
 ```
-## [1] 0.986389
+## [1] 0.9642844
 ```
 
 ```r
@@ -206,7 +206,7 @@ mean( samples )
 ```
 
 ```
-## [1] 0.7979829
+## [1] 0.7979395
 ```
 
 ```r
@@ -214,7 +214,7 @@ median( samples )
 ```
 
 ```
-## [1] 0.8388388
+## [1] 0.8408408
 ```
 
 ```r
@@ -264,7 +264,7 @@ rbinom( 10 , size=2 , prob=0.7 )
 ```
 
 ```
-##  [1] 1 2 0 1 1 0 1 1 1 2
+##  [1] 2 1 2 2 1 2 2 0 2 1
 ```
 
 ```r
@@ -276,7 +276,7 @@ table(dummy_w)/1e5
 ```
 ## dummy_w
 ##       0       1       2 
-## 0.09171 0.42086 0.48743
+## 0.09004 0.41844 0.49152
 ```
 
 ```r
@@ -502,7 +502,7 @@ birth2 <- c(0,1,0,1,0,1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,0,
 0,0,0,1,1,1,0,0,0,0)
 ```
 
-#### So for example, the first family in the data reported a boy (1) and then a girl (0). Th e second family reported a girl (0) and then a boy (1). Th e third family reported two girls. You can load these two vectors into R’s memory by typing:
+#### So for example, the first family in the data reported a boy (1) and then a girl (0). Th e second family reported a girl (0) and then a boy (1). The third family reported two girls. You can load these two vectors into R’s memory by typing:
 
 
 ```r
@@ -523,17 +523,223 @@ sum(birth1) + sum(birth2)
 
 #### 3H1. Using grid approximation, compute the posterior distribution for the probability of a birth being a boy. Assume a uniform prior probability. Which parameter value maximizes the posterior probability?
 
+```r
+all=c(birth1, birth2)
+boy_n=sum(birth1) + sum(birth2)
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=1000 )
+# define prior
+prior <- rep( 1 , 1000 )
+# compute likelihood at each value in grid
+likelihood <- dbinom( boy_n , size= length(all) , prob=p_grid )
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+plot_posterior <- function(x, y) {
+  plot(x = x, y = y, type="b", xlab = "Probability of boy", ylab = "Posterior Probability")
+  title <- paste( length(x), "Points")
+  mtext(title)
+}
+plot_posterior(x = p_grid, y = posterior)
+```
+
+![](chapter_3_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
+
+```r
+p_grid[ which.max(posterior) ]
+```
+
+```
+## [1] 0.5545546
+```
+
+> p=0.55 maximizes the posterior probability
 
 #### 3H2. Using the sample function, draw 10,000 random parameter values from the posterior distribution you calculated above. Use these samples to estimate the 50%, 89%, and 97% highest posterior density intervals.
 
+```r
+samples <- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )
+HPDI( samples , prob=0.5 )
+```
 
-#### 3H3. Use rbinom to simulate 10,000 replicates of 200 births. You should end up with 10,000 numbers, each one a count of boys out of 200 births. Compare the distribution of predicted numbers of boys to the actual count in the data (111 boys out of 200 births). Th ere are many good ways to visualize the simulations, but the dens command (part of the rethinking package) is probably the easiest way in this case. Does it look like the model fi ts the data well? Th at is, does the distribution of predictions include the actual observation as a central, likely outcome?
+```
+##      |0.5      0.5| 
+## 0.5305305 0.5765766
+```
+
+```r
+HPDI( samples , prob=0.89 )
+```
+
+```
+##     |0.89     0.89| 
+## 0.4994995 0.6096096
+```
+
+```r
+HPDI( samples , prob=0.97 )
+```
+
+```
+##     |0.97     0.97| 
+## 0.4794795 0.6286286
+```
+
+#### 3H3. Use rbinom to simulate 10,000 replicates of 200 births. You should end up with 10,000 numbers, each one a count of boys out of 200 births. Compare the distribution of predicted numbers of boys to the actual count in the data (111 boys out of 200 births). There are many good ways to visualize the simulations, but the dens command (part of the rethinking package) is probably the easiest way in this case. Does it look like the model fits the data well? That is, does the distribution of predictions include the actual observation as a central, likely outcome?
+
+```r
+simulate_birth <- rbinom( 1e4 , size=200 , prob=samples )
+dens(simulate_birth)
+abline(v = boy_n, col = "red", lwd=3)
+abline(v = median(simulate_birth), col = "blue", lty=2, lwd=3)
+abline(v = mean(simulate_birth), col = "green", lty=3, lwd=3)
+```
+
+![](chapter_3_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
+
+```r
+boy_n
+```
+
+```
+## [1] 111
+```
+
+```r
+median(simulate_birth)
+```
+
+```
+## [1] 111
+```
+
+```r
+mean(simulate_birth)
+```
+
+```
+## [1] 111.0173
+```
+
+> Yes, the distribution of predictions includes the actual observation as a central, likely outcome
+
+#### 3H4. Now compare 10,000 counts of boys from 100 simulated first borns only to the number of boys in the first births, birth1. How does the model look in this light?
+
+```r
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=1000 )
+# define prior
+prior <- rep( 1 , 1000 )
+# compute likelihood at each value in grid
+likelihood <- dbinom( sum(birth1) , size= length(birth1) , prob=p_grid )
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+plot_posterior(x = p_grid, y = posterior)
+```
+
+![](chapter_3_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
+
+```r
+p_grid[ which.max(posterior) ]
+```
+
+```
+## [1] 0.5095095
+```
+
+```r
+samples <- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )
+HPDI( samples , prob=0.5 )
+```
+
+```
+##      |0.5      0.5| 
+## 0.4794795 0.5455455
+```
+
+```r
+simulate_birth1 <- rbinom( 1e4 , size=100 , prob=samples )
+dens(simulate_birth1)
+abline(v = sum(birth1), col = "red", lwd=3)
+abline(v = median(simulate_birth1), col = "blue", lty=2, lwd=3)
+abline(v = mean(simulate_birth1), col = "green", lty=3, lwd=3)
+```
+
+![](chapter_3_files/figure-html/unnamed-chunk-27-2.png)<!-- -->
+
+```r
+sum(birth1)
+```
+
+```
+## [1] 51
+```
+
+```r
+median(simulate_birth1)
+```
+
+```
+## [1] 51
+```
+
+```r
+mean(simulate_birth1)
+```
+
+```
+## [1] 51.0376
+```
+
+#### 3H5. The model assumes that sex of first and second births are independent. To check this assumption, focus now on second births that followed female first borns. Compare 10,000 simulated counts of boys to only those second births that followed girls. To do this correctly, you need to count the number of first borns who were girls and simulate that many births, 10,000 times. Compare the counts of boys in your simulations to the actual observed count of boys following girls. How does the model look in this light? Any guesses what is going on in these data?
 
 
-#### 3H4. Now compare 10,000 counts of boys from 100 simulated fi rst borns only to the number of boys in the fi rst births, birth1. How does the model look in this light?
+```r
+girl1 = length(birth1)-sum(birth1)
+girl1
+```
 
+```
+## [1] 49
+```
 
-#### 3H5. Th e model assumes that sex of fi rst and second births are independent. To check this assumption, focus now on second births that followed female fi rst borns. Compare 10,000 simulated counts of boys to only those second births that followed girls. To do this correctly, you need to count the number of fi rst borns who were girls and simulate that many births, 10,000 times. Compare the counts of boys in your simulations to the actual observed count of boys following girls. How does the model look in this light? Any guesses what is going on in these data?
+```r
+simulate_birth_g <- rbinom( 1e4 , size=girl1 , prob=samples )
+dens(simulate_birth_g)
+girl1boy2 = sum(birth2[birth1 == 0])
 
+abline(v = girl1boy2, col = "red", lwd=3)
+abline(v = median(simulate_birth_g), col = "blue", lty=2, lwd=3)
+abline(v = mean(simulate_birth_g), col = "green", lty=3, lwd=3)
+```
 
+![](chapter_3_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
+
+```r
+girl1boy2
+```
+
+```
+## [1] 39
+```
+
+```r
+median(simulate_birth_g)
+```
+
+```
+## [1] 25
+```
+
+```r
+mean(simulate_birth_g)
+```
+
+```
+## [1] 25.0012
+```
 
