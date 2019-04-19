@@ -120,7 +120,7 @@ sum( samples < 0.5 ) / 1e4
 ```
 
 ```
-## [1] 0.1694
+## [1] 0.1704
 ```
 
 ```r
@@ -129,7 +129,7 @@ sum( samples > 0.5 & samples < 0.75 ) / 1e4
 ```
 
 ```
-## [1] 0.6089
+## [1] 0.6071
 ```
 
 ```r
@@ -139,7 +139,7 @@ quantile( samples , 0.8 )
 
 ```
 ##       80% 
-## 0.7587588
+## 0.7607608
 ```
 
 ```r
@@ -149,7 +149,7 @@ quantile( samples , c( 0.1 , 0.9 ) )
 
 ```
 ##       10%       90% 
-## 0.4503504 0.8118118
+## 0.4494494 0.8098098
 ```
 
 
@@ -168,7 +168,7 @@ PI( samples , prob=0.5 )
 
 ```
 ##       25%       75% 
-## 0.7087087 0.9339339
+## 0.7017017 0.9299299
 ```
 
 ```r
@@ -178,7 +178,7 @@ HPDI( samples , prob=0.5 )
 
 ```
 ##      |0.5      0.5| 
-## 0.8438438 1.0000000
+## 0.8368368 0.9979980
 ```
 
 
@@ -197,7 +197,7 @@ chainmode( samples , adj=0.01 )
 ```
 
 ```
-## [1] 0.9972101
+## [1] 0.986389
 ```
 
 ```r
@@ -206,7 +206,7 @@ mean( samples )
 ```
 
 ```
-## [1] 0.8017801
+## [1] 0.7979829
 ```
 
 ```r
@@ -214,7 +214,7 @@ median( samples )
 ```
 
 ```
-## [1] 0.8438438
+## [1] 0.8388388
 ```
 
 ```r
@@ -255,7 +255,7 @@ rbinom( 1 , size=2 , prob=0.7 )
 ```
 
 ```
-## [1] 1
+## [1] 2
 ```
 
 ```r
@@ -264,7 +264,7 @@ rbinom( 10 , size=2 , prob=0.7 )
 ```
 
 ```
-##  [1] 2 1 2 1 1 2 2 1 1 1
+##  [1] 1 2 0 1 1 0 1 1 1 2
 ```
 
 ```r
@@ -276,7 +276,7 @@ table(dummy_w)/1e5
 ```
 ## dummy_w
 ##       0       1       2 
-## 0.09028 0.41943 0.49029
+## 0.09171 0.42086 0.48743
 ```
 
 ```r
@@ -393,7 +393,7 @@ HPDI( samples , prob=0.66 )
 ##     |0.66     0.66| 
 ## 0.5205205 0.7847848
 ```
-0.52 < p < 0.78
+> 0.52 < p < 0.78
 
 #### 3E7. Which values of p contain 66% of the posterior probability, assuming equal posterior probability both below and above the interval?
 
@@ -405,25 +405,90 @@ PI( samples , prob = 0.66 )
 ##       17%       83% 
 ## 0.5005005 0.7687688
 ```
-0.50 < p < 0.77
+> 0.50 < p < 0.77
 
 ### Medium.
 
-#### 3M1. Suppose the globe tossing data had turned out to be 8 water in 15 tosses. Construct the posterior distribution, using grid approximation. Use the same fl at prior as before.
+#### 3M1. Suppose the globe tossing data had turned out to be 8 water in 15 tosses. Construct the posterior distribution, using grid approximation. Use the same flat prior as before.
 
+```r
+# define grid
+p_grid <- seq( from=0 , to=1 , length.out=100 )
+
+# define prior
+prior <- rep( 1 , 100 )
+
+# compute likelihood at each value in grid
+likelihood <- dbinom( 8 , size=15 , prob=p_grid )
+
+# compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+# standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+plot_posterior <- function(x, y) {
+  plot(x = x, y = y, type="b", xlab = "Probability of Water", ylab = "Posterior Probability")
+  title <- paste( length(x), "Points")
+  mtext(title)
+}
+plot_posterior(x = p_grid, y = posterior)
+```
+
+![](chapter_3_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 #### 3M2. Draw 10,000 samples from the grid approximation from above. Th en use the samples to calculate the 90% HPDI for p.
 
+```r
+samples <- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )
+HPDI( samples , prob=0.9 )
+```
 
-#### 3M3. Construct a posterior predictive check for this model and data. Th is means simulate the distribution of samples, averaging over the posterior uncertainty in p. What is the probability of observing 8 water in 15 tosses?
+```
+##      |0.9      0.9| 
+## 0.3535354 0.7272727
+```
+> 0.34<p<0.73
 
+#### 3M3. Construct a posterior predictive check for this model and data. This means simulate the distribution of samples, averaging over the posterior uncertainty in p. What is the probability of observing 8 water in 15 tosses?
+
+```r
+w <- rbinom( 1e4 , size=15 , prob=samples )
+simplehist(w)
+```
+
+![](chapter_3_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+
+```r
+sum(w == 8)/1e4
+```
+
+```
+## [1] 0.1445
+```
+> 14.5% is the probability of observing 8 water in 15 tosses
 
 #### 3M4. Using the posterior distribution constructed from the new (8/15) data, now calculate the probability of observing 6 water in 9 tosses.
 
+```r
+w <- rbinom( 1e4 , size=9 , prob=samples )
+simplehist(w)
+```
+
+![](chapter_3_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+
+```r
+sum(w == 6)/1e4
+```
+
+```
+## [1] 0.1733
+```
+> 17.64% is the probability of observing 6 water in 9 tosses.
 
 ### Hard.
 
-#### Introduction. Th e practice problems here all use the data below. Th ese data indicate the gender (male=1, female=0) of offi cially reported fi rst and second born children in 100 two-child families.
+#### Introduction. The practice problems here all use the data below. These data indicate the gender (male=1, female=0) of officially reported first and second born children in 100 two-child families.
 
 
 ```r
@@ -437,7 +502,7 @@ birth2 <- c(0,1,0,1,0,1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,0,
 0,0,0,1,1,1,0,0,0,0)
 ```
 
-#### So for example, the fi rst family in the data reported a boy (1) and then a girl (0). Th e second family reported a girl (0) and then a boy (1). Th e third family reported two girls. You can load these two vectors into R’s memory by typing:
+#### So for example, the first family in the data reported a boy (1) and then a girl (0). Th e second family reported a girl (0) and then a boy (1). Th e third family reported two girls. You can load these two vectors into R’s memory by typing:
 
 
 ```r
