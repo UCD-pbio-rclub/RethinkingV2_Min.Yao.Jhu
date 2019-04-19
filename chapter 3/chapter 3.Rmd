@@ -6,6 +6,9 @@ output:
   html_document: 
     keep_md: yes
 ---
+```{r}
+library(rethinking)
+```
 
 # Sampling the Imaginary
 
@@ -19,7 +22,7 @@ Pr_Positive <- Pr_Positive_Vampire * Pr_Vampire +
 ( Pr_Vampire_Positive <- Pr_Positive_Vampire*Pr_Vampire / Pr_Positive )
 ```
 
-
+## 3.1. Sampling from a grid-approximate posterior
 
 ```{r}
 ## R code 3.2
@@ -38,7 +41,11 @@ plot( samples )
 ## R code 3.5
 library(rethinking)
 dens( samples )
+```
 
+## 3.2. Sampling to summarize
+
+```{r}
 ## R code 3.6
 # add up posterior probability where p < 0.5
 sum( posterior[ p_grid < 0.5 ] )
@@ -54,7 +61,9 @@ quantile( samples , 0.8 )
 
 ## R code 3.10
 quantile( samples , c( 0.1 , 0.9 ) )
+```
 
+```{r}
 ## R code 3.11
 p_grid <- seq( from=0 , to=1 , length.out=1000 )
 prior <- rep(1,1000)
@@ -68,7 +77,9 @@ PI( samples , prob=0.5 )
 
 ## R code 3.13
 HPDI( samples , prob=0.5 )
+```
 
+```{r}
 ## R code 3.14
 p_grid[ which.max(posterior) ]
 
@@ -87,7 +98,10 @@ loss <- sapply( p_grid , function(d) sum( posterior*abs( d - p_grid ) ) )
 
 ## R code 3.19
 p_grid[ which.min(loss) ]
+```
 
+
+```{r}
 ## R code 3.20
 dbinom( 0:2 , size=2 , prob=0.7 )
 
@@ -104,38 +118,17 @@ table(dummy_w)/1e5
 ## R code 3.24
 dummy_w <- rbinom( 1e5 , size=9 , prob=0.7 )
 simplehist( dummy_w , xlab="dummy water count" )
+```
 
+```{r}
 ## R code 3.25
 w <- rbinom( 1e4 , size=9 , prob=0.6 )
+simplehist(w)
 
 ## R code 3.26
 w <- rbinom( 1e4 , size=9 , prob=samples )
+simplehist(w)
 
-## R code 3.27
-p_grid <- seq( from=0 , to=1 , length.out=1000 )
-prior <- rep( 1 , 1000 )
-likelihood <- dbinom( 6 , size=9 , prob=p_grid )
-posterior <- likelihood * prior
-posterior <- posterior / sum(posterior)
-set.seed(100)
-samples <- sample( p_grid , prob=posterior , size=1e4 , replace=TRUE )
-
-## R code 3.28
-birth1 <- c(1,0,0,0,1,1,0,1,0,1,0,0,1,1,0,1,1,0,0,0,1,0,0,0,1,0,
-0,0,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,0,1,0,0,1,1,0,1,0,0,0,0,0,0,0,
-1,1,0,1,0,0,1,0,0,0,1,0,0,1,1,1,1,0,1,0,1,1,1,1,1,0,0,1,0,1,1,0,
-1,0,1,1,1,0,1,1,1,1)
-birth2 <- c(0,1,0,1,0,1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,0,
-1,1,1,0,1,1,1,0,1,0,0,1,1,1,1,0,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,
-1,1,1,0,1,1,0,1,1,0,1,1,1,0,0,0,0,0,0,1,0,0,0,1,1,0,0,1,0,0,1,1,
-0,0,0,1,1,1,0,0,0,0)
-
-## R code 3.29
-library(rethinking)
-data(homeworkch3)
-
-## R code 3.30
-sum(birth1) + sum(birth2)
 ```
 
 
@@ -144,7 +137,7 @@ sum(birth1) + sum(birth2)
 
 ## 3.5. Practice
 
-### Easy. Th ese problems use the samples from the posterior distribution for the globe tossing example.Th is code will give you a specifi c set of samples, so that you can check your answers exactly.
+### Easy. Th ese problems use the samples from the posterior distribution for the globe tossing example.This code will give you a specific set of samples, so that you can check your answers exactly.
 
 ```{r}
 p_grid <- seq( from=0 , to=1 , length.out=1000 )
@@ -158,30 +151,70 @@ samples <- sample( p_grid , prob=posterior , size=1e4 , replace=TRUE )
 
 #### Use the values in samples to answer the questions that follow.
 
-#### 3E1. How much posterior probability lies below p = 0:2?
+#### 3E1. How much posterior probability lies below p = 0.2?
 
-#### 3E2. How much posterior probability lies above p = 0:8?
+```{r}
+sum(samples < 0.2) / 1e4
+```
+
+#### 3E2. How much posterior probability lies above p = 0.8?
+
+```{r}
+sum(samples > 0.8) / 1e4
+```
 
 #### 3E3. How much posterior probability lies between p = 0:2 and p = 0:8?
 
+```{r}
+sum(samples > 0.2 & samples < 0.8) / 1e4
+```
+
+
 #### 3E4. 20% of the posterior probability lies below which value of p?
+
+```{r}
+quantile( samples , 0.2 )
+```
 
 #### 3E5. 20% of the posterior probability lies above which value of p?
 
+```{r}
+quantile( samples , 0.8 )
+```
+
 #### 3E6. Which values of p contain the narrowest interval equal to 66% of the posterior probability?
+```{r}
+HPDI( samples , prob=0.66 )
+```
+0.52 < p < 0.78
 
 #### 3E7. Which values of p contain 66% of the posterior probability, assuming equal posterior probability both below and above the interval?
-
+```{r}
+PI( samples , prob = 0.66 )
+```
+0.50 < p < 0.77
 
 ### Medium.
 
 #### 3M1. Suppose the globe tossing data had turned out to be 8 water in 15 tosses. Construct the posterior distribution, using grid approximation. Use the same fl at prior as before.
+```{r}
+
+```
 
 #### 3M2. Draw 10,000 samples from the grid approximation from above. Th en use the samples to calculate the 90% HPDI for p.
+```{r}
+
+```
 
 #### 3M3. Construct a posterior predictive check for this model and data. Th is means simulate the distribution of samples, averaging over the posterior uncertainty in p. What is the probability of observing 8 water in 15 tosses?
+```{r}
+
+```
 
 #### 3M4. Using the posterior distribution constructed from the new (8/15) data, now calculate the probability of observing 6 water in 9 tosses.
+```{r}
+
+```
 
 ### Hard.
 
@@ -212,13 +245,28 @@ sum(birth1) + sum(birth2)
 ```
 
 #### 3H1. Using grid approximation, compute the posterior distribution for the probability of a birth being a boy. Assume a uniform prior probability. Which parameter value maximizes the posterior probability?
+```{r}
+
+```
 
 #### 3H2. Using the sample function, draw 10,000 random parameter values from the posterior distribution you calculated above. Use these samples to estimate the 50%, 89%, and 97% highest posterior density intervals.
+```{r}
+
+```
 
 #### 3H3. Use rbinom to simulate 10,000 replicates of 200 births. You should end up with 10,000 numbers, each one a count of boys out of 200 births. Compare the distribution of predicted numbers of boys to the actual count in the data (111 boys out of 200 births). Th ere are many good ways to visualize the simulations, but the dens command (part of the rethinking package) is probably the easiest way in this case. Does it look like the model fi ts the data well? Th at is, does the distribution of predictions include the actual observation as a central, likely outcome?
+```{r}
+
+```
 
 #### 3H4. Now compare 10,000 counts of boys from 100 simulated fi rst borns only to the number of boys in the fi rst births, birth1. How does the model look in this light?
+```{r}
+
+```
 
 #### 3H5. Th e model assumes that sex of fi rst and second births are independent. To check this assumption, focus now on second births that followed female fi rst borns. Compare 10,000 simulated counts of boys to only those second births that followed girls. To do this correctly, you need to count the number of fi rst borns who were girls and simulate that many births, 10,000 times. Compare the counts of boys in your simulations to the actual observed count of boys following girls. How does the model look in this light? Any guesses what is going on in these data?
 
+```{r}
+
+```
 
