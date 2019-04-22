@@ -12,8 +12,16 @@ output:
 ### 4.1.1. Normal by addition.
 
 ```{r}
+library(rethinking)
+```
+
+
+```{r}
 ## R code 4.1
 pos <- replicate( 1000 , sum( runif(16,-1,1) ) )
+hist(pos)
+plot(density(pos))
+dens(pos, norm.comp=TRUE)
 ```
 
 ### 4.1.2. Normal by multiplication.
@@ -28,8 +36,9 @@ dens( growth , norm.comp=TRUE )
 
 ## R code 4.4
 big <- replicate( 10000 , prod( 1 + runif(12,0,0.5) ) )
+dens( big , norm.comp=TRUE )
 small <- replicate( 10000 , prod( 1 + runif(12,0,0.01) ) )
-
+dens( small , norm.comp=TRUE )
 ```
 
 ### 4.1.3. Normal by log-multiplication.
@@ -37,6 +46,7 @@ small <- replicate( 10000 , prod( 1 + runif(12,0,0.01) ) )
 ```{r}
 ## R code 4.5
 log.big <- replicate( 10000 , log(prod(1 + runif(12,0,0.5))) )
+dens( log.big , norm.comp=TRUE )
 ```
 
 ### 4.1.4. Using Gaussian distributions.
@@ -52,6 +62,8 @@ posterior <- posterior/sum(posterior)
 ```
 
 ## 4.3. A Gaussian model of height
+
+### 4.3.1. The data.
 
 ```{r}
 ## R code 4.7
@@ -70,7 +82,11 @@ d$height
 
 ## R code 4.11
 d2 <- d[ d$age >= 18 , ]
+```
 
+### 4.3.2. Th e model.
+
+```{r}
 ## R code 4.12
 curve( dnorm( x , 178 , 20 ) , from=100 , to=250 )
 
@@ -87,7 +103,11 @@ dens( prior_h )
 sample_mu <- rnorm( 1e4 , 178 , 100 )
 prior_h <- rnorm( 1e4 , sample_mu , sample_sigma )
 dens( prior_h )
+```
 
+### 4.3.3. Grid approximation of the posterior distribution.
+
+```{r}
 ## R code 4.16
 mu.list <- seq( from=140, to=160 , length.out=200 )
 sigma.list <- seq( from=4 , to=9 , length.out=200 )
@@ -106,7 +126,11 @@ contour_xyz( post$mu , post$sigma , post$prob )
 
 ## R code 4.18
 image_xyz( post$mu , post$sigma , post$prob )
+```
 
+### 4.3.4. Sampling from the posterior.
+
+```{r}
 ## R code 4.19
 sample.rows <- sample( 1:nrow(post) , size=1e4 , replace=TRUE ,
     prob=post$prob )
@@ -147,7 +171,11 @@ plot( sample2.mu , sample2.sigma , cex=0.5 ,
 
 ## R code 4.25
 dens( sample2.sigma , norm.comp=TRUE )
+```
 
+### 4.3.5. Finding the posterior distribution with quap.
+
+```{r}
 ## R code 4.26
 library(rethinking)
 data(Howell1)
@@ -182,7 +210,11 @@ m4.2 <- quap(
         sigma ~ dunif( 0 , 50 )
     ) , data=d2 )
 precis( m4.2 )
+```
 
+### 4.3.6. Sampling from a quap. 
+
+```{r}
 ## R code 4.32
 vcov( m4.1 )
 
@@ -201,10 +233,18 @@ precis(post)
 ## R code 4.36
 library(MASS)
 post <- mvrnorm( n=1e4 , mu=coef(m4.1) , Sigma=vcov(m4.1) )
+```
 
+## 4.4. Adding a predictor
+
+```{r}
 ## R code 4.37
 plot( d2$height ~ d2$weight )
+```
 
+### 4.4.1. Th e linear model strategy.
+
+```{r}
 ## R code 4.38
 set.seed(2971)
 N <- 100                   # 100 lines
@@ -231,7 +271,11 @@ set.seed(2971)
 N <- 100                   # 100 lines
 a <- rnorm( N , 178 , 20 )
 b <- rlnorm( N , 0 , 1 )
+```
 
+### 4.4.2. Finding the posterior distribution.
+
+```{r}
 ## R code 4.42
 # load data again, since it's a long way back
 library(rethinking)
