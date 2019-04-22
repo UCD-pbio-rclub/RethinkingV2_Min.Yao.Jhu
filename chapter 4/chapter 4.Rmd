@@ -1,0 +1,310 @@
+---
+title: "chapter 4"
+author: "Min-Yao"
+date: "2019年4月21日"
+output: 
+  html_document: 
+    keep_md: yes
+---
+# Geocentric Models
+
+## 4.1. Why normal distributions are normal
+### 4.1.1. Normal by addition.
+
+```{r}
+## R code 4.1
+pos <- replicate( 1000 , sum( runif(16,-1,1) ) )
+```
+
+### 4.1.2. Normal by multiplication.
+
+```{r}
+## R code 4.2
+prod( 1 + runif(12,0,0.1) )
+
+## R code 4.3
+growth <- replicate( 10000 , prod( 1 + runif(12,0,0.1) ) )
+dens( growth , norm.comp=TRUE )
+
+## R code 4.4
+big <- replicate( 10000 , prod( 1 + runif(12,0,0.5) ) )
+small <- replicate( 10000 , prod( 1 + runif(12,0,0.01) ) )
+
+```
+
+### 4.1.3. Normal by log-multiplication.
+
+```{r}
+## R code 4.5
+log.big <- replicate( 10000 , log(prod(1 + runif(12,0,0.5))) )
+```
+
+### 4.1.4. Using Gaussian distributions.
+## 4.2. A language for describing models
+### 4.2.1. Re-describing the globe tossing model.
+
+```{r}
+## R code 4.6
+w <- 6; n <- 9;
+p_grid <- seq(from=0,to=1,length.out=100)
+posterior <- dbinom(w,n,p_grid)*dunif(p_grid,0,1)
+posterior <- posterior/sum(posterior)
+```
+
+## 4.3. A Gaussian model of height
+
+```{r}
+## R code 4.7
+library(rethinking)
+data(Howell1)
+d <- Howell1
+
+## R code 4.8
+str( d )
+
+## R code 4.9
+precis( d )
+
+## R code 4.10
+d$height
+
+## R code 4.11
+d2 <- d[ d$age >= 18 , ]
+
+## R code 4.12
+curve( dnorm( x , 178 , 20 ) , from=100 , to=250 )
+
+## R code 4.13
+curve( dunif( x , 0 , 50 ) , from=-10 , to=60 )
+
+## R code 4.14
+sample_mu <- rnorm( 1e4 , 178 , 20 )
+sample_sigma <- runif( 1e4 , 0 , 50 )
+prior_h <- rnorm( 1e4 , sample_mu , sample_sigma )
+dens( prior_h )
+
+## R code 4.15
+sample_mu <- rnorm( 1e4 , 178 , 100 )
+prior_h <- rnorm( 1e4 , sample_mu , sample_sigma )
+dens( prior_h )
+
+## R code 4.16
+mu.list <- seq( from=140, to=160 , length.out=200 )
+sigma.list <- seq( from=4 , to=9 , length.out=200 )
+post <- expand.grid( mu=mu.list , sigma=sigma.list )
+post$LL <- sapply( 1:nrow(post) , function(i) sum( dnorm(
+                d2$height ,
+                mean=post$mu[i] ,
+                sd=post$sigma[i] ,
+                log=TRUE ) ) )
+post$prod <- post$LL + dnorm( post$mu , 178 , 20 , TRUE ) +
+    dunif( post$sigma , 0 , 50 , TRUE )
+post$prob <- exp( post$prod - max(post$prod) )
+
+## R code 4.17
+contour_xyz( post$mu , post$sigma , post$prob )
+
+## R code 4.18
+image_xyz( post$mu , post$sigma , post$prob )
+
+## R code 4.19
+sample.rows <- sample( 1:nrow(post) , size=1e4 , replace=TRUE ,
+    prob=post$prob )
+sample.mu <- post$mu[ sample.rows ]
+sample.sigma <- post$sigma[ sample.rows ]
+
+## R code 4.20
+plot( sample.mu , sample.sigma , cex=0.5 , pch=16 , col=col.alpha(rangi2,0.1) )
+
+## R code 4.21
+dens( sample.mu )
+dens( sample.sigma )
+
+## R code 4.22
+HPDI( sample.mu )
+HPDI( sample.sigma )
+
+## R code 4.23
+d3 <- sample( d2$height , size=20 )
+
+## R code 4.24
+mu.list <- seq( from=150, to=170 , length.out=200 )
+sigma.list <- seq( from=4 , to=20 , length.out=200 )
+post2 <- expand.grid( mu=mu.list , sigma=sigma.list )
+post2$LL <- sapply( 1:nrow(post2) , function(i)
+    sum( dnorm( d3 , mean=post2$mu[i] , sd=post2$sigma[i] ,
+    log=TRUE ) ) )
+post2$prod <- post2$LL + dnorm( post2$mu , 178 , 20 , TRUE ) +
+    dunif( post2$sigma , 0 , 50 , TRUE )
+post2$prob <- exp( post2$prod - max(post2$prod) )
+sample2.rows <- sample( 1:nrow(post2) , size=1e4 , replace=TRUE ,
+    prob=post2$prob )
+sample2.mu <- post2$mu[ sample2.rows ]
+sample2.sigma <- post2$sigma[ sample2.rows ]
+plot( sample2.mu , sample2.sigma , cex=0.5 ,
+    col=col.alpha(rangi2,0.1) ,
+    xlab="mu" , ylab="sigma" , pch=16 )
+
+## R code 4.25
+dens( sample2.sigma , norm.comp=TRUE )
+
+## R code 4.26
+library(rethinking)
+data(Howell1)
+d <- Howell1
+d2 <- d[ d$age >= 18 , ]
+
+## R code 4.27
+flist <- alist(
+    height ~ dnorm( mu , sigma ) ,
+    mu ~ dnorm( 178 , 20 ) ,
+    sigma ~ dunif( 0 , 50 )
+)
+
+## R code 4.28
+m4.1 <- quap( flist , data=d2 )
+
+## R code 4.29
+precis( m4.1 )
+
+## R code 4.30
+start <- list(
+    mu=mean(d2$height),
+    sigma=sd(d2$height)
+)
+m4.1 <- quap( flist , data=d2 , start=start )
+
+## R code 4.31
+m4.2 <- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu ~ dnorm( 178 , 0.1 ) ,
+        sigma ~ dunif( 0 , 50 )
+    ) , data=d2 )
+precis( m4.2 )
+
+## R code 4.32
+vcov( m4.1 )
+
+## R code 4.33
+diag( vcov( m4.1 ) )
+cov2cor( vcov( m4.1 ) )
+
+## R code 4.34
+library(rethinking)
+post <- extract.samples( m4.1 , n=1e4 )
+head(post)
+
+## R code 4.35
+precis(post)
+
+## R code 4.36
+library(MASS)
+post <- mvrnorm( n=1e4 , mu=coef(m4.1) , Sigma=vcov(m4.1) )
+
+## R code 4.37
+plot( d2$height ~ d2$weight )
+
+## R code 4.38
+set.seed(2971)
+N <- 100                   # 100 lines
+a <- rnorm( N , 178 , 20 )
+b <- rnorm( N , 0 , 10 )
+
+## R code 4.39
+plot( NULL , xlim=range(d2$weight) , ylim=c(-100,400) ,
+    xlab="weight" , ylab="height" )
+abline( h=0 , lty=2 )
+abline( h=272 , lty=1 , lwd=0.5 )
+mtext( "b ~ dnorm(0,10)" )
+xbar <- mean(d2$weight)
+for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar) ,
+    from=min(d2$weight) , to=max(d2$weight) , add=TRUE ,
+    col=col.alpha("black",0.2) )
+
+## R code 4.40
+b <- rlnorm( 1e4 , 0 , 1 )
+dens( b , xlim=c(0,5) , adj=0.1 )
+
+## R code 4.41
+set.seed(2971)
+N <- 100                   # 100 lines
+a <- rnorm( N , 178 , 20 )
+b <- rlnorm( N , 0 , 1 )
+
+## R code 4.42
+# load data again, since it's a long way back
+library(rethinking)
+data(Howell1)
+d <- Howell1
+d2 <- d[ d$age >= 18 , ]
+
+# define the average weight, x-bar
+xbar <- mean(d2$weight)
+
+# fit model
+m4.3 <- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu <- a + b*( weight - xbar ) ,
+        a ~ dnorm( 178 , 20 ) ,
+        b ~ dlnorm( 0 , 1 ) ,
+        sigma ~ dunif( 0 , 50 )
+    ) ,
+    data=d2 )
+
+## R code 4.43
+m4.3b <- quap(
+    alist(
+        height ~ dnorm( mu , sigma ) ,
+        mu <- a + exp(log_b)*( weight - xbar ),
+        a ~ dnorm( 178 , 100 ) ,
+        log_b ~ dnorm( 0 , 1 ) ,
+        sigma ~ dunif( 0 , 50 )
+    ) ,
+    data=d2 )
+```
+
+## 4.7. Practice
+
+### Easy.
+
+#### 4E1. In the model defi nition below, which line is the likelihood?
+yi ~ Normal(u, sigma)
+u ~ Normal(0, 10)
+sigma ~ Uniform(0, 10)
+
+#### 4E2. In the model defi nition just above, how many parameters are in the posterior distribution?
+
+#### 4E3. Using the model defi nition above, write down the appropriate form of Bayes’ theorem that includes the proper likelihood and priors.
+
+#### 4E4. In the model defi nition below, which line is the linear model?
+yi ~ Normal(u, sigma)
+ui = a + bxi
+a ~ Normal(0, 10)
+b ~ Normal(0, 1)
+sigma ~ Uniform(0, 10)
+
+#### 4E5. In the model defi nition just above, how many parameters are in the posterior distribution?
+
+### Medium.
+
+#### 4M1. For the model defi nition below, simulate observed heights from the prior (not the posterior).
+yi ~ Normal(u, sigma)
+u ~ Normal(0, 10)
+sigma ~ Uniform(0, 10)
+
+#### 4M2. Translate the model just above into a quap formula.
+
+#### 4M3. Translate the quap model formula below into a mathematical model definition.
+
+```{r}
+flist <- alist(
+y ~ dnorm( mu , sigma ),
+mu <- a + b*x,
+a ~ dnorm( 0 , 50 ),
+b ~ dunif( 0 , 10 ),
+sigma ~ dunif( 0 , 50 )
+)
+```
+

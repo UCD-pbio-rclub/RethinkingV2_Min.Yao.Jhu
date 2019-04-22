@@ -120,7 +120,7 @@ sum( samples < 0.5 ) / 1e4
 ```
 
 ```
-## [1] 0.1718
+## [1] 0.1677
 ```
 
 ```r
@@ -129,7 +129,7 @@ sum( samples > 0.5 & samples < 0.75 ) / 1e4
 ```
 
 ```
-## [1] 0.6051
+## [1] 0.5981
 ```
 
 ```r
@@ -139,7 +139,7 @@ quantile( samples , 0.8 )
 
 ```
 ##       80% 
-## 0.7607608
+## 0.7647648
 ```
 
 ```r
@@ -149,7 +149,7 @@ quantile( samples , c( 0.1 , 0.9 ) )
 
 ```
 ##       10%       90% 
-## 0.4504505 0.8128128
+## 0.4494494 0.8158158
 ```
 
 
@@ -168,7 +168,7 @@ PI( samples , prob=0.5 )
 
 ```
 ##       25%       75% 
-## 0.7037037 0.9299299
+## 0.7107107 0.9309309
 ```
 
 ```r
@@ -178,7 +178,7 @@ HPDI( samples , prob=0.5 )
 
 ```
 ##      |0.5      0.5| 
-## 0.8408408 1.0000000
+## 0.8408408 0.9989990
 ```
 
 
@@ -197,7 +197,7 @@ chainmode( samples , adj=0.01 )
 ```
 
 ```
-## [1] 0.9642844
+## [1] 0.9888745
 ```
 
 ```r
@@ -206,7 +206,7 @@ mean( samples )
 ```
 
 ```
-## [1] 0.7979395
+## [1] 0.8007994
 ```
 
 ```r
@@ -214,7 +214,7 @@ median( samples )
 ```
 
 ```
-## [1] 0.8408408
+## [1] 0.8418418
 ```
 
 ```r
@@ -255,7 +255,7 @@ rbinom( 1 , size=2 , prob=0.7 )
 ```
 
 ```
-## [1] 2
+## [1] 1
 ```
 
 ```r
@@ -264,7 +264,7 @@ rbinom( 10 , size=2 , prob=0.7 )
 ```
 
 ```
-##  [1] 2 1 2 2 1 2 2 0 2 1
+##  [1] 1 2 2 2 2 2 1 1 1 2
 ```
 
 ```r
@@ -276,7 +276,7 @@ table(dummy_w)/1e5
 ```
 ## dummy_w
 ##       0       1       2 
-## 0.09004 0.41844 0.49152
+## 0.09038 0.42133 0.48829
 ```
 
 ```r
@@ -560,6 +560,15 @@ p_grid[ which.max(posterior) ]
 
 ```r
 samples <- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )
+HPDI( samples , prob=c(0.5, 0.89, 0.97 ))
+```
+
+```
+##     |0.97     |0.89      |0.5      0.5|     0.89|     0.97| 
+## 0.4794795 0.4994995 0.5305305 0.5765766 0.6096096 0.6286286
+```
+
+```r
 HPDI( samples , prob=0.5 )
 ```
 
@@ -627,41 +636,6 @@ mean(simulate_birth)
 #### 3H4. Now compare 10,000 counts of boys from 100 simulated first borns only to the number of boys in the first births, birth1. How does the model look in this light?
 
 ```r
-# define grid
-p_grid <- seq( from=0 , to=1 , length.out=1000 )
-# define prior
-prior <- rep( 1 , 1000 )
-# compute likelihood at each value in grid
-likelihood <- dbinom( sum(birth1) , size= length(birth1) , prob=p_grid )
-# compute product of likelihood and prior
-unstd.posterior <- likelihood * prior
-# standardize the posterior, so it sums to 1
-posterior <- unstd.posterior / sum(unstd.posterior)
-
-plot_posterior(x = p_grid, y = posterior)
-```
-
-![](chapter_3_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
-
-```r
-p_grid[ which.max(posterior) ]
-```
-
-```
-## [1] 0.5095095
-```
-
-```r
-samples <- sample( p_grid , size=1e4 , replace=TRUE , prob=posterior )
-HPDI( samples , prob=0.5 )
-```
-
-```
-##      |0.5      0.5| 
-## 0.4794795 0.5455455
-```
-
-```r
 simulate_birth1 <- rbinom( 1e4 , size=100 , prob=samples )
 dens(simulate_birth1)
 abline(v = sum(birth1), col = "red", lwd=3)
@@ -669,7 +643,7 @@ abline(v = median(simulate_birth1), col = "blue", lty=2, lwd=3)
 abline(v = mean(simulate_birth1), col = "green", lty=3, lwd=3)
 ```
 
-![](chapter_3_files/figure-html/unnamed-chunk-27-2.png)<!-- -->
+![](chapter_3_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
 
 ```r
 sum(birth1)
@@ -684,7 +658,7 @@ median(simulate_birth1)
 ```
 
 ```
-## [1] 51
+## [1] 56
 ```
 
 ```r
@@ -692,7 +666,7 @@ mean(simulate_birth1)
 ```
 
 ```
-## [1] 51.0376
+## [1] 55.5053
 ```
 
 #### 3H5. The model assumes that sex of first and second births are independent. To check this assumption, focus now on second births that followed female first borns. Compare 10,000 simulated counts of boys to only those second births that followed girls. To do this correctly, you need to count the number of first borns who were girls and simulate that many births, 10,000 times. Compare the counts of boys in your simulations to the actual observed count of boys following girls. How does the model look in this light? Any guesses what is going on in these data?
@@ -732,7 +706,7 @@ median(simulate_birth_g)
 ```
 
 ```
-## [1] 25
+## [1] 27
 ```
 
 ```r
@@ -740,6 +714,6 @@ mean(simulate_birth_g)
 ```
 
 ```
-## [1] 25.0012
+## [1] 27.1647
 ```
 
