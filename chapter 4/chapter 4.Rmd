@@ -198,6 +198,7 @@ m4.1 <- quap( flist , data=d2 )
 
 ## R code 4.29
 precis( m4.1 )
+precis( m4.1, prob = 0.95 )
 
 ## R code 4.30
 start <- list(
