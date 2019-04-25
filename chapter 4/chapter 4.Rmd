@@ -247,7 +247,7 @@ post <- mvrnorm( n=1e4 , mu=coef(m4.1) , Sigma=vcov(m4.1) )
 plot( d2$height ~ d2$weight )
 ```
 
-### 4.4.1. Th e linear model strategy.
+### 4.4.1. The linear model strategy.
 
 ```{r}
 ## R code 4.38
