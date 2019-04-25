@@ -350,7 +350,7 @@ sigma ~ Uniform(0, 10)
 
 #### 4E3. Using the model definition above, write down the appropriate form of Bayes’ theorem that includes the proper likelihood and priors.
 
->
+$\Pr(μ,σ|y)=\prod_iNormal(yi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)/\int\int\prod_iNormal(hi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)dμdσ$
 
 #### 4E4. In the model definition below, which line is the linear model?
 yi ~ Normal(u, sigma)
@@ -391,8 +391,12 @@ dens( prior_y )
 #### 4M2. Translate the model just above into a quap formula.
 
 ```{r}
-
-
+## R code 4.27
+formula4M2 <- alist(
+    y ~ dnorm( mu , sigma ) ,
+    mu ~ dnorm( 0 , 10 ) ,
+    sigma ~ dunif( 0 , 10 )
+)
 ```
 
 
@@ -408,3 +412,8 @@ sigma ~ dunif( 0 , 50 )
 )
 ```
 
+yi ~ Normal(mu, sigma)
+mu <- a + b*xi
+a ~ Normal(0, 50)
+b ~ Uniform(0, 10)
+sigma ~ Uniform(0, 50)

@@ -92,7 +92,7 @@ prod( 1 + runif(12,0,0.1) )
 ```
 
 ```
-## [1] 1.697165
+## [1] 1.407568
 ```
 
 ```r
@@ -455,9 +455,9 @@ precis( m4.1 )
 ```
 
 ```
-##             mean        sd      5.5%      94.5%
-## mu    154.607021 0.4119946 153.94857 155.265468
-## sigma   7.731331 0.2913858   7.26564   8.197022
+##             mean        sd       5.5%      94.5%
+## mu    154.607001 0.4119950 153.948554 155.265449
+## sigma   7.731339 0.2913866   7.265647   8.197031
 ```
 
 ```r
@@ -466,8 +466,8 @@ precis( m4.1, prob = 0.95 )
 
 ```
 ##             mean        sd       2.5%      97.5%
-## mu    154.607021 0.4119946 153.799526 155.414515
-## sigma   7.731331 0.2913858   7.160225   8.302437
+## mu    154.607001 0.4119950 153.799506 155.414497
+## sigma   7.731339 0.2913866   7.160232   8.302446
 ```
 
 ```r
@@ -489,9 +489,9 @@ precis( m4.2 )
 ```
 
 ```
-##            mean        sd      5.5%    94.5%
-## mu    177.86375 0.1002354 177.70356 178.0239
-## sigma  24.51751 0.9289181  23.03292  26.0021
+##            mean        sd      5.5%     94.5%
+## mu    177.86376 0.1002354 177.70356 178.02395
+## sigma  24.51757 0.9289240  23.03297  26.00217
 ```
 
 ### 4.3.6. Sampling from a quap. 
@@ -537,12 +537,12 @@ head(post)
 
 ```
 ##         mu    sigma
-## 1 154.9681 7.364689
-## 2 154.8290 7.453648
-## 3 154.5374 8.056511
-## 4 155.7259 7.317425
-## 5 154.3865 7.717783
-## 6 154.6612 7.436210
+## 1 153.8383 7.346436
+## 2 155.0254 7.540259
+## 3 154.6650 8.452859
+## 4 154.0012 8.093675
+## 5 154.3586 8.399401
+## 6 154.9940 7.573478
 ```
 
 ```r
@@ -551,9 +551,9 @@ precis(post)
 ```
 
 ```
-##             mean        sd       5.5%      94.5%   histogram
-## mu    154.612298 0.4210558 153.931800 155.278029     ▁▁▅▇▂▁▁
-## sigma   7.727964 0.2903084   7.264593   8.199743 ▁▁▁▂▅▇▇▃▁▁▁
+##             mean        sd       5.5%      94.5%     histogram
+## mu    154.609838 0.4153356 153.950183 155.272579      ▁▁▁▅▇▂▁▁
+## sigma   7.736576 0.2910236   7.267717   8.202265 ▁▁▁▁▂▅▇▇▃▁▁▁▁
 ```
 
 ```r
@@ -691,7 +691,7 @@ sigma ~ Uniform(0, 10)
 
 #### 4E3. Using the model definition above, write down the appropriate form of Bayes’ theorem that includes the proper likelihood and priors.
 
->
+$\Pr(μ,σ|y)=\prod_iNormal(yi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)/\int\int\prod_iNormal(hi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)dμdσ$
 
 #### 4E4. In the model definition below, which line is the linear model?
 yi ~ Normal(u, sigma)
@@ -735,6 +735,14 @@ dens( prior_y )
 #### 4M2. Translate the model just above into a quap formula.
 
 
+```r
+## R code 4.27
+formula4M2 <- alist(
+    y ~ dnorm( mu , sigma ) ,
+    mu ~ dnorm( 0 , 10 ) ,
+    sigma ~ dunif( 0 , 10 )
+)
+```
 
 
 #### 4M3. Translate the quap model formula below into a mathematical model definition.
@@ -750,3 +758,8 @@ sigma ~ dunif( 0 , 50 )
 )
 ```
 
+yi ~ Normal(mu, sigma)
+mu <- a + b*xi
+a ~ Normal(0, 50)
+b ~ Uniform(0, 10)
+sigma ~ Uniform(0, 50)
