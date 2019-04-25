@@ -92,7 +92,7 @@ prod( 1 + runif(12,0,0.1) )
 ```
 
 ```
-## [1] 1.407568
+## [1] 1.681588
 ```
 
 ```r
@@ -395,7 +395,7 @@ HPDI( sample.sigma )
 
 ```
 ##    |0.89    0.89| 
-## 7.266332 8.195980
+## 7.291457 8.195980
 ```
 
 ```r
@@ -456,8 +456,8 @@ precis( m4.1 )
 
 ```
 ##             mean        sd       5.5%      94.5%
-## mu    154.607001 0.4119950 153.948554 155.265449
-## sigma   7.731339 0.2913866   7.265647   8.197031
+## mu    154.612791 0.4119718 153.954380 155.271201
+## sigma   7.730884 0.2913439   7.265261   8.196508
 ```
 
 ```r
@@ -466,8 +466,8 @@ precis( m4.1, prob = 0.95 )
 
 ```
 ##             mean        sd       2.5%      97.5%
-## mu    154.607001 0.4119950 153.799506 155.414497
-## sigma   7.731339 0.2913866   7.160232   8.302446
+## mu    154.612791 0.4119718 153.805341 155.420241
+## sigma   7.730884 0.2913439   7.159861   8.301908
 ```
 
 ```r
@@ -490,8 +490,8 @@ precis( m4.2 )
 
 ```
 ##            mean        sd      5.5%     94.5%
-## mu    177.86376 0.1002354 177.70356 178.02395
-## sigma  24.51757 0.9289240  23.03297  26.00217
+## mu    177.86375 0.1002354 177.70356 178.02395
+## sigma  24.51756 0.9289234  23.03296  26.00216
 ```
 
 ### 4.3.6. Sampling from a quap. 
@@ -537,12 +537,12 @@ head(post)
 
 ```
 ##         mu    sigma
-## 1 153.8383 7.346436
-## 2 155.0254 7.540259
-## 3 154.6650 8.452859
-## 4 154.0012 8.093675
-## 5 154.3586 8.399401
-## 6 154.9940 7.573478
+## 1 154.5491 7.520431
+## 2 155.2088 7.684656
+## 3 154.7984 7.692010
+## 4 153.2333 7.478963
+## 5 155.6721 7.819995
+## 6 155.0498 7.522178
 ```
 
 ```r
@@ -551,9 +551,9 @@ precis(post)
 ```
 
 ```
-##             mean        sd       5.5%      94.5%     histogram
-## mu    154.609838 0.4153356 153.950183 155.272579      ▁▁▁▅▇▂▁▁
-## sigma   7.736576 0.2910236   7.267717   8.202265 ▁▁▁▁▂▅▇▇▃▁▁▁▁
+##             mean        sd      5.5%      94.5%   histogram
+## mu    154.605349 0.4151979 153.94028 155.276149    ▁▁▁▅▇▂▁▁
+## sigma   7.729075 0.2916053   7.26325   8.202198 ▁▁▁▂▅▇▇▃▁▁▁
 ```
 
 ```r
@@ -677,12 +677,15 @@ m4.3 <- quap(
 #### 4E1. In the model definition below, which line is the likelihood?
 
 yi ~ Normal(u, sigma)
+
 > the likelihood
 
 u ~ Normal(0, 10)
+
 > the prior for u (mean)
 
 sigma ~ Uniform(0, 10)
+
 > the prior for sigma (SD)
 
 #### 4E2. In the model definition just above, how many parameters are in the posterior distribution?
@@ -693,20 +696,26 @@ sigma ~ Uniform(0, 10)
 
 $\Pr(μ,σ|y)=\prod_iNormal(yi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)/\int\int\prod_iNormal(hi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)dμdσ$
 
+> Pr(μ,σ|y)=∏iNormal(yi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)/∫∫∏iNormal(hi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)dμdσ
+
 #### 4E4. In the model definition below, which line is the linear model?
 yi ~ Normal(u, sigma)
+
 > the likelihood
 
 ui = a + bxi
 > the linear model
 
 a ~ Normal(0, 10)
+
 > the prior for a
 
 b ~ Normal(0, 1)
+
 > the prior for b
 
 sigma ~ Uniform(0, 10)
+
 > the prior for sigma
 
 #### 4E5. In the model definition just above, how many parameters are in the posterior distribution?
@@ -717,9 +726,9 @@ sigma ~ Uniform(0, 10)
 ### Medium.
 
 #### 4M1. For the model definition below, simulate observed heights from the prior (not the posterior).
-yi ~ Normal(u, sigma)
-u ~ Normal(0, 10)
-sigma ~ Uniform(0, 10)
+#### yi ~ Normal(u, sigma)
+#### u ~ Normal(0, 10)
+#### sigma ~ Uniform(0, 10)
 
 
 ```r
@@ -758,8 +767,12 @@ sigma ~ dunif( 0 , 50 )
 )
 ```
 
-yi ~ Normal(mu, sigma)
-mu <- a + b*xi
-a ~ Normal(0, 50)
-b ~ Uniform(0, 10)
-sigma ~ Uniform(0, 50)
+> yi ~ Normal(mu, sigma)
+
+> mu <- a + b*xi
+
+> a ~ Normal(0, 50)
+
+> b ~ Uniform(0, 10)
+
+> sigma ~ Uniform(0, 50)

@@ -336,12 +336,15 @@ m4.3 <- quap(
 #### 4E1. In the model definition below, which line is the likelihood?
 
 yi ~ Normal(u, sigma)
+
 > the likelihood
 
 u ~ Normal(0, 10)
+
 > the prior for u (mean)
 
 sigma ~ Uniform(0, 10)
+
 > the prior for sigma (SD)
 
 #### 4E2. In the model definition just above, how many parameters are in the posterior distribution?
@@ -352,20 +355,26 @@ sigma ~ Uniform(0, 10)
 
 $\Pr(μ,σ|y)=\prod_iNormal(yi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)/\int\int\prod_iNormal(hi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)dμdσ$
 
+> Pr(μ,σ|y)=∏iNormal(yi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)/∫∫∏iNormal(hi|μ,σ)Normal(μ|0,10)Uniform(σ|0,10)dμdσ
+
 #### 4E4. In the model definition below, which line is the linear model?
 yi ~ Normal(u, sigma)
+
 > the likelihood
 
 ui = a + bxi
 > the linear model
 
 a ~ Normal(0, 10)
+
 > the prior for a
 
 b ~ Normal(0, 1)
+
 > the prior for b
 
 sigma ~ Uniform(0, 10)
+
 > the prior for sigma
 
 #### 4E5. In the model definition just above, how many parameters are in the posterior distribution?
@@ -376,9 +385,9 @@ sigma ~ Uniform(0, 10)
 ### Medium.
 
 #### 4M1. For the model definition below, simulate observed heights from the prior (not the posterior).
-yi ~ Normal(u, sigma)
-u ~ Normal(0, 10)
-sigma ~ Uniform(0, 10)
+#### yi ~ Normal(u, sigma)
+#### u ~ Normal(0, 10)
+#### sigma ~ Uniform(0, 10)
 
 ```{r}
 sample_mu <- rnorm( 1e4 , 0 , 10 )
@@ -412,8 +421,12 @@ sigma ~ dunif( 0 , 50 )
 )
 ```
 
-yi ~ Normal(mu, sigma)
-mu <- a + b*xi
-a ~ Normal(0, 50)
-b ~ Uniform(0, 10)
-sigma ~ Uniform(0, 50)
+> yi ~ Normal(mu, sigma)
+
+> mu <- a + b*xi
+
+> a ~ Normal(0, 50)
+
+> b ~ Uniform(0, 10)
+
+> sigma ~ Uniform(0, 50)
