@@ -92,7 +92,7 @@ prod( 1 + runif(12,0,0.1) )
 ```
 
 ```
-## [1] 1.651852
+## [1] 1.697165
 ```
 
 ```r
@@ -267,24 +267,39 @@ d$height
 ```r
 ## R code 4.11
 d2 <- d[ d$age >= 18 , ]
+precis( d2 )
 ```
 
-### 4.3.2. Th e model.
+```
+##             mean         sd     5.5%     94.5%       histogram
+## height 154.59709  7.7423321 142.8750 167.00500       ▁▃▇▇▅▇▂▁▁
+## weight  44.99049  6.4567081  35.1375  55.76588         ▁▅▇▇▃▂▁
+## age     41.13849 15.9678551  20.0000  70.00000 ▂▅▇▅▃▇▃▃▂▂▂▁▁▁▁
+## male     0.46875  0.4997328   0.0000   1.00000      ▇▁▁▁▁▁▁▁▁▇
+```
 
+### 4.3.2. The model.
+
+
+```r
+dens(d2$height)
+```
+
+![](chapter_4_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 ```r
 ## R code 4.12
 curve( dnorm( x , 178 , 20 ) , from=100 , to=250 )
 ```
 
-![](chapter_4_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](chapter_4_files/figure-html/unnamed-chunk-7-2.png)<!-- -->
 
 ```r
 ## R code 4.13
 curve( dunif( x , 0 , 50 ) , from=-10 , to=60 )
 ```
 
-![](chapter_4_files/figure-html/unnamed-chunk-7-2.png)<!-- -->
+![](chapter_4_files/figure-html/unnamed-chunk-7-3.png)<!-- -->
 
 ```r
 ## R code 4.14
@@ -294,7 +309,7 @@ prior_h <- rnorm( 1e4 , sample_mu , sample_sigma )
 dens( prior_h )
 ```
 
-![](chapter_4_files/figure-html/unnamed-chunk-7-3.png)<!-- -->
+![](chapter_4_files/figure-html/unnamed-chunk-7-4.png)<!-- -->
 
 ```r
 ## R code 4.15
@@ -303,7 +318,7 @@ prior_h <- rnorm( 1e4 , sample_mu , sample_sigma )
 dens( prior_h )
 ```
 
-![](chapter_4_files/figure-html/unnamed-chunk-7-4.png)<!-- -->
+![](chapter_4_files/figure-html/unnamed-chunk-7-5.png)<!-- -->
 
 ### 4.3.3. Grid approximation of the posterior distribution.
 
@@ -371,7 +386,7 @@ HPDI( sample.mu )
 
 ```
 ##    |0.89    0.89| 
-## 153.9698 155.1759
+## 153.8693 155.1759
 ```
 
 ```r
@@ -380,7 +395,7 @@ HPDI( sample.sigma )
 
 ```
 ##    |0.89    0.89| 
-## 7.316583 8.221106
+## 7.266332 8.195980
 ```
 
 ```r
@@ -440,9 +455,19 @@ precis( m4.1 )
 ```
 
 ```
-##             mean        sd       5.5%     94.5%
-## mu    154.609329 0.4120184 153.950843 155.26781
-## sigma   7.731772 0.2914275   7.266015   8.19753
+##             mean        sd      5.5%      94.5%
+## mu    154.607021 0.4119946 153.94857 155.265468
+## sigma   7.731331 0.2913858   7.26564   8.197022
+```
+
+```r
+precis( m4.1, prob = 0.95 )
+```
+
+```
+##             mean        sd       2.5%      97.5%
+## mu    154.607021 0.4119946 153.799526 155.414515
+## sigma   7.731331 0.2913858   7.160225   8.302437
 ```
 
 ```r
@@ -464,9 +489,9 @@ precis( m4.2 )
 ```
 
 ```
-##            mean        sd      5.5%     94.5%
-## mu    177.86375 0.1002354 177.70356 178.02395
-## sigma  24.51756 0.9289235  23.03297  26.00216
+##            mean        sd      5.5%    94.5%
+## mu    177.86375 0.1002354 177.70356 178.0239
+## sigma  24.51751 0.9289181  23.03292  26.0021
 ```
 
 ### 4.3.6. Sampling from a quap. 
@@ -512,12 +537,12 @@ head(post)
 
 ```
 ##         mu    sigma
-## 1 155.1267 7.325356
-## 2 154.2849 7.325383
-## 3 154.0847 6.807935
-## 4 153.9386 7.399057
-## 5 155.5141 7.888845
-## 6 154.4460 7.775568
+## 1 154.9681 7.364689
+## 2 154.8290 7.453648
+## 3 154.5374 8.056511
+## 4 155.7259 7.317425
+## 5 154.3865 7.717783
+## 6 154.6612 7.436210
 ```
 
 ```r
@@ -526,9 +551,9 @@ precis(post)
 ```
 
 ```
-##             mean        sd       5.5%      94.5%    histogram
-## mu    154.605897 0.4097671 153.946870 155.261987     ▁▁▁▅▇▂▁▁
-## sigma   7.736877 0.2938757   7.259965   8.205035 ▁▁▁▂▅▇▇▃▁▁▁▁
+##             mean        sd       5.5%      94.5%   histogram
+## mu    154.612298 0.4210558 153.931800 155.278029     ▁▁▅▇▂▁▁
+## sigma   7.727964 0.2903084   7.264593   8.199743 ▁▁▁▂▅▇▇▃▁▁▁
 ```
 
 ```r
@@ -547,7 +572,7 @@ plot( d2$height ~ d2$weight )
 
 ![](chapter_4_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
-### 4.4.1. Th e linear model strategy.
+### 4.4.1. The linear model strategy.
 
 
 ```r
@@ -585,7 +610,28 @@ set.seed(2971)
 N <- 100                   # 100 lines
 a <- rnorm( N , 178 , 20 )
 b <- rlnorm( N , 0 , 1 )
+
+## R code 4.39
+plot( NULL , xlim=range(d2$weight) , ylim=c(-100,400) ,
+    xlab="weight" , ylab="height" )
+abline( h=0 , lty=2 )
+abline( h=272 , lty=1 , lwd=0.5 )
+mtext( "b ~ dnorm(0,10)" )
+xbar <- mean(d2$weight)
+for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar) ,
+    from=min(d2$weight) , to=max(d2$weight) , add=TRUE ,
+    col=col.alpha("black",0.2) )
 ```
+
+![](chapter_4_files/figure-html/unnamed-chunk-13-3.png)<!-- -->
+
+```r
+## R code 4.40
+b <- rlnorm( 1e4 , 0 , 1 )
+dens( b , xlim=c(0,5) , adj=0.1 )
+```
+
+![](chapter_4_files/figure-html/unnamed-chunk-13-4.png)<!-- -->
 
 ### 4.4.2. Finding the posterior distribution.
 
@@ -613,47 +659,83 @@ m4.3 <- quap(
     data=d2 )
 
 ## R code 4.43
-m4.3b <- quap(
-    alist(
-        height ~ dnorm( mu , sigma ) ,
-        mu <- a + exp(log_b)*( weight - xbar ),
-        a ~ dnorm( 178 , 100 ) ,
-        log_b ~ dnorm( 0 , 1 ) ,
-        sigma ~ dunif( 0 , 50 )
-    ) ,
-    data=d2 )
+#m4.3b <- quap(
+#    alist(
+#        height ~ dnorm( mu , sigma ) ,
+#        mu <- a + exp(log_b)*( weight - xbar ),
+#        a ~ dnorm( 178 , 100 ) ,
+#        log_b ~ dnorm( 0 , 1 ) ,
+#        sigma ~ dunif( 0 , 50 )
+#    ) ,
+#    data=d2 )
 ```
 
 ## 4.7. Practice
 
 ### Easy.
 
-#### 4E1. In the model defi nition below, which line is the likelihood?
+#### 4E1. In the model definition below, which line is the likelihood?
+
 yi ~ Normal(u, sigma)
+> the likelihood
+
 u ~ Normal(0, 10)
+> the prior for u (mean)
+
 sigma ~ Uniform(0, 10)
+> the prior for sigma (SD)
 
-#### 4E2. In the model defi nition just above, how many parameters are in the posterior distribution?
+#### 4E2. In the model definition just above, how many parameters are in the posterior distribution?
 
-#### 4E3. Using the model defi nition above, write down the appropriate form of Bayes’ theorem that includes the proper likelihood and priors.
+> Two, u and sigma are parameters. yi is observed data.
 
-#### 4E4. In the model defi nition below, which line is the linear model?
+#### 4E3. Using the model definition above, write down the appropriate form of Bayes’ theorem that includes the proper likelihood and priors.
+
+>
+
+#### 4E4. In the model definition below, which line is the linear model?
 yi ~ Normal(u, sigma)
-ui = a + bxi
-a ~ Normal(0, 10)
-b ~ Normal(0, 1)
-sigma ~ Uniform(0, 10)
+> the likelihood
 
-#### 4E5. In the model defi nition just above, how many parameters are in the posterior distribution?
+ui = a + bxi
+> the linear model
+
+a ~ Normal(0, 10)
+> the prior for a
+
+b ~ Normal(0, 1)
+> the prior for b
+
+sigma ~ Uniform(0, 10)
+> the prior for sigma
+
+#### 4E5. In the model definition just above, how many parameters are in the posterior distribution?
+
+> Three, a, b, and sigma are parameters.
+
 
 ### Medium.
 
-#### 4M1. For the model defi nition below, simulate observed heights from the prior (not the posterior).
+#### 4M1. For the model definition below, simulate observed heights from the prior (not the posterior).
 yi ~ Normal(u, sigma)
 u ~ Normal(0, 10)
 sigma ~ Uniform(0, 10)
 
+
+```r
+sample_mu <- rnorm( 1e4 , 0 , 10 )
+sample_sigma <- runif( 1e4 , 0 , 10 )
+prior_y <- rnorm( 1e4 , sample_mu , sample_sigma )
+dens( prior_y )
+```
+
+![](chapter_4_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+
 #### 4M2. Translate the model just above into a quap formula.
+
+
+
 
 #### 4M3. Translate the quap model formula below into a mathematical model definition.
 
