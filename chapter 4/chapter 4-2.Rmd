@@ -640,6 +640,8 @@ shade( sim.height.HPDI , weight.seq )
 
 #### (c) What aspects of the model fit concern you? Describe the kinds of assumptions you would change, if any, to improve the model. You don’t have to write any new code. Just explain what the model appears to be doing a bad job of, and what you hypothesize would be a better model.
 
+> I think a parabolic (second order) polynomial would be a better model.
+
 ```{r}
 ## R code 4.65
 d4H2$weight_s <- ( d4H2$weight - mean(d4H2$weight) )/sd(d4H2$weight)
