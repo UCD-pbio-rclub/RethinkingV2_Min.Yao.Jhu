@@ -390,7 +390,7 @@ precis(d)
 ```{r}
 ## R code 4.73
 d2 <- d[ complete.cases(d$temp) , ] # complete cases on temp
-num_knots <- 15
+num_knots <- 5
 knot_list <- quantile( d2$year , probs=seq(0,1,length.out=num_knots) )
 knot_list
 ```
