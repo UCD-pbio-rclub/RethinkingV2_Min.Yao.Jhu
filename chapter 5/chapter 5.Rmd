@@ -20,10 +20,14 @@ d <- WaffleDivorce
 # standardize variables
 d$A <- scale( d$MedianAgeMarriage )
 d$D <- scale( d$Divorce )
+```
 
+```{r}
 ## R code 5.2
 sd( d$MedianAgeMarriage )
+```
 
+```{r}
 ## R code 5.3
 m5.1 <- quap(
     alist(
@@ -33,14 +37,19 @@ m5.1 <- quap(
         bA ~ dnorm( 0 , 0.5 ) ,
         sigma ~ dexp( 1 )
     ) , data = d )
+```
 
+```{r}
 ## R code 5.4
 set.seed(10)
 prior <- extract.prior( m5.1 )
 mu <- link( m5.1 , post=prior , data=list( A=c(-2,2) ) )
 plot( NULL , xlim=c(-2,2) , ylim=c(-2,2) )
 for ( i in 1:50 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+```
 
+
+```{r}
 ## R code 5.5
 # compute percentile interval of mean
 A_seq <- seq( from=-3 , to=3.2 , length.out=30 )
@@ -52,7 +61,9 @@ mu.PI <- apply( mu , 2 , PI )
 plot( D ~ A , data=d , col=rangi2 )
 lines( A_seq , mu.mean , lwd=2 )
 shade( mu.PI , A_seq )
+```
 
+```{r}
 ## R code 5.6
 d$M <- scale( d$Marriage )
 m5.2 <- quap(
@@ -65,11 +76,34 @@ m5.2 <- quap(
     ) , data = d )
 ```
 
+```{r}
+## R code 5.4
+set.seed(10)
+prior <- extract.prior( m5.2 )
+mu <- link( m5.2 , post=prior , data=list( M=c(-2,2) ) )
+plot( NULL , xlim=c(-2,2) , ylim=c(-2,2) )
+for ( i in 1:50 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+```
+
+```{r}
+## R code 5.5
+# compute percentile interval of mean
+M_seq <- seq( from=-3 , to=3.2 , length.out=30 )
+mu <- link( m5.2 , data=list(M=M_seq) )
+mu.mean <- apply( mu , 2, mean )
+mu.PI <- apply( mu , 2 , PI )
+
+# plot it all
+plot( D ~ M , data=d , col=rangi2 )
+lines( M_seq , mu.mean , lwd=2 )
+shade( mu.PI , M_seq )
+```
+
 ### 5.1.1. Think before you regress.
 
 ```{r}
 ## R code 5.7
-install.packages('dagitty')
+#install.packages('dagitty')
 library(dagitty)
 dag5.1 <- dagitty( "dag {
     A -> D
@@ -96,8 +130,11 @@ m5.3 <- quap(
 precis( m5.3 )
 
 ## R code 5.9
-plot( coeftab(m5.1,m5.2,m5.3), par=c("bA","bM") )
+#plot(coeftab(m5.1,m5.2,m5.3), par=c("bA","bM") )
+```
 
+
+```{r}
 ## R code 5.10
 N <- 50 # number of simulated States
 age <- rnorm( N )        # sim A
@@ -117,12 +154,17 @@ m5.4 <- quap(
         bAM ~ dnorm( 0 , 0.5 ) ,
         sigma ~ dexp( 1 )
     ) , data = d )
+```
 
+```{r}
 ## R code 5.12
 mu <- link(m5.4)
 mu_mean <- apply( mu , 2 , mean )
 mu_resid <- d$M - mu_mean
+```
 
+
+```{r}
 ## R code 5.13
 # prepare new counterfactual data
 M_seq <- seq( from=-2 , to=3 , length.out=30 )
@@ -143,7 +185,32 @@ mtext( "Median age marriage (std) = 0" )
 lines( M_seq , mu_mean )
 shade( mu_PI , M_seq )
 shade( D_PI , M_seq )
+```
 
+```{r}
+## R code 5.13
+# prepare new counterfactual data
+A_seq <- seq( from=-3 , to=4 , length.out=30 )
+pred_data <- data.frame( A = A_seq , M = 0 )
+
+# compute counterfactual mean divorce (mu)
+mu <- link( m5.3 , data=pred_data )
+mu_mean <- apply( mu , 2 , mean )
+mu_PI <- apply( mu , 2 , PI )
+
+# simulate counterfactual divorce outcomes
+D_sim <- sim( m5.3 , data=pred_data , n=1e4 )
+D_PI <- apply( D_sim , 2 , PI )
+
+# display predictions, hiding raw data with type="n"
+plot( D ~ A , data=d , type="n" )
+mtext( "Median age marriage (std) = 0" )
+lines( A_seq , mu_mean )
+shade( mu_PI , A_seq )
+shade( D_PI , A_seq )
+```
+
+```{r}
 ## R code 5.14
 # call link without specifying new data
 # so it uses original data
@@ -157,7 +224,9 @@ mu_PI <- apply( mu , 2 , PI )
 # again no new data, so uses original data
 D_sim <- sim( m5.3 , n=1e4 )
 D_PI <- apply( D_sim , 2 , PI )
+```
 
+```{r}
 ## R code 5.15
 plot( mu_mean ~ d$D , col=rangi2 , ylim=range(mu_PI) ,
     xlab="Observed divorce" , ylab="Predicted divorce" )
@@ -166,7 +235,10 @@ for ( i in 1:nrow(d) ) lines( rep(d$D[i],2) , mu_PI[,i] , col=rangi2 )
 
 ## R code 5.16
 identify( x=d$D , y=mu_mean , labels=d$Loc )
+```
 
+
+```{r}
 ## R code 5.17
 N <- 100                         # number of cases
 x_real <- rnorm( N )             # x_real as Gaussian with mean 0 and stddev 1
@@ -183,12 +255,17 @@ library(rethinking)
 data(milk)
 d <- milk
 str(d)
+```
 
+
+```{r}
 ## R code 5.19
 d$K <- scale( d$kcal.per.g )
 d$N <- scale( d$neocortex.perc )
 d$M <- scale( log(d$mass) )
+```
 
+```{r}
 ## R code 5.20
 #m5.5_draft <- quap(
 #    alist(
@@ -198,13 +275,20 @@ d$M <- scale( log(d$mass) )
 #        bN ~ dnorm( 0 , 1 ) ,
 #        sigma ~ dexp( 1 )
 #    ) , data=d )
+```
 
+
+```{r}
 ## R code 5.21
 d$neocortex.perc
+```
 
+```{r}
 ## R code 5.22
 dcc <- d[ complete.cases(d$K,d$N,d$M) , ]
+```
 
+```{r}
 ## R code 5.23
 m5.5_draft <- quap(
     alist(
@@ -214,14 +298,20 @@ m5.5_draft <- quap(
         bN ~ dnorm( 0 , 1 ) ,
         sigma ~ dexp( 1 )
     ) , data=dcc )
+```
 
+
+```{r}
 ## R code 5.24
 prior <- extract.prior( m5.5_draft )
 xseq <- c(-2,2)
 mu <- link( m5.5_draft , post=prior , data=list(N=xseq) )
 plot( NULL , xlim=xseq , ylim=xseq )
 for ( i in 1:50 ) lines( xseq , mu[i,] , col=col.alpha("black",0.3) )
+```
 
+
+```{r}
 ## R code 5.25
 m5.5 <- quap(
     alist(
@@ -234,7 +324,17 @@ m5.5 <- quap(
 
 ## R code 5.26
 precis( m5.5 )
+```
+```{r}
+## R code 5.24
+prior <- extract.prior( m5.5 )
+xseq <- c(-2,2)
+mu <- link( m5.5 , post=prior , data=list(N=xseq) )
+plot( NULL , xlim=xseq , ylim=xseq )
+for ( i in 1:50 ) lines( xseq , mu[i,] , col=col.alpha("black",0.3) )
+```
 
+```{r}
 ## R code 5.27
 xseq <- seq( from=min(dcc$N)-0.15 , to=max(dcc$N)+0.15 , length.out=30 )
 mu <- link( m5.5 , data=list(N=xseq) )
@@ -243,7 +343,9 @@ mu_PI <- apply(mu,2,PI)
 plot( K ~ N , data=dcc )
 lines( xseq , mu_mean , lwd=2 )
 shade( mu_PI , xseq )
+```
 
+```{r}
 ## R code 5.28
 m5.6 <- quap(
     alist(
@@ -254,7 +356,9 @@ m5.6 <- quap(
         sigma ~ dexp( 1 )
     ) , data=dcc )
 precis(m5.6)
+```
 
+```{r}
 ## R code 5.29
 m5.7 <- quap(
     alist(
@@ -268,8 +372,10 @@ m5.7 <- quap(
 precis(m5.7)
 
 ## R code 5.30
-plot( coeftab( m5.5 , m5.6 , m5.7 ) , pars=c("bM","bN") )
+#plot( coeftab( m5.5 , m5.6 , m5.7 ) , pars=c("bM","bN") )
+```
 
+```{r}
 ## R code 5.31
 xseq <- seq( from=min(dcc$M)-0.15 , to=max(dcc$M)+0.15 , length.out=30 )
 mu <- link( m5.7 , data=data.frame( M=xseq , N=0 ) )
@@ -278,7 +384,9 @@ mu_PI <- apply(mu,2,PI)
 plot( NULL , xlim=range(dcc$M) , ylim=range(dcc$K) )
 lines( xseq , mu_mean , lwd=2 )
 shade( mu_PI , xseq )
+```
 
+```{r}
 ## R code 5.32
 # M -> K <- N
 # M -> N
