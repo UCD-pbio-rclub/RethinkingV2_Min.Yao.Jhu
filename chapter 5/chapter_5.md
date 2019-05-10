@@ -1156,7 +1156,7 @@ str(d)
 
 
 ```r
-## R code 5.3
+## change from R code 5.3
 m5H1.1 <- quap(
     alist(
         W ~ dnorm( mu , sigma ) ,
@@ -1177,7 +1177,7 @@ precis(m5H1.1)
 
 
 ```r
-## R code 5.5
+## change from R code 5.5
 # compute percentile interval of mean
 A_seq <- seq( from= min(d$A) , to= max(d$A) , length.out=30 )
 mu <- link( m5H1.1 , data=list(A=A_seq) )
@@ -1194,7 +1194,7 @@ shade( mu.PI , A_seq )
 
 
 ```r
-## R code 5.3
+## change from R code 5.3
 m5H1.2 <- quap(
     alist(
         W ~ dnorm( mu , sigma ) ,
@@ -1215,7 +1215,7 @@ precis(m5H1.2)
 
 
 ```r
-## R code 5.5
+## change from R code 5.5
 # compute percentile interval of mean
 S_seq <- seq( from= min(d$S) , to= max(d$S) , length.out=30 )
 mu <- link( m5H1.2 , data=list(S=S_seq) )
@@ -1235,7 +1235,7 @@ shade( mu.PI , S_seq )
 
 
 ```r
-## R code 5.8
+## change from R code 5.8
 m5H2 <- quap(
     alist(
         W ~ dnorm( mu , sigma ) ,
@@ -1258,13 +1258,15 @@ precis( m5H2 )
 
 ```r
 ## R code 5.9
-#plot(coeftab(m5H1.1,m5H1.2,m5H2), par=c("bS","bA") )
+plot(coeftab(m5H1.1,m5H1.2,m5H2), par=c("bS","bA") )
 ```
+
+![](chapter_5_files/figure-html/unnamed-chunk-59-1.png)<!-- -->
 
 
 
 ```r
-## R code 5.13
+## change from R code 5.13
 # prepare new counterfactual data
 S_seq <- seq( from= min(d$S) , to= max(d$S) , length.out=30 )
 pred_data <- data.frame( S = S_seq , A = 0 )
@@ -1290,7 +1292,7 @@ shade( W_PI , S_seq )
 
 
 ```r
-## R code 5.13
+## change from R code 5.13
 # prepare new counterfactual data
 A_seq <- seq( from= min(d$A) , to= max(d$A) , length.out=30 )
 pred_data <- data.frame( A = A_seq , S = 0 )
