@@ -1271,12 +1271,12 @@ plot(coeftab(m5H1.1,m5H1.2,m5H2), par=c("bS","bA") )
 S_seq <- seq( from= min(d$S) , to= max(d$S) , length.out=30 )
 pred_data <- data.frame( S = S_seq , A = 0 )
 
-# compute counterfactual mean divorce (mu)
+# compute counterfactual mean weight (mu)
 mu <- link( m5H2 , data=pred_data )
 mu_mean <- apply( mu , 2 , mean )
 mu_PI <- apply( mu , 2 , PI )
 
-# simulate counterfactual divorce outcomes
+# simulate counterfactual weight
 W_sim <- sim( m5H2 , data=pred_data , n=1e4 )
 W_PI <- apply( W_sim , 2 , PI )
 
@@ -1297,12 +1297,12 @@ shade( W_PI , S_seq )
 A_seq <- seq( from= min(d$A) , to= max(d$A) , length.out=30 )
 pred_data <- data.frame( A = A_seq , S = 0 )
 
-# compute counterfactual mean divorce (mu)
+# compute counterfactual mean weight (mu)
 mu <- link( m5H2 , data=pred_data )
 mu_mean <- apply( mu , 2 , mean )
 mu_PI <- apply( mu , 2 , PI )
 
-# simulate counterfactual divorce outcomes
+# simulate counterfactual weight
 W_sim <- sim( m5H2 , data=pred_data , n=1e4 )
 W_PI <- apply( W_sim , 2 , PI )
 
