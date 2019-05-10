@@ -580,9 +580,77 @@ $\beta_F$ and $\beta_S$ should be positive.
 ## Medium.
 ### 5M2. Invent your own example of a masked relationship. An outcome variable should be correlated with both predictor variables, but in opposite directions. And the two predictor variables should be correlated with one another.
 
-### 5M3. It is sometimes observed that the best predictor of fire risk is the presence of fi refi ghters—States and localities with many fi refi ghters also have more fi res. Presumably fi refi ghtersdonot cause fires. Nevertheless, this is not a spurious correlation. Instead fires cause fi refi ghters. Considerthe same reversal of causal inference in the context of the divorce and marriage data. How might a high divorce rate cause a higher marriage rate? Can you think of a way to evaluate this relationship, using multiple regression?
+```{r}
+## change from R code 5.17
+library(ggplot2)
+library(GGally)
+set.seed(1)
+N <- 1000                         # number of cases
+x_real <- rnorm( N )             # x_real as Gaussian with mean 0 and stddev 1
+x_spur <- rnorm( N , x_real*0.5 )    # x_spur as Gaussian with mean=x_real*0.5
+y <- rnorm( N , x_real-x_spur )         # y as Gaussian with mean=x_real-x_spur
+d <- data.frame(y,x_real,x_spur) # bind all together in data frame
+ggpairs(d)
+precis(lm(y~x_spur, d))
+precis(lm(y~x_real, d))
+precis(lm(y~x_real+x_spur, d))
+```
+
+### 5M3. It is sometimes observed that the best predictor of fire risk is the presence of firefighters—States and localities with many firefighters also have more fires. Presumably firefighters do not cause fires. Nevertheless, this is not a spurious correlation. Instead fires cause firefighters. Consider the same reversal of causal inference in the context of the divorce and marriage data. How might a high divorce rate cause a higher marriage rate? Can you think of a way to evaluate this relationship, using multiple regression?
+
+> I think a high divorce rate may cause more single individuals and these divorced people can also marriage again. Therefore, to evaluate this relationship, I can use multiple regression by regressing marriage rate on both divorce rate and non-first marriage rate. If there is little or no additional predictive power in also knowing divorce rate once we know non-first marriage rate, this means my hypothesis is correct.
+
 
 ### 5M4. In the divorce data, States with high numbers of Mormons (members of The Church of Jesus Christ of Latter-day Saints, LDS) have much lower divorce rates than the regression models expected. Find a list of LDS population by State and use those numbers as a predictor variable, predicting divorce rate using marriage rate, median age at marriage, and percent LDS population (possibly standardized). You may want to consider transformations of the raw percent LDS variable.
+
+```{r}
+library(rethinking)
+data(WaffleDivorce)
+d <- WaffleDivorce
+str(d)
+d$Location
+```
+
+> Download data from https://www.worldatlas.com/articles/mormon-population-by-state.html and save it as CSV
+
+
+```{r}
+LDS <- read.csv("LDS.csv", header = TRUE)
+LDS
+str(LDS)
+```
+
+```{r}
+d$LDS <- LDS$PercentageofMormonResidents
+str(d)
+```
+
+```{r}
+d$logLDS <- log(d$LDS)
+d$L <- scale(d$logLDS)
+d$A <- scale(d$MedianAgeMarriage)
+d$D <- scale(d$Divorce)
+d$M <- scale(d$Marriage)
+str(d)
+```
+
+```{r}
+## change from R code 5.8
+m5M4 <- quap(
+    alist(
+        D ~ dnorm( mu , sigma ) ,
+        mu <- a + bM*M + bA*A + bL*L ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bM ~ dnorm( 0 , 0.5 ) ,
+        bA ~ dnorm( 0 , 0.5 ) ,
+        bL ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data = d )
+precis( m5M4 )
+
+## R code 5.9
+plot(coeftab(m5.1,m5.2,m5.3,m5M4), par=c("bA","bM","bL") )
+```
 
 ## Hard. 
 ### All three exercises below use the same data, data(foxes) (part of rethinking). 79 The urban fox (Vulpes vulpes) is a successful exploiter of human habitat. Since urban foxes move in packs and defend territories, data on habitat quality and population density is also included. The data frame has five columns:
@@ -594,4 +662,7 @@ $\beta_F$ and $\beta_S$ should be positive.
 
 ### 5H1. Fit two bivariate Gaussian regressions, using quap: (1) body weight as a linear function of territory size (area), and (2) body weight as a linear function of groupsize. Plot the results of these regressions, displaying the MAP regression line and the 95% interval of the mean. Is either variable important for predicting fox body weight?
 
+
+
 ### 5H2. Now fi t a multiple linear regression with weight as the outcome and both area and groupsize as predictor variables. Plot the predictions of the model for each predictor, holding the other predictor constant at its mean. What does this model say about the importance of each variable? Why do you get diff erent results than you got in the exercise just above?
+
