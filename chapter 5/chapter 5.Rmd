@@ -662,7 +662,138 @@ plot(coeftab(m5.1,m5.2,m5.3,m5M4), par=c("bA","bM","bL") )
 
 ### 5H1. Fit two bivariate Gaussian regressions, using quap: (1) body weight as a linear function of territory size (area), and (2) body weight as a linear function of groupsize. Plot the results of these regressions, displaying the MAP regression line and the 95% interval of the mean. Is either variable important for predicting fox body weight?
 
+```{r}
+library(rethinking)
+data(foxes)
+d <- foxes
+str(d)
+```
+
+```{r}
+d$W <- scale(d$weight)
+d$A <- scale(d$area)
+d$S <- scale(d$groupsize)
+str(d)
+```
 
 
-### 5H2. Now fi t a multiple linear regression with weight as the outcome and both area and groupsize as predictor variables. Plot the predictions of the model for each predictor, holding the other predictor constant at its mean. What does this model say about the importance of each variable? Why do you get diff erent results than you got in the exercise just above?
+```{r}
+## R code 5.3
+m5H1.1 <- quap(
+    alist(
+        W ~ dnorm( mu , sigma ) ,
+        mu <- a + bA * A ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bA ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data = d )
+precis(m5H1.1)
+```
 
+```{r}
+## R code 5.5
+# compute percentile interval of mean
+A_seq <- seq( from= min(d$A) , to= max(d$A) , length.out=30 )
+mu <- link( m5H1.1 , data=list(A=A_seq) )
+mu.mean <- apply( mu , 2, mean )
+mu.PI <- apply( mu , 2 , PI )
+
+# plot it all
+plot( W ~ A , data=d , col=rangi2 )
+lines( A_seq , mu.mean , lwd=2 )
+shade( mu.PI , A_seq )
+```
+
+```{r}
+## R code 5.3
+m5H1.2 <- quap(
+    alist(
+        W ~ dnorm( mu , sigma ) ,
+        mu <- a + bS * S ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bS ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data = d )
+precis(m5H1.2)
+```
+
+```{r}
+## R code 5.5
+# compute percentile interval of mean
+S_seq <- seq( from= min(d$S) , to= max(d$S) , length.out=30 )
+mu <- link( m5H1.2 , data=list(S=S_seq) )
+mu.mean <- apply( mu , 2, mean )
+mu.PI <- apply( mu , 2 , PI )
+
+# plot it all
+plot( W ~ S , data=d , col=rangi2 )
+lines( S_seq , mu.mean , lwd=2 )
+shade( mu.PI , S_seq )
+```
+
+
+### 5H2. Now fit a multiple linear regression with weight as the outcome and both area and groupsize as predictor variables. Plot the predictions of the model for each predictor, holding the other predictor constant at its mean. What does this model say about the importance of each variable? Why do you get diff erent results than you got in the exercise just above?
+
+```{r}
+## R code 5.8
+m5H2 <- quap(
+    alist(
+        W ~ dnorm( mu , sigma ) ,
+        mu <- a + bS*S + bA*A ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bS ~ dnorm( 0 , 0.5 ) ,
+        bA ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data = d )
+precis( m5H2 )
+
+## R code 5.9
+#plot(coeftab(m5H1.1,m5H1.2,m5H2), par=c("bS","bA") )
+```
+
+
+```{r}
+## R code 5.13
+# prepare new counterfactual data
+S_seq <- seq( from= min(d$S) , to= max(d$S) , length.out=30 )
+pred_data <- data.frame( S = S_seq , A = 0 )
+
+# compute counterfactual mean divorce (mu)
+mu <- link( m5H2 , data=pred_data )
+mu_mean <- apply( mu , 2 , mean )
+mu_PI <- apply( mu , 2 , PI )
+
+# simulate counterfactual divorce outcomes
+W_sim <- sim( m5H2 , data=pred_data , n=1e4 )
+W_PI <- apply( W_sim , 2 , PI )
+
+# display predictions, hiding raw data with type="n"
+plot( W ~ S , data=d , type="n" )
+mtext( "Area (std) = 0" )
+lines( S_seq , mu_mean )
+shade( mu_PI , S_seq )
+shade( W_PI , S_seq )
+```
+
+```{r}
+## R code 5.13
+# prepare new counterfactual data
+A_seq <- seq( from= min(d$A) , to= max(d$A) , length.out=30 )
+pred_data <- data.frame( A = A_seq , S = 0 )
+
+# compute counterfactual mean divorce (mu)
+mu <- link( m5H2 , data=pred_data )
+mu_mean <- apply( mu , 2 , mean )
+mu_PI <- apply( mu , 2 , PI )
+
+# simulate counterfactual divorce outcomes
+W_sim <- sim( m5H2 , data=pred_data , n=1e4 )
+W_PI <- apply( W_sim , 2 , PI )
+
+# display predictions, hiding raw data with type="n"
+plot( W ~ A , data=d , type="n" )
+mtext( "Groupsize (std) = 0" )
+lines( A_seq , mu_mean )
+shade( mu_PI , A_seq )
+shade( W_PI , A_seq )
+```
