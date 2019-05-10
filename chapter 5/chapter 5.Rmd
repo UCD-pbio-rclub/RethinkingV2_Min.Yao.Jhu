@@ -130,7 +130,7 @@ m5.3 <- quap(
 precis( m5.3 )
 
 ## R code 5.9
-#plot(coeftab(m5.1,m5.2,m5.3), par=c("bA","bM") )
+plot(coeftab(m5.1,m5.2,m5.3), par=c("bA","bM") )
 ```
 
 
@@ -372,7 +372,7 @@ m5.7 <- quap(
 precis(m5.7)
 
 ## R code 5.30
-#plot( coeftab( m5.5 , m5.6 , m5.7 ) , pars=c("bM","bN") )
+plot( coeftab( m5.5 , m5.6 , m5.7 ) , pars=c("bM","bN") )
 ```
 
 ```{r}
@@ -395,7 +395,22 @@ M <- rnorm( n )
 N <- rnorm( n , M )
 K <- rnorm( n , N - M )
 d_sim <- data.frame(K=K,N=N,M=M)
+```
 
+```{r}
+## R code 5.29
+m5.7sim1 <- quap(
+    alist(
+        K ~ dnorm( mu , sigma ) ,
+        mu <- a + bN*N + bM*M ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bN ~ dnorm( 0 , 0.5 ) ,
+        bM ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=d_sim )
+precis(m5.7sim1)
+```
+```{r}
 ## R code 5.33
 # M -> K <- N
 # N -> M
@@ -404,7 +419,23 @@ N <- rnorm( n )
 M <- rnorm( n , N )
 K <- rnorm( n , N - M )
 d_sim2 <- data.frame(K=K,N=N,M=M)
+```
 
+```{r}
+## R code 5.29
+m5.7sim2 <- quap(
+    alist(
+        K ~ dnorm( mu , sigma ) ,
+        mu <- a + bN*N + bM*M ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bN ~ dnorm( 0 , 0.5 ) ,
+        bM ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=d_sim2 )
+precis(m5.7sim2)
+```
+
+```{r}
 # M -> K <- N
 # M <- U -> N
 n <- 100
@@ -415,6 +446,20 @@ K <- rnorm( n , N - M )
 d_sim3 <- data.frame(K=K,N=N,M=M)
 ```
 
+```{r}
+## R code 5.29
+m5.7sim3 <- quap(
+    alist(
+        K ~ dnorm( mu , sigma ) ,
+        mu <- a + bN*N + bM*M ,
+        a ~ dnorm( 0 , 0.2 ) ,
+        bN ~ dnorm( 0 , 0.5 ) ,
+        bM ~ dnorm( 0 , 0.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=d_sim3 )
+precis(m5.7sim3)
+```
+
 ## 5.3. Categorical variables
 
 ```{r}
@@ -422,16 +467,24 @@ d_sim3 <- data.frame(K=K,N=N,M=M)
 data(Howell1)
 d <- Howell1
 str(d)
+```
 
+```{r}
 ## R code 5.35
 mu_female <- rnorm(1e4,178,20)
 mu_male <- rnorm(1e4,178,20) + rnorm(1e4,0,10)
 precis( data.frame( mu_female , mu_male ) )
+```
 
+
+```{r}
 ## R code 5.36
 d$sex <- ifelse( d$male==1 , 2 , 1 )
 str( d$sex )
+```
 
+
+```{r}
 ## R code 5.37
 m5.8 <- quap(
     alist(
@@ -441,20 +494,29 @@ m5.8 <- quap(
         sigma ~ dunif( 0 , 50 )
     ) , data=d )
 precis( m5.8 , depth=2 )
+```
 
+
+```{r}
 ## R code 5.38
 post <- extract.samples(m5.8)
 post$diff_fm <- post$a[,1] - post$a[,2]
 precis( post , depth=2 )
+```
 
+```{r}
 ## R code 5.39
 data(milk)
 d <- milk
 unique(d$clade)
+```
 
+```{r}
 ## R code 5.40
 d$clade_id <- as.integer( d$clade )
+```
 
+```{r}
 ## R code 5.41
 d$K <- scale( d$kcal.per.g )
 m5.9 <- quap(
@@ -465,9 +527,10 @@ m5.9 <- quap(
         sigma ~ dexp( 1 )
     ) , data=d )
 labels <- paste( "a[" , 1:4 , "]:" , levels(d$clade) , sep="" )
-plot( precis( m5.9 , depth=2 , pars="a" ) , labels=labels ,
-    xlab="expected kcal (std)" )
+plot( precis( m5.9 , depth=2 , pars="a" ) , labels=labels , xlab="expected kcal (std)" )
+```
 
+```{r}
 ## R code 5.42
 set.seed(63)
 d$house <- sample( rep(1:4,each=8) , size=nrow(d) )
@@ -503,7 +566,16 @@ $$
 \mu_i = \alpha + \beta_x x_i + \beta_z z_i
 $$
 
-### 5E3.  Write down a multiple regression to evaluate the claim: Neither amount of funding nor size of laboratory is by itself a good predictor of time to PhD degree; but together these variables are both positively associated with time to degree. Write down the model defi nition and indicate which side of zero each slope parameter should be on.
+>  2, 3, and 4 are multiple regressions because these models have two predictors.
+
+### 5E3.  Write down a multiple regression to evaluate the claim: Neither amount of funding nor size of laboratory is by itself a good predictor of time to PhD degree; but together these variables are both positively associated with time to degree. Write down the model definition and indicate which side of zero each slope parameter should be on.
+
+> F is amount of funding; S is size of laboratory.
+
+$$
+\mu_i = \alpha + \beta_F F_i + \beta_S S_i
+$$
+$\beta_F$ and $\beta_S$ should be positive.
 
 ## Medium.
 ### 5M2. Invent your own example of a masked relationship. An outcome variable should be correlated with both predictor variables, but in opposite directions. And the two predictor variables should be correlated with one another.
