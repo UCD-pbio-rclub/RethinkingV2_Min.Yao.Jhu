@@ -812,7 +812,7 @@ $$
 \mu_i = \alpha + \beta_x x_i + \beta_z z_i
 $$
 
->  2, 3, and 4 are multiple regressions because these models have two predictors.
+>  2 and 4 are multiple regressions because these models have two predictors.
 
 ### 5E3.  Write down a multiple regression to evaluate the claim: Neither amount of funding nor size of laboratory is by itself a good predictor of time to PhD degree; but together these variables are both positively associated with time to degree. Write down the model definition and indicate which side of zero each slope parameter should be on.
 
