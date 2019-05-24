@@ -80,6 +80,12 @@ cor( tw[selected] , nw[selected] )
 ## [1] -0.7680083
 ```
 
+```r
+plot(nw,tw)
+```
+
+![](chapter_6_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
 ## 6.1. Multicollinearity
 
 ### 6.1.1. Multicollinear legs.
@@ -128,6 +134,8 @@ plot(precis(m6.1))
 ![](chapter_6_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 ```r
+#plot(coeftab( m6.1 ) , pars=c("a","bl","br","sigma"))
+
 ## R code 6.5
 post <- extract.samples(m6.1)
 plot( bl ~ br , post , col=col.alpha(rangi2,0.1) , pch=16 )
@@ -502,7 +510,7 @@ precis(m6.10)
 ## sigma  1.213188e+00 0.02766080  1.1689803 1.2573949
 ```
 
-### 6.3.2. Th e haunted DAG.
+### 6.3.2. The haunted DAG.
 
 
 ```r

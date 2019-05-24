@@ -27,6 +27,7 @@ s <- nw + tw  # total score
 q <- quantile( s , 1-p ) # top 10% threshold
 selected <- ifelse( s >= q , TRUE , FALSE )
 cor( tw[selected] , nw[selected] )
+plot(nw,tw)
 ```
 
 ## 6.1. Multicollinearity
@@ -61,6 +62,7 @@ precis(m6.1)
 
 ## R code 6.4
 plot(precis(m6.1))
+#plot(coeftab( m6.1 ) , pars=c("a","bl","br","sigma"))
 
 ## R code 6.5
 post <- extract.samples(m6.1)
@@ -288,7 +290,7 @@ m6.10 <- quap(
 precis(m6.10)
 ```
 
-### 6.3.2. Th e haunted DAG.
+### 6.3.2. The haunted DAG.
 
 ```{r}
 ## R code 6.26
