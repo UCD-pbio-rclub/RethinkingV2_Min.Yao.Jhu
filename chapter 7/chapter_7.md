@@ -7,15 +7,62 @@ output:
     keep_md: yes
 ---
 
-```{r}
+
+```r
 library(rethinking)
+```
+
+```
+## Loading required package: rstan
+```
+
+```
+## Warning: package 'rstan' was built under R version 3.5.3
+```
+
+```
+## Loading required package: ggplot2
+```
+
+```
+## Loading required package: StanHeaders
+```
+
+```
+## Warning: package 'StanHeaders' was built under R version 3.5.3
+```
+
+```
+## rstan (Version 2.18.2, GitRev: 2e1f913d3ca3)
+```
+
+```
+## For execution on a local, multicore CPU with excess RAM we recommend calling
+## options(mc.cores = parallel::detectCores()).
+## To avoid recompilation of unchanged Stan programs, we recommend calling
+## rstan_options(auto_write = TRUE)
+```
+
+```
+## For improved execution time, we recommend calling
+## Sys.setenv(LOCAL_CPPFLAGS = '-march=native')
+## although this causes Stan to throw an error on a few processors.
+```
+
+```
+## Loading required package: parallel
+```
+
+```
+## rethinking (Version 1.88)
 ```
 
 # 7 Ulysses’ Compass
 ## 7.1. Th e problem with parameters
 ### 7.1.1. More parameters always improve fit.
 
-```{r}
+
+```r
 ## R code 7.1
 sppnames <- c( "afarensis","africanus","habilis","boisei",
     "rudolfensis","ergaster","sapiens")
@@ -44,7 +91,13 @@ r <- apply(s,2,mean) - d$brain_std
 resid_var <- var2(r)
 outcome_var <- var2( d$brain_std )
 1 - resid_var/outcome_var
+```
 
+```
+## [1] 0.4774595
+```
+
+```r
 ## R code 7.5
 R2_is_bad <- function( quap_fit ) {
     s <- sim( quap_fit , refresh=0 )
@@ -114,7 +167,81 @@ ci <- apply( l , 2 , PI )
 plot( brain_std ~ mass_std , data=d )
 lines( mass_seq , mu )
 shade( ci , mass_seq )
+```
 
+![](chapter_7_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
+## R code 7.9
+post <- extract.samples(m7.2)
+mass_seq <- seq( from=min(d$mass_std) , to=max(d$mass_std) , length.out=100 )
+l <- link( m7.2 , data=list( mass_std=mass_seq ) )
+mu <- apply( l , 2 , mean )
+ci <- apply( l , 2 , PI )
+plot( brain_std ~ mass_std , data=d )
+lines( mass_seq , mu )
+shade( ci , mass_seq )
+```
+
+![](chapter_7_files/figure-html/unnamed-chunk-2-2.png)<!-- -->
+
+```r
+## R code 7.9
+post <- extract.samples(m7.3)
+mass_seq <- seq( from=min(d$mass_std) , to=max(d$mass_std) , length.out=100 )
+l <- link( m7.3 , data=list( mass_std=mass_seq ) )
+mu <- apply( l , 2 , mean )
+ci <- apply( l , 2 , PI )
+plot( brain_std ~ mass_std , data=d )
+lines( mass_seq , mu )
+shade( ci , mass_seq )
+```
+
+![](chapter_7_files/figure-html/unnamed-chunk-2-3.png)<!-- -->
+
+```r
+## R code 7.9
+post <- extract.samples(m7.4)
+mass_seq <- seq( from=min(d$mass_std) , to=max(d$mass_std) , length.out=100 )
+l <- link( m7.4 , data=list( mass_std=mass_seq ) )
+mu <- apply( l , 2 , mean )
+ci <- apply( l , 2 , PI )
+plot( brain_std ~ mass_std , data=d )
+lines( mass_seq , mu )
+shade( ci , mass_seq )
+```
+
+![](chapter_7_files/figure-html/unnamed-chunk-2-4.png)<!-- -->
+
+```r
+## R code 7.9
+post <- extract.samples(m7.5)
+mass_seq <- seq( from=min(d$mass_std) , to=max(d$mass_std) , length.out=100 )
+l <- link( m7.5 , data=list( mass_std=mass_seq ) )
+mu <- apply( l , 2 , mean )
+ci <- apply( l , 2 , PI )
+plot( brain_std ~ mass_std , data=d )
+lines( mass_seq , mu )
+shade( ci , mass_seq )
+```
+
+![](chapter_7_files/figure-html/unnamed-chunk-2-5.png)<!-- -->
+
+```r
+## R code 7.9
+post <- extract.samples(m7.6)
+mass_seq <- seq( from=min(d$mass_std) , to=max(d$mass_std) , length.out=100 )
+l <- link( m7.6 , data=list( mass_std=mass_seq ) )
+mu <- apply( l , 2 , mean )
+ci <- apply( l , 2 , PI )
+plot( brain_std ~ mass_std , data=d )
+lines( mass_seq , mu )
+shade( ci , mass_seq )
+```
+
+![](chapter_7_files/figure-html/unnamed-chunk-2-6.png)<!-- -->
+
+```r
 ## R code 7.10
 m7.1_OLS <- lm( brain_std ~ mass_std , data=d )
 post <- extract.samples( m7.1_OLS )
@@ -122,7 +249,8 @@ post <- extract.samples( m7.1_OLS )
 
 ### 7.1.2. Too few parameters hurts, too.
 
-```{r}
+
+```r
 ## R code 7.11
 m7.7 <- quap(
     alist(
@@ -140,20 +268,33 @@ m7.7 <- quap(
 ### 7.2.1. Firing the weatherperson.
 ### 7.2.2. Information and uncertainty.
 
-```{r}
+
+```r
 ## R code 7.13
 p <- c( 0.3 , 0.7 )
 -sum( p*log(p) )
 ```
 
+```
+## [1] 0.6108643
+```
+
 ### 7.2.3. From entropy to accuracy. 
 ### 7.2.4. Estimating divergence.
 
-```{r}
+
+```r
 ## R code 7.14
 set.seed(1)
 lppd( m7.1 , n=1e4 )
+```
 
+```
+## [1]  0.6098734  0.6483613  0.5496684  0.6235097  0.4648872  0.4348502
+## [7] -0.8446646
+```
+
+```r
 ## R code 7.15
 set.seed(1)
 logprob <- sim( m7.1 , ll=TRUE , n=1e4 )
@@ -163,24 +304,46 @@ f <- function( i ) log_sum_exp( logprob[,i] ) - log(ns)
 ( lppd <- sapply( 1:n , f ) )
 ```
 
+```
+## [1]  0.6098734  0.6483613  0.5496684  0.6235097  0.4648872  0.4348502
+## [7] -0.8446646
+```
+
 ### 7.2.5. Scoring the right data.
 
-```{r}
+
+```r
 ## R code 7.16
 set.seed(1)
 sapply( list(m7.1,m7.2,m7.3,m7.4,m7.5,m7.6) , function(m) sum(lppd(m)) )
+```
 
+```
+## [1]  2.490449  2.566165  3.707343  5.333750 14.124459 39.445390
+```
+
+```r
 ## R code 7.17
 N <- 20
 kseq <- 1:5
 dev <- sapply( kseq , function(k) {
         print(k);
-        r <- replicate( 1e4 , sim_train_test( N=N, k=k ) );
+        r <- replicate( 10 , sim_train_test( N=N, k=k ) );
         c( mean(r[1,]) , mean(r[2,]) , sd(r[1,]) , sd(r[2,]) )
     } )
+```
 
+```
+## [1] 1
+## [1] 2
+## [1] 3
+## [1] 4
+## [1] 5
+```
+
+```r
 ## R code 7.18
-        r <- mcreplicate( 1e4 , sim_train_test( N=N, k=k ) , mc.cores=4 )
+#        r <- mcreplicate( 1e4 , sim_train_test( N=N, k=k ) , mc.cores=4 )
 
 ## R code 7.19
 plot( 1:5 , dev[1,] , ylim=c( min(dev[1:2,])-5 , max(dev[1:2,])+10 ) ,
@@ -196,191 +359,58 @@ for ( i in kseq ) {
 }
 ```
 
-## 7.3. Golem Taming: Regularization
-## 7.4. Predicting predictive accuracy
-### 7.4.1. Cross-validation.
-### 7.4.2. Information criteria. 
-
-```{r}
-## R code 7.20
-data(cars)
-m <- quap(
-    alist(
-        dist ~ dnorm(mu,sigma),
-        mu <- a + b*speed,
-        a ~ dnorm(0,100),
-        b ~ dnorm(0,10),
-        sigma ~ dexp(1)
-    ) , data=cars )
-set.seed(94)
-post <- extract.samples(m,n=1000)
-
-## R code 7.21
-n_samples <- 1000
-logprob <- sapply( 1:n_samples ,
-    function(s) {
-        mu <- post$a[s] + post$b[s]*cars$speed
-        dnorm( cars$dist , mu , post$sigma[s] , log=TRUE )
-    } )
-
-## R code 7.22
-n_cases <- nrow(cars)
-lppd <- sapply( 1:n_cases , function(i) log_sum_exp(logprob[i,]) - log(n_samples) )
-
-## R code 7.23
-pWAIC <- sapply( 1:n_cases , function(i) var(logprob[i,]) )
-
-## R code 7.24
--2*( sum(lppd) - sum(pWAIC) )
-
-## R code 7.25
-waic_vec <- -2*( lppd - pWAIC )
-sqrt( n_cases*var(waic_vec) )
-```
-
-### 7.4.3. Comparing LOOCV, LOOIS, and WAIC.
-## 7.5. Using cross-validation and information criteria
-### 7.5.1. Model mis-selection.
-
-```{r}
-## R code 7.26
-set.seed(11)
-WAIC( m6.7 )
-
-## R code 7.27
-set.seed(77)
-compare( m6.6 , m6.7 , m6.8 )
-
-## R code 7.28
-set.seed(91)
-waic_m6.7 <- WAIC( m6.7 , pointwise=TRUE )
-waic_m6.8 <- WAIC( m6.8 , pointwise=TRUE )
-n <- length(waic_m6.6)
-diff_m6.7_m6.8 <- waic_m6.7 - waic_m6.8
-
-## R code 7.29
-40.0 + c(-1,1)*10.4*2.6
-
-## R code 7.30
-plot( compare( m6.6 , m6.7 , m6.8 ) )
-
-## R code 7.31
-set.seed(92)
-waic_m6.6 <- WAIC( m6.6 , pointwise=TRUE )
-diff_m6.6_m6.8 <- waic_m6.6 - waic_m6.8
-sqrt( n*var( diff_m6.6_m6.8 ) )
-
-## R code 7.32
-set.seed(93)
-compare( m6.6 , m6.7 , m6.8 )@dSE
-```
-
-### 7.5.2. Something about Cebus.
-
-```{r}
-## R code 7.33
-data(Primates301)
-d <- Primates301
-
-## R code 7.34
-d$log_L <- scale( log(d$longevity) )
-d$log_B <- scale( log(d$brain) )
-d$log_M <- scale( log(d$body) )
-
-## R code 7.35
-sapply( d[,c("log_L","log_B","log_M")] , function(x) sum(is.na(x)) )
-
-## R code 7.36
-d2 <- d[ complete.cases( d$log_L , d$log_M , d$log_B ) , ]
-nrow(d2)
-
-## R code 7.37
-m7.8 <- quap(
-    alist(
-        log_L ~ dnorm( mu , sigma ),
-        mu <- a + bM*log_M + bB*log_B,
-        a ~ dnorm(0,0.1),
-        bM ~ dnorm(0,0.5),
-        bB ~ dnorm(0,0.5),
-        sigma ~ dexp(1)
-    ) , data=d2 )
-
-## R code 7.38
-m7.9 <- quap(
-    alist(
-        log_L ~ dnorm( mu , sigma ),
-        mu <- a + bB*log_B,
-        a ~ dnorm(0,0.1),
-        bB ~ dnorm(0,0.5),
-        sigma ~ dexp(1)
-    ) , data=d2 )
-m7.10 <- quap(
-    alist(
-        log_L ~ dnorm( mu , sigma ),
-        mu <- a + bM*log_M,
-        a ~ dnorm(0,0.1),
-        bM ~ dnorm(0,0.5),
-        sigma ~ dexp(1)
-    ) , data=d2 )
-
-## R code 7.39
-set.seed(301)
-compare( m7.8 , m7.9 , m7.10 )
-
-## R code 7.40
-plot( compare( m7.8 , m7.9 , m7.10 ) )
-
-## R code 7.41
-plot( coeftab( m7.8 , m7.9 , m7.10 ) , pars=c("bM","bB") )
-
-## R code 7.42
-cor( d2$log_B , d2$log_M )
-
-## R code 7.43
-waic_m7.8 <- WAIC( m7.8 , pointwise=TRUE )
-waic_m7.9 <- WAIC( m7.9 , pointwise=TRUE )
-
-## R code 7.44
-# compute point scaling
-x <- d2$log_B - d2$log_M
-x <- x - min(x)
-x <- x / max(x)
-
-# draw the plot
-plot( waic_m7.8 - waic_m7.9 , d2$log_L ,
-    xlab="pointwise difference in WAIC" , ylab="log longevity (std)" , pch=21 ,
-    col=col.alpha("black",0.8) , cex=1+x , lwd=2 , bg=col.alpha(rangi2,0.4) )
-abline( v=0 , lty=2 )
-abline( h=0 , lty=2 )
-
-## R code 7.45
-m7.11 <- quap(
-    alist(
-        log_B ~ dnorm( mu , sigma ),
-        mu <- a + bM*log_M + bL*log_L,
-        a ~ dnorm(0,0.1),
-        bM ~ dnorm(0,0.5),
-        bL ~ dnorm(0,0.5),
-        sigma ~ dexp(1)
-    ) , data=d2 )
-precis( m7.11 )
-```
+![](chapter_7_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 ## 7.6. Summary
 ## 7.7. Practice
 
-```{r}
-## R code 7.46
-library(rethinking)
-data(Howell1)
-d <- Howell1
-d$age <- (d$age - mean(d$age))/sd(d$age)
-set.seed( 1000 )
-i <- sample(1:nrow(d),size=nrow(d)/2)
-d1 <- d[ i , ]
-d2 <- d[ -i , ]
+### Easy.
+#### 7E1. State the three motivating criteria that define information entropy. Try to express each in your own words.
 
-## R code 7.47
-sum( dnorm( d2$height , mu , sigma , log=TRUE ) )
+> (1) The measure of uncertainty should be continuous. 
+
+> (2) The measure of uncertainty should increase as the number of possible events in-
+creases.
+
+> (3) The measure of uncertainty should be additive. 
+
+#### 7E2. Suppose a coin is weighted such that, when it is tossed and lands on a table, it comes up heads 70% of the time. What is the entropy of this coin?
+
+
+```r
+## R code 7.13
+p <- c( 0.7 , 0.3 )
+-sum( p*log(p) )
 ```
+
+```
+## [1] 0.6108643
+```
+
+#### 7E3. Suppose a four-sided die is loaded such that, when tossed onto a table, it shows “1” 20%, “2” 25%, ”3” 25%, and ”4” 30% of the time. What is the entropy of this die?
+
+
+```r
+## R code 7.13
+p <- c( 0.2 , 0.25 , 0.25, 0.3 )
+-sum( p*log(p) )
+```
+
+```
+## [1] 1.376227
+```
+
+#### 7E4. Suppose another four-sided die is loaded such that it never shows “4”. The other three sides show equally often. What is the entropy of this die?
+
+
+```r
+## R code 7.13
+p <- c( 1/3 , 1/3 , 1/3 )
+-sum( p*log(p) )
+```
+
+```
+## [1] 1.098612
+```
+
 
