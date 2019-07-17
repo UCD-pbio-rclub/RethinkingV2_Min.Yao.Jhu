@@ -209,10 +209,12 @@ lppd( m7.1 , n=1e4 )
 ## R code 7.15
 set.seed(1)
 logprob <- sim( m7.1 , ll=TRUE , n=1e4 )
+head(logprob)
 n <- ncol(logprob)
-ns <- nrow(logprob)
+ns <- nrow(logprob) # the total number of sample
 f <- function( i ) log_sum_exp( logprob[,i] ) - log(ns)
 ( lppd <- sapply( 1:n , f ) )
+
 ```
 
 ### 7.2.5. Scoring the right data.
