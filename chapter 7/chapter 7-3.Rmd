@@ -1,0 +1,36 @@
+---
+title: "chapter 7-3"
+author: "Min-Yao"
+date: "2019年7月22日"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r}
+library(rethinking)
+```
+
+### 1. Consider three fictional Polynesian islands. On each there is a Royal Ornithologist charged by the king with surveying the birb population. They have each found the following proportions of 5 important birb species:
+
+
+
+#### Notice that each row sums to 1, all the birbs. Th is problem has two parts. It is not computationally complicated. But it is conceptually tricky. 
+#### First, compute the entropy of each island’s birb distribution. Interpret these entropy values.
+#### Second, use each island’s birb distribution to predict the other two. Th is means to compute the K-L Divergence of each island from the others, treating each island as if it were a statistical model of the other islands. You should end up with 6 diff erent K-L Divergence values. Which island predicts the others best? Why?
+
+### 2. Recall the marriage, age, and happiness collider bias example from Chapter 6. Run models m6.9 and m6.10 again. Compare these two models using WAIC (or LOO, they will produce identical results). Which model is expected to make better predictions? Which model provides the correct causal inference about the infl uence of age on happiness? Can you explain why the answers to these two questions disagree?
+
+### 3. Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on fi ve diff erent models, each using weight as the outcome, and containing these sets of predictor variables:
+(1) avgfood + groupsize + area
+(2) avgfood + groupsize
+(3) groupsize + area
+(4) avgfood
+(5) area
+#### Can you explain the relative diff erences in WAIC scores, using the fox DAG from last week’s homework? Be sure to pay attention to the standard error
+of the score diff erences( dSE).
+
+```{r}
+
+```
+

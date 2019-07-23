@@ -647,3 +647,5 @@ d2 <- d[ -i , ]
 ## R code 7.47
 #sum( dnorm( d2$height , mu , sigma , log=TRUE ) )
 ```
+
+
