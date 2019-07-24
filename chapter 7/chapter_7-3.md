@@ -816,6 +816,17 @@ plot(coeftab(m1,m2,m3))
 ![](chapter_7-3_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
 
 ```r
+compare( m1,m2,m3 )@dSE
+```
+
+```
+##          m1       m2       m3
+## m1       NA 3.541291 2.979099
+## m2 3.541291       NA 5.794179
+## m3 2.979099 5.794179       NA
+```
+
+```r
 coeftab(m4,m5)
 ```
 
@@ -833,5 +844,15 @@ plot(coeftab(m4,m5))
 ```
 
 ![](chapter_7-3_files/figure-html/unnamed-chunk-18-2.png)<!-- -->
+
+```r
+compare( m4,m5 )@dSE
+```
+
+```
+##           m4        m5
+## m4        NA 0.7423171
+## m5 0.7423171        NA
+```
 
 > m1,m2,m3 have very similar lower WAIC values, and m4,m5 have very similar higher WAIC values

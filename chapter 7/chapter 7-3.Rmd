@@ -395,8 +395,10 @@ compare( m1 , m2 , m3 , m4 , m5 )
 ```{r}
 coeftab(m1,m2,m3)
 plot(coeftab(m1,m2,m3))
+compare( m1,m2,m3 )@dSE
 coeftab(m4,m5)
 plot(coeftab(m4,m5))
+compare( m4,m5 )@dSE
 ```
 
 > m1,m2,m3 have very similar lower WAIC values, and m4,m5 have very similar higher WAIC values
