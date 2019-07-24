@@ -173,7 +173,7 @@ compare( m7.8 , m7.9 , m7.10 )
 plot( compare( m7.8 , m7.9 , m7.10 ) )
 
 ## R code 7.41
-#plot( coeftab( m7.8 , m7.9 , m7.10 ) , pars=c("bM","bB") )
+plot( coeftab( m7.8 , m7.9 , m7.10 ) , pars=c("bM","bB") )
 
 ## R code 7.42
 cor( d2$log_B , d2$log_M )
@@ -292,9 +292,14 @@ plot(precis(m6.10))
 ```{r}
 compare( m6.9 , m6.10 )
 plot(compare( m6.9 , m6.10 ))
-#plot( coeftab( m6.9 , m6.10 ) , pars=c("bA") )
+plot( coeftab( m6.9 , m6.10 ) , pars=c("bA") )
 ```
 
+> Happiness (H) and age (A) both cause marriage (M). Marriage is therefore a collider. Even though there is no causal association between happiness and age, if we condition on marriage — which means here, if we include it as a predictor in a regression—then it will induce a statistical association between age and happiness. And this can mislead us to think that happiness changes with age, when in fact it is constant.
+
+> In model m6.9, that age is negatively associated with happiness. But this is just a statistical association, not a causal association. Once we know whether someone is married or not, then their age does provide information about how happy they are.
+
+> Therefore,  m6.9 model is expected to make better predictions. m6.10 model provides the correct causal inference about the influence of age on happiness.
 
 ### 3. Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:
 (1) avgfood + groupsize + area
@@ -302,15 +307,15 @@ plot(compare( m6.9 , m6.10 ))
 (3) groupsize + area
 (4) avgfood
 (5) area
-#### Can you explain the relative differences in WAIC scores, using the fox DAG from last week’s homework? Be sure to pay attention to the standard error of the score differences( dSE).
+#### Can you explain the relative differences in WAIC scores, using the fox DAG from last week’s homework? Be sure to pay attention to the standard error of the score differences(dSE).
 
 ```{r}
 data(foxes)
 fox_data <- foxes
-fox_data$st_weight <- standardize(fox_data$weight)
-fox_data$st_area <- standardize(fox_data$area)
-fox_data$st_avgfood <- standardize(fox_data$avgfood)
-fox_data$st_groupsize <- standardize(fox_data$groupsize)
+fox_data$st_weight <- scale(fox_data$weight)
+fox_data$st_area <- scale(fox_data$area)
+fox_data$st_avgfood <- scale(fox_data$avgfood)
+fox_data$st_groupsize <- scale(fox_data$groupsize)
 
 str(fox_data)
 head(fox_data)
@@ -325,6 +330,8 @@ m1 <- quap(
     c(bAF,bGS,bA) ~ dnorm(0,0.5),
     sigma ~ dexp(1)
     ), data=fox_data )
+precis(m1)
+plot(precis(m1))
 ```
 
 ```{r}
@@ -336,6 +343,8 @@ m2 <- quap(
     c(bAF,bGS) ~ dnorm(0,0.5),
     sigma ~ dexp(1)
     ), data=fox_data )
+precis(m2)
+plot(precis(m2))
 ```
 
 ```{r}
@@ -347,6 +356,8 @@ m3 <- quap(
     c(bGS,bA) ~ dnorm(0,0.5),
     sigma ~ dexp(1)
     ), data=fox_data )
+precis(m3)
+plot(precis(m3))
 ```
 
 ```{r}
@@ -358,6 +369,8 @@ m4 <- quap(
     bAF ~ dnorm(0,0.5),
     sigma ~ dexp(1)
     ), data=fox_data )
+precis(m4)
+plot(precis(m4))
 ```
 
 ```{r}
@@ -369,14 +382,21 @@ m5 <- quap(
     bA ~ dnorm(0,0.5),
     sigma ~ dexp(1)
     ), data=fox_data )
+precis(m5)
+plot(precis(m5))
 ```
 
 ```{r}
 compare( m1 , m2 , m3 , m4 , m5 )
 ```
 
+
+
 ```{r}
+coeftab(m1,m2,m3)
+plot(coeftab(m1,m2,m3))
 coeftab(m4,m5)
+plot(coeftab(m4,m5))
 ```
 
-
+> m1,m2,m3 have very similar lower WAIC values, and m4,m5 have very similar higher WAIC values
