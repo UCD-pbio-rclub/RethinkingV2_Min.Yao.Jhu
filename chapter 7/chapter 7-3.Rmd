@@ -7,30 +7,376 @@ output:
     keep_md: yes
 ---
 
+
+
 ```{r}
 library(rethinking)
 ```
 
+## 7.5. Using cross-validation and information criteria
+### 7.5.1. Model mis-selection.
+
+## 6.2. Post-treatment bias
+
+```{r}
+## R code 6.14
+set.seed(71)
+# number of plants
+N <- 100
+
+# simulate initial heights
+h0 <- rnorm(N,10,2)
+
+# assign treatments and simulate fungus and growth
+treatment <- rep( 0:1 , each=N/2 )
+fungus <- rbinom( N , size=1 , prob=0.5 - treatment*0.4 )
+h1 <- h0 + rnorm(N, 5 - 3*fungus)
+
+# compose a clean data frame
+d <- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
+precis(d)
+```
+### 6.2.1. A prior is born.
+
+```{r}
+## R code 6.15
+sim_p <- rlnorm( 1e4 , 0 , 0.25 )
+precis( data.frame(sim_p) )
+
+## R code 6.16
+m6.6 <- quap(
+    alist(
+        h1 ~ dnorm( mu , sigma ),
+        mu <- h0*p,
+        p ~ dlnorm( 0 , 0.25 ),
+        sigma ~ dexp( 1 )
+    ), data=d )
+precis(m6.6)
+
+## R code 6.17
+m6.7 <- quap(
+    alist(
+        h1 ~ dnorm( mu , sigma ),
+        mu <- h0 * p,
+        p <- a + bt*treatment + bf*fungus,
+        a ~ dlnorm( 0 , 0.2 ) ,
+        bt ~ dnorm( 0 , 0.5 ),
+        bf ~ dnorm( 0 , 0.5 ),
+        sigma ~ dexp( 1 )
+    ), data=d )
+precis(m6.7)
+```
+
+### 6.2.2. Blocked by consequence.
+
+```{r}
+## R code 6.18
+m6.8 <- quap(
+    alist(
+        h1 ~ dnorm( mu , sigma ),
+        mu <- h0 * p,
+        p <- a + bt*treatment,
+        a ~ dlnorm( 0 , 0.2 ),
+        bt ~ dnorm( 0 , 0.5 ),
+        sigma ~ dexp( 1 )
+    ), data=d )
+precis(m6.8)
+```
+
+```{r}
+## R code 7.26
+set.seed(11)
+WAIC( m6.7 )
+
+## R code 7.27
+set.seed(77)
+compare( m6.6 , m6.7 , m6.8 )
+
+## R code 7.28
+set.seed(91)
+waic_m6.6 <- WAIC( m6.6 , pointwise=TRUE )
+waic_m6.7 <- WAIC( m6.7 , pointwise=TRUE )
+waic_m6.8 <- WAIC( m6.8 , pointwise=TRUE )
+n <- length(waic_m6.6)
+diff_m6.7_m6.8 <- waic_m6.7 - waic_m6.8
+
+## R code 7.29
+40.0 + c(-1,1)*10.4*2.6
+
+## R code 7.30
+plot( compare( m6.6 , m6.7 , m6.8 ) )
+
+## R code 7.31
+set.seed(92)
+waic_m6.6 <- WAIC( m6.6 , pointwise=TRUE )
+diff_m6.6_m6.8 <- waic_m6.6 - waic_m6.8
+sqrt( n*var( diff_m6.6_m6.8 ) )
+
+## R code 7.32
+set.seed(93)
+compare( m6.6 , m6.7 , m6.8 )@dSE
+```
+
+### 7.5.2. Something about Cebus.
+
+```{r}
+## R code 7.33
+data(Primates301)
+d <- Primates301
+
+## R code 7.34
+d$log_L <- scale( log(d$longevity) )
+d$log_B <- scale( log(d$brain) )
+d$log_M <- scale( log(d$body) )
+
+## R code 7.35
+sapply( d[,c("log_L","log_B","log_M")] , function(x) sum(is.na(x)) )
+
+## R code 7.36
+d2 <- d[ complete.cases( d$log_L , d$log_M , d$log_B ) , ]
+nrow(d2)
+
+## R code 7.37
+m7.8 <- quap(
+    alist(
+        log_L ~ dnorm( mu , sigma ),
+        mu <- a + bM*log_M + bB*log_B,
+        a ~ dnorm(0,0.1),
+        bM ~ dnorm(0,0.5),
+        bB ~ dnorm(0,0.5),
+        sigma ~ dexp(1)
+    ) , data=d2 )
+
+## R code 7.38
+m7.9 <- quap(
+    alist(
+        log_L ~ dnorm( mu , sigma ),
+        mu <- a + bB*log_B,
+        a ~ dnorm(0,0.1),
+        bB ~ dnorm(0,0.5),
+        sigma ~ dexp(1)
+    ) , data=d2 )
+m7.10 <- quap(
+    alist(
+        log_L ~ dnorm( mu , sigma ),
+        mu <- a + bM*log_M,
+        a ~ dnorm(0,0.1),
+        bM ~ dnorm(0,0.5),
+        sigma ~ dexp(1)
+    ) , data=d2 )
+
+## R code 7.39
+set.seed(301)
+compare( m7.8 , m7.9 , m7.10 )
+
+## R code 7.40
+plot( compare( m7.8 , m7.9 , m7.10 ) )
+
+## R code 7.41
+#plot( coeftab( m7.8 , m7.9 , m7.10 ) , pars=c("bM","bB") )
+
+## R code 7.42
+cor( d2$log_B , d2$log_M )
+
+## R code 7.43
+waic_m7.8 <- WAIC( m7.8 , pointwise=TRUE )
+waic_m7.9 <- WAIC( m7.9 , pointwise=TRUE )
+
+## R code 7.44
+# compute point scaling
+x <- d2$log_B - d2$log_M
+x <- x - min(x)
+x <- x / max(x)
+
+# draw the plot
+plot( waic_m7.8 - waic_m7.9 , d2$log_L ,
+    xlab="pointwise difference in WAIC" , ylab="log longevity (std)" , pch=21 ,
+    col=col.alpha("black",0.8) , cex=1+x , lwd=2 , bg=col.alpha(rangi2,0.4) )
+abline( v=0 , lty=2 )
+abline( h=0 , lty=2 )
+
+## R code 7.45
+m7.11 <- quap(
+    alist(
+        log_B ~ dnorm( mu , sigma ),
+        mu <- a + bM*log_M + bL*log_L,
+        a ~ dnorm(0,0.1),
+        bM ~ dnorm(0,0.5),
+        bL ~ dnorm(0,0.5),
+        sigma ~ dexp(1)
+    ) , data=d2 )
+precis( m7.11 )
+```
+
 ### 1. Consider three fictional Polynesian islands. On each there is a Royal Ornithologist charged by the king with surveying the birb population. They have each found the following proportions of 5 important birb species:
 
+Birb A Birb B Birb C Birb D Birb E
+Island 1 0.2 0.2 0.2 0.2 0.2
+Island 2 0.8 0.1 0.05 0.025 0.025
+Island 3 0.05 0.15 0.7 0.05 0.05
 
-
-#### Notice that each row sums to 1, all the birbs. Th is problem has two parts. It is not computationally complicated. But it is conceptually tricky. 
+#### Notice that each row sums to 1, all the birbs. This problem has two parts. It is not computationally complicated. But it is conceptually tricky. 
 #### First, compute the entropy of each island’s birb distribution. Interpret these entropy values.
-#### Second, use each island’s birb distribution to predict the other two. Th is means to compute the K-L Divergence of each island from the others, treating each island as if it were a statistical model of the other islands. You should end up with 6 diff erent K-L Divergence values. Which island predicts the others best? Why?
+#### Second, use each island’s birb distribution to predict the other two. This means to compute the K-L Divergence of each island from the others, treating each island as if it were a statistical model of the other islands. You should end up with 6 different K-L Divergence values. Which island predicts the others best? Why?
 
-### 2. Recall the marriage, age, and happiness collider bias example from Chapter 6. Run models m6.9 and m6.10 again. Compare these two models using WAIC (or LOO, they will produce identical results). Which model is expected to make better predictions? Which model provides the correct causal inference about the infl uence of age on happiness? Can you explain why the answers to these two questions disagree?
+```{r}
+island <-list()
+island$one <- c( 0.2 , 0.2 , 0.2 , 0.2 , 0.2 )
+island$two <- c( 0.8 , 0.1 , 0.05 , 0.025 , 0.025 )
+island$three <- c( 0.05 , 0.15 , 0.7 , 0.05 , 0.05 )
+island
 
-### 3. Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on fi ve diff erent models, each using weight as the outcome, and containing these sets of predictor variables:
+entropy <- function(p) {
+  -sum(p*log(p))}
+
+sapply( island , entropy )
+```
+
+```{r}
+KLD <- function(p,q) {
+  sum( p*(log(p)-log(q)))}
+
+Divergence <-list()
+Divergence$"1.2" <- KLD ( island$one , island$two )
+Divergence$"1.3" <- KLD ( island$one , island$three )
+Divergence$"2.1" <- KLD ( island$two , island$one )
+Divergence$"2.3" <- KLD ( island$two , island$three )
+Divergence$"3.1" <- KLD ( island$three , island$one )
+Divergence$"3.2" <- KLD ( island$three , island$two )
+
+Divergence
+```
+
+>  First island predicts the others best because first island has the highest entropy.
+
+### 2. Recall the marriage, age, and happiness collider bias example from Chapter 6. Run models m6.9 and m6.10 again. Compare these two models using WAIC (or LOO, they will produce identical results). Which model is expected to make better predictions? Which model provides the correct causal inference about the influence of age on happiness? Can you explain why the answers to these two questions disagree?
+
+## 6.3. Collider bias
+
+### 6.3.1. Collider of false sorrow.
+
+```{r}
+## R code 6.22
+d <- sim_happiness( seed=1977 , N_years=1000 )
+precis(d)
+
+## R code 6.23
+d2 <- d[ d$age>17 , ] # only adults
+d2$A <- ( d2$age - 18 ) / ( 65 - 18 )
+
+## R code 6.24
+d2$mid <- d2$married + 1
+m6.9 <- quap(
+    alist(
+        happiness ~ dnorm( mu , sigma ),
+        mu <- a[mid] + bA*A,
+        a[mid] ~ dnorm( 0 , 1 ),
+        bA ~ dnorm( 0 , 2 ),
+        sigma ~ dexp(1)
+    ) , data=d2 )
+precis(m6.9,depth=2)
+plot(precis(m6.9))
+## R code 6.25
+m6.10 <- quap(
+    alist(
+        happiness ~ dnorm( mu , sigma ),
+        mu <- a + bA*A,
+        a ~ dnorm( 0 , 1 ),
+        bA ~ dnorm( 0 , 2 ),
+        sigma ~ dexp(1)
+    ) , data=d2 )
+precis(m6.10)
+plot(precis(m6.10))
+```
+
+```{r}
+compare( m6.9 , m6.10 )
+plot(compare( m6.9 , m6.10 ))
+#plot( coeftab( m6.9 , m6.10 ) , pars=c("bA") )
+```
+
+
+### 3. Reconsider the urban fox analysis from last week’s homework. Use WAIC or LOO based model comparison on five different models, each using weight as the outcome, and containing these sets of predictor variables:
 (1) avgfood + groupsize + area
 (2) avgfood + groupsize
 (3) groupsize + area
 (4) avgfood
 (5) area
-#### Can you explain the relative diff erences in WAIC scores, using the fox DAG from last week’s homework? Be sure to pay attention to the standard error
-of the score diff erences( dSE).
+#### Can you explain the relative differences in WAIC scores, using the fox DAG from last week’s homework? Be sure to pay attention to the standard error of the score differences( dSE).
 
 ```{r}
+data(foxes)
+fox_data <- foxes
+fox_data$st_weight <- standardize(fox_data$weight)
+fox_data$st_area <- standardize(fox_data$area)
+fox_data$st_avgfood <- standardize(fox_data$avgfood)
+fox_data$st_groupsize <- standardize(fox_data$groupsize)
 
+str(fox_data)
+head(fox_data)
 ```
+
+```{r}
+m1 <- quap(
+  alist(
+    st_weight ~ dnorm( mu , sigma ),
+    mu <- a + bAF*st_avgfood + bGS*st_groupsize + bA*st_area,
+    a ~ dnorm(0,0.2),
+    c(bAF,bGS,bA) ~ dnorm(0,0.5),
+    sigma ~ dexp(1)
+    ), data=fox_data )
+```
+
+```{r}
+m2 <- quap(
+  alist(
+    st_weight ~ dnorm( mu , sigma ),
+    mu <- a + bAF*st_avgfood + bGS*st_groupsize,
+    a ~ dnorm(0,0.2),
+    c(bAF,bGS) ~ dnorm(0,0.5),
+    sigma ~ dexp(1)
+    ), data=fox_data )
+```
+
+```{r}
+m3 <- quap(
+  alist(
+    st_weight ~ dnorm( mu , sigma ),
+    mu <- a + bGS*st_groupsize + bA*st_area,
+    a ~ dnorm(0,0.2),
+    c(bGS,bA) ~ dnorm(0,0.5),
+    sigma ~ dexp(1)
+    ), data=fox_data )
+```
+
+```{r}
+m4 <- quap(
+  alist(
+    st_weight ~ dnorm( mu , sigma ),
+    mu <- a + bAF*st_avgfood,
+    a ~ dnorm(0,0.2),
+    bAF ~ dnorm(0,0.5),
+    sigma ~ dexp(1)
+    ), data=fox_data )
+```
+
+```{r}
+m5 <- quap(
+  alist(
+    st_weight ~ dnorm( mu , sigma ),
+    mu <- a + bA*st_area,
+    a ~ dnorm(0,0.2),
+    bA ~ dnorm(0,0.5),
+    sigma ~ dexp(1)
+    ), data=fox_data )
+```
+
+```{r}
+compare( m1 , m2 , m3 , m4 , m5 )
+```
+
+```{r}
+coeftab(m4,m5)
+```
+
 
