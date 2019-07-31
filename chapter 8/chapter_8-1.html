@@ -748,7 +748,7 @@ compare(m_with1, m_with2, m_with3)</code></pre>
 ## m_with3 469.7994 5.410058  0.000000 9.681149e-01 15.12988        NA
 ## m_with2 476.6258 4.529583  6.826426 3.188508e-02 15.31300  6.240441
 ## m_with1 539.3187 2.566464 69.519250 7.762712e-16 13.24398 15.204642</code></pre>
-<pre class="r"><code>m_without1 &lt;- map(
+<pre class="r"><code>m_without1 &lt;- quap(
   alist(
     log_gdp ~ dnorm(mu, sigma),
     mu &lt;- a + bR*rugged,
@@ -758,7 +758,7 @@ compare(m_with1, m_with2, m_with3)</code></pre>
   ),
   data = d2
 )
-m_without2 &lt;- map(
+m_without2 &lt;- quap(
   alist(
     log_gdp ~ dnorm(mu, sigma),
     mu &lt;- a + bA*cont_africa + bR*rugged,
@@ -769,7 +769,7 @@ m_without2 &lt;- map(
   ),
   data = d2
 )
-m_without3 &lt;- map(
+m_without3 &lt;- quap(
   alist(
     log_gdp ~ dnorm(mu, sigma),
     mu &lt;- a + bA*cont_africa + bR*rugged + bAR*cont_africa*rugged,
@@ -792,6 +792,135 @@ compare(m_without1, m_without2, m_without3)</code></pre>
 </div>
 <div id="use-the-tomato.csv-attached-data-set-and-evaluate-whether-hypocotyl-length-hyp-is-affected-by-shade-trt-species-species-and-their-interaction." class="section level4">
 <h4>1. Use the tomato.csv (attached) data set and evaluate whether hypocotyl length (“hyp”) is affected by shade (“trt”), species (“species”) and their interaction.</h4>
+<pre class="r"><code>tomato &lt;- read.csv(&quot;Tomato.csv&quot;)
+str(tomato)</code></pre>
+<pre><code>## 'data.frame':    1008 obs. of  25 variables:
+##  $ shelf   : Factor w/ 6 levels &quot;U&quot;,&quot;V&quot;,&quot;W&quot;,&quot;X&quot;,..: 6 6 6 6 6 6 6 6 6 6 ...
+##  $ flat    : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ col     : Factor w/ 9 levels &quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,..: 2 3 4 5 6 7 9 2 3 4 ...
+##  $ row     : int  1 1 1 1 1 1 1 2 2 2 ...
+##  $ acs     : Factor w/ 36 levels &quot;LA1028&quot;,&quot;LA1305&quot;,..: 23 2 19 26 30 5 14 32 7 34 ...
+##  $ trt     : Factor w/ 2 levels &quot;H&quot;,&quot;L&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ days    : int  28 28 28 28 28 28 28 28 28 28 ...
+##  $ date    : Factor w/ 2 levels &quot;5/5/08&quot;,&quot;5/6/08&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ hyp     : num  19.5 31.3 56.6 35.2 35.3 ...
+##  $ int1    : num  2.37 3.34 8.43 0.56 0.82 1.07 2.85 2.08 5.43 4.08 ...
+##  $ int2    : num  1.59 0.01 2.39 0 0.02 6.69 0.41 0.53 0.81 3.26 ...
+##  $ int3    : num  1.87 9.19 6.7 1.6 1.49 5.72 3.79 1.9 3.63 3.49 ...
+##  $ int4    : num  0.51 1.62 3.69 0.61 0.46 4.76 3.25 NA 2.66 3.02 ...
+##  $ intleng : num  6.34 14.16 21.21 2.77 2.79 ...
+##  $ totleng : num  25.8 45.4 77.9 38 38.1 ...
+##  $ petleng : num  15.78 12.36 13.05 8.08 7.68 ...
+##  $ leafleng: num  30.5 22.9 46.7 26.8 22.4 ...
+##  $ leafwid : num  34.4 14 43.8 33.3 23.6 ...
+##  $ leafnum : int  5 4 5 5 5 5 5 4 5 5 ...
+##  $ ndvi    : int  111 120 110 105 106 132 118 112 107 123 ...
+##  $ lat     : num  -9.52 -13.38 -16.23 -20.48 -20.92 ...
+##  $ lon     : num  -78 -75.4 -71.7 -70 -69.1 ...
+##  $ alt     : int  740 3360 2585 1020 2460 2000 2920 480 75 3540 ...
+##  $ species : Factor w/ 5 levels &quot;S. chilense&quot;,..: 4 5 5 1 1 2 3 4 5 5 ...
+##  $ who     : Factor w/ 2 levels &quot;Dan&quot;,&quot;Pepe&quot;: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>head(tomato)</code></pre>
+<pre><code>##   shelf flat col row    acs trt days   date   hyp int1 int2 int3 int4
+## 1     Z    1   B   1 LA2580   H   28 5/5/08 19.46 2.37 1.59 1.87 0.51
+## 2     Z    1   C   1 LA1305   H   28 5/5/08 31.28 3.34 0.01 9.19 1.62
+## 3     Z    1   D   1 LA1973   H   28 5/5/08 56.65 8.43 2.39 6.70 3.69
+## 4     Z    1   E   1 LA2748   H   28 5/5/08 35.18 0.56 0.00 1.60 0.61
+## 5     Z    1   F   1 LA2931   H   28 5/5/08 35.32 0.82 0.02 1.49 0.46
+## 6     Z    1   G   1 LA1317   H   28 5/5/08 28.74 1.07 6.69 5.72 4.76
+##   intleng totleng petleng leafleng leafwid leafnum ndvi      lat      lon
+## 1    6.34   25.80   15.78    30.53   34.44       5  111  -9.5167 -78.0083
+## 2   14.16   45.44   12.36    22.93   13.99       4  120 -13.3833 -75.3583
+## 3   21.21   77.86   13.05    46.71   43.78       5  110 -16.2333 -71.7000
+## 4    2.77   37.95    8.08    26.82   33.28       5  105 -20.4833 -69.9833
+## 5    2.79   38.11    7.68    22.40   23.61       5  106 -20.9167 -69.0667
+## 6   18.24   46.98   23.66    42.35   42.35       5  132 -13.4167 -73.8417
+##    alt         species who
+## 1  740    S. pennellii Dan
+## 2 3360   S. peruvianum Dan
+## 3 2585   S. peruvianum Dan
+## 4 1020     S. chilense Dan
+## 5 2460     S. chilense Dan
+## 6 2000 S. chmielewskii Dan</code></pre>
+<pre class="r"><code>tomato2 &lt;- subset(tomato, select = c(hyp, trt, species))
+str(tomato2)</code></pre>
+<pre><code>## 'data.frame':    1008 obs. of  3 variables:
+##  $ hyp    : num  19.5 31.3 56.6 35.2 35.3 ...
+##  $ trt    : Factor w/ 2 levels &quot;H&quot;,&quot;L&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ species: Factor w/ 5 levels &quot;S. chilense&quot;,..: 4 5 5 1 1 2 3 4 5 5 ...</code></pre>
+<pre class="r"><code>head(tomato2)</code></pre>
+<pre><code>##     hyp trt         species
+## 1 19.46   H    S. pennellii
+## 2 31.28   H   S. peruvianum
+## 3 56.65   H   S. peruvianum
+## 4 35.18   H     S. chilense
+## 5 35.32   H     S. chilense
+## 6 28.74   H S. chmielewskii</code></pre>
+<pre class="r"><code>tomato2$species_number &lt;- as.numeric(as.factor(tomato2$species))
+tomato2$trt_number &lt;- as.numeric(as.factor(tomato2$trt))
+str(tomato2)</code></pre>
+<pre><code>## 'data.frame':    1008 obs. of  5 variables:
+##  $ hyp           : num  19.5 31.3 56.6 35.2 35.3 ...
+##  $ trt           : Factor w/ 2 levels &quot;H&quot;,&quot;L&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ species       : Factor w/ 5 levels &quot;S. chilense&quot;,..: 4 5 5 1 1 2 3 4 5 5 ...
+##  $ species_number: num  4 5 5 1 1 2 3 4 5 5 ...
+##  $ trt_number    : num  1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+<pre class="r"><code>head(tomato2)</code></pre>
+<pre><code>##     hyp trt         species species_number trt_number
+## 1 19.46   H    S. pennellii              4          1
+## 2 31.28   H   S. peruvianum              5          1
+## 3 56.65   H   S. peruvianum              5          1
+## 4 35.18   H     S. chilense              1          1
+## 5 35.32   H     S. chilense              1          1
+## 6 28.74   H S. chmielewskii              2          1</code></pre>
+<pre class="r"><code>### no interaction model
+tomato_m1 &lt;- quap(
+  alist(
+    hyp ~ dnorm( mu , sigma ) ,
+    mu &lt;- a[species_number] + b*trt_number ,
+    a[species_number] ~ dnorm( 5 , 1 ) ,
+    b ~ dnorm( 0 , 1 ) ,
+    sigma ~ dexp( 1 )) ,
+    data=tomato2 )
+
+precis(tomato_m1, depth=2)</code></pre>
+<pre><code>##            mean        sd      5.5%     94.5%
+## a[1]  10.734058 0.6687726  9.665231 11.802886
+## a[2]   8.982234 0.6541013  7.936854 10.027614
+## a[3]   8.723509 0.6489675  7.686333  9.760684
+## a[4]   6.205911 0.7187012  5.057288  7.354535
+## a[5]  13.271721 0.6720296 12.197687 14.345754
+## b     13.987256 0.3068375 13.496871 14.477642
+## sigma 10.287942 0.2396901  9.904870 10.671013</code></pre>
+<pre class="r"><code>### no interaction model
+tomato_m2 &lt;- quap(
+  alist(
+    hyp ~ dnorm( mu , sigma ) ,
+    mu &lt;- a[species_number] + b*trt_number + bST[species_number]*trt_number,
+    a[species_number] ~ dnorm( 5 , 1 ) ,
+    b ~ dnorm( 0 , 1 ) ,
+    bST[species_number] ~ dnorm( 0 , 1 ),
+    sigma ~ dexp( 1 )) ,
+    data=tomato2 )
+
+precis(tomato_m2, depth=2)</code></pre>
+<pre><code>##             mean        sd       5.5%     94.5%
+## a[1]    9.833507 0.8421049  8.4876603 11.179353
+## a[2]    9.674329 0.8403223  8.3313312 11.017326
+## a[3]    9.507598 0.8335139  8.1754815 10.839714
+## a[4]    6.754812 0.8664218  5.3701021  8.139521
+## a[5]   11.147988 0.8434453  9.8000000 12.495977
+## b      11.810329 0.4831767 11.0381196 12.582539
+## bST[1]  3.093091 0.6609089  2.0368312  4.149351
+## bST[2]  1.516184 0.6552103  0.4690312  2.563336
+## bST[3]  1.401378 0.6602501  0.3461714  2.456586
+## bST[4]  1.531893 0.6848538  0.4373648  2.626422
+## bST[5]  4.267782 0.6572204  3.2174170  5.318147
+## sigma  10.265047 0.2380173  9.8846490 10.645444</code></pre>
+<pre class="r"><code>compare(tomato_m1,tomato_m2)</code></pre>
+<pre><code>##               WAIC    pWAIC    dWAIC    weight       SE     dSE
+## tomato_m2 7578.296 6.547331 0.000000 0.6735461 53.09664      NA
+## tomato_m1 7579.744 5.023227 1.448535 0.3264539 52.96892 5.75006</code></pre>
 </div>
 </div>
 </div>

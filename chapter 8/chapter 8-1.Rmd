@@ -590,7 +590,7 @@ compare(m_with1, m_with2, m_with3)
 ```
 
 ```{r}
-m_without1 <- map(
+m_without1 <- quap(
   alist(
     log_gdp ~ dnorm(mu, sigma),
     mu <- a + bR*rugged,
@@ -600,7 +600,7 @@ m_without1 <- map(
   ),
   data = d2
 )
-m_without2 <- map(
+m_without2 <- quap(
   alist(
     log_gdp ~ dnorm(mu, sigma),
     mu <- a + bA*cont_africa + bR*rugged,
@@ -611,7 +611,7 @@ m_without2 <- map(
   ),
   data = d2
 )
-m_without3 <- map(
+m_without3 <- quap(
   alist(
     log_gdp ~ dnorm(mu, sigma),
     mu <- a + bA*cont_africa + bR*rugged + bAR*cont_africa*rugged,
@@ -644,6 +644,41 @@ head(tomato2)
 ```
 
 ```{r}
+tomato2$species_number <- as.numeric(as.factor(tomato2$species))
+tomato2$trt_number <- as.numeric(as.factor(tomato2$trt))
+str(tomato2)
+head(tomato2)
+```
 
+```{r}
+### no interaction model
+tomato_m1 <- quap(
+  alist(
+    hyp ~ dnorm( mu , sigma ) ,
+    mu <- a[species_number] + b*trt_number ,
+    a[species_number] ~ dnorm( 5 , 1 ) ,
+    b ~ dnorm( 0 , 1 ) ,
+    sigma ~ dexp( 1 )) ,
+    data=tomato2 )
+
+precis(tomato_m1, depth=2)
+
+### no interaction model
+tomato_m2 <- quap(
+  alist(
+    hyp ~ dnorm( mu , sigma ) ,
+    mu <- a[species_number] + b*trt_number + bST[species_number]*trt_number,
+    a[species_number] ~ dnorm( 5 , 1 ) ,
+    b ~ dnorm( 0 , 1 ) ,
+    bST[species_number] ~ dnorm( 0 , 1 ),
+    sigma ~ dexp( 1 )) ,
+    data=tomato2 )
+
+precis(tomato_m2, depth=2)
+
+```
+
+```{r}
+compare(tomato_m1,tomato_m2)
 ```
 
