@@ -857,70 +857,70 @@ str(tomato2)</code></pre>
 ## 5 35.32   H     S. chilense
 ## 6 28.74   H S. chmielewskii</code></pre>
 <pre class="r"><code>tomato2$species_number &lt;- as.numeric(as.factor(tomato2$species))
-tomato2$trt_number &lt;- as.numeric(as.factor(tomato2$trt))
+tomato2$trt_number &lt;- as.numeric(as.factor(tomato2$trt))-1
 str(tomato2)</code></pre>
 <pre><code>## 'data.frame':    1008 obs. of  5 variables:
 ##  $ hyp           : num  19.5 31.3 56.6 35.2 35.3 ...
 ##  $ trt           : Factor w/ 2 levels &quot;H&quot;,&quot;L&quot;: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ species       : Factor w/ 5 levels &quot;S. chilense&quot;,..: 4 5 5 1 1 2 3 4 5 5 ...
 ##  $ species_number: num  4 5 5 1 1 2 3 4 5 5 ...
-##  $ trt_number    : num  1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+##  $ trt_number    : num  0 0 0 0 0 0 0 0 0 0 ...</code></pre>
 <pre class="r"><code>head(tomato2)</code></pre>
 <pre><code>##     hyp trt         species species_number trt_number
-## 1 19.46   H    S. pennellii              4          1
-## 2 31.28   H   S. peruvianum              5          1
-## 3 56.65   H   S. peruvianum              5          1
-## 4 35.18   H     S. chilense              1          1
-## 5 35.32   H     S. chilense              1          1
-## 6 28.74   H S. chmielewskii              2          1</code></pre>
+## 1 19.46   H    S. pennellii              4          0
+## 2 31.28   H   S. peruvianum              5          0
+## 3 56.65   H   S. peruvianum              5          0
+## 4 35.18   H     S. chilense              1          0
+## 5 35.32   H     S. chilense              1          0
+## 6 28.74   H S. chmielewskii              2          0</code></pre>
 <pre class="r"><code>### no interaction model
 tomato_m1 &lt;- quap(
   alist(
     hyp ~ dnorm( mu , sigma ) ,
     mu &lt;- a[species_number] + b*trt_number ,
-    a[species_number] ~ dnorm( 5 , 1 ) ,
+    a[species_number] ~ dnorm( 30 , 5 ) ,
     b ~ dnorm( 0 , 1 ) ,
     sigma ~ dexp( 1 )) ,
     data=tomato2 )
 
 precis(tomato_m1, depth=2)</code></pre>
 <pre><code>##            mean        sd      5.5%     94.5%
-## a[1]  10.734058 0.6687726  9.665231 11.802886
-## a[2]   8.982234 0.6541013  7.936854 10.027614
-## a[3]   8.723509 0.6489675  7.686333  9.760684
-## a[4]   6.205911 0.7187012  5.057288  7.354535
-## a[5]  13.271721 0.6720296 12.197687 14.345754
-## b     13.987256 0.3068375 13.496871 14.477642
-## sigma 10.287942 0.2396901  9.904870 10.671013</code></pre>
-<pre class="r"><code>### no interaction model
+## a[1]  32.663977 0.6676289 31.596977 33.730977
+## a[2]  29.985732 0.6454041 28.954252 31.017212
+## a[3]  29.172984 0.6373639 28.154354 30.191615
+## a[4]  26.651629 0.8172581 25.345493 27.957766
+## a[5]  36.327789 0.6560264 35.279332 37.376246
+## b      4.044409 0.4923829  3.257487  4.831332
+## sigma  9.000665 0.1998598  8.681251  9.320080</code></pre>
+<pre class="r"><code>### interaction model
 tomato_m2 &lt;- quap(
   alist(
     hyp ~ dnorm( mu , sigma ) ,
     mu &lt;- a[species_number] + b*trt_number + bST[species_number]*trt_number,
-    a[species_number] ~ dnorm( 5 , 1 ) ,
+    a[species_number] ~ dnorm( 30 , 5 ) ,
     b ~ dnorm( 0 , 1 ) ,
     bST[species_number] ~ dnorm( 0 , 1 ),
     sigma ~ dexp( 1 )) ,
     data=tomato2 )
 
 precis(tomato_m2, depth=2)</code></pre>
-<pre><code>##             mean        sd       5.5%     94.5%
-## a[1]    9.833507 0.8421049  8.4876603 11.179353
-## a[2]    9.674329 0.8403223  8.3313312 11.017326
-## a[3]    9.507598 0.8335139  8.1754815 10.839714
-## a[4]    6.754812 0.8664218  5.3701021  8.139521
-## a[5]   11.147988 0.8434453  9.8000000 12.495977
-## b      11.810329 0.4831767 11.0381196 12.582539
-## bST[1]  3.093091 0.6609089  2.0368312  4.149351
-## bST[2]  1.516184 0.6552103  0.4690312  2.563336
-## bST[3]  1.401378 0.6602501  0.3461714  2.456586
-## bST[4]  1.531893 0.6848538  0.4373648  2.626422
-## bST[5]  4.267782 0.6572204  3.2174170  5.318147
-## sigma  10.265047 0.2380173  9.8846490 10.645444</code></pre>
+<pre><code>##               mean        sd       5.5%     94.5%
+## a[1]   32.33590850 0.7512659 31.1352405 33.536576
+## a[2]   30.36085948 0.7298607 29.1944012 31.527318
+## a[3]   29.42448860 0.7093588 28.2907962 30.558181
+## a[4]   26.01069708 0.9185962 24.5426029 27.478791
+## a[5]   35.97906690 0.7413354 34.7942698 37.163864
+## b       3.58258034 0.5852938  2.6471678  4.517993
+## bST[1]  1.11940601 0.8112027 -0.1770526  2.415865
+## bST[2] -0.27311863 0.8020534 -1.5549548  1.008718
+## bST[3] -0.07725242 0.8023527 -1.3595670  1.205062
+## bST[4]  1.66408845 0.8581251  0.2926388  3.035538
+## bST[5]  1.14945693 0.8061862 -0.1389843  2.437898
+## sigma   8.96047871 0.1992949  8.6419670  9.278990</code></pre>
 <pre class="r"><code>compare(tomato_m1,tomato_m2)</code></pre>
-<pre><code>##               WAIC    pWAIC    dWAIC    weight       SE     dSE
-## tomato_m2 7578.296 6.547331 0.000000 0.6735461 53.09664      NA
-## tomato_m1 7579.744 5.023227 1.448535 0.3264539 52.96892 5.75006</code></pre>
+<pre><code>##               WAIC    pWAIC   dWAIC     weight       SE      dSE
+## tomato_m2 7307.963 9.200935 0.00000 0.94891411 58.74091       NA
+## tomato_m1 7313.807 7.508978 5.84362 0.05108589 58.82306 2.725635</code></pre>
 </div>
 </div>
 </div>

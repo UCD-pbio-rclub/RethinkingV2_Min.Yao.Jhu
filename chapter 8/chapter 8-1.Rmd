@@ -645,7 +645,7 @@ head(tomato2)
 
 ```{r}
 tomato2$species_number <- as.numeric(as.factor(tomato2$species))
-tomato2$trt_number <- as.numeric(as.factor(tomato2$trt))
+tomato2$trt_number <- as.numeric(as.factor(tomato2$trt))-1
 str(tomato2)
 head(tomato2)
 ```
@@ -656,19 +656,19 @@ tomato_m1 <- quap(
   alist(
     hyp ~ dnorm( mu , sigma ) ,
     mu <- a[species_number] + b*trt_number ,
-    a[species_number] ~ dnorm( 5 , 1 ) ,
+    a[species_number] ~ dnorm( 30 , 5 ) ,
     b ~ dnorm( 0 , 1 ) ,
     sigma ~ dexp( 1 )) ,
     data=tomato2 )
 
 precis(tomato_m1, depth=2)
 
-### no interaction model
+### interaction model
 tomato_m2 <- quap(
   alist(
     hyp ~ dnorm( mu , sigma ) ,
     mu <- a[species_number] + b*trt_number + bST[species_number]*trt_number,
-    a[species_number] ~ dnorm( 5 , 1 ) ,
+    a[species_number] ~ dnorm( 30 , 5 ) ,
     b ~ dnorm( 0 , 1 ) ,
     bST[species_number] ~ dnorm( 0 , 1 ),
     sigma ~ dexp( 1 )) ,
