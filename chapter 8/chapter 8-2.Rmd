@@ -364,63 +364,30 @@ for ( s in -1:1 ) {
 
 ## 8.5. Practice.
 
-7M1. Recall the tulips example from the chapter. Suppose another set of treatments adjusted the
-temperature in the greenhouse over two levels: cold and hot. Th e data in the chapter were collected
-at the cold temperature. You fi nd none of the plants grown under the hot temperature developed
-any blooms at all, regardless of the water and shade levels. Can you explain this result in terms of
-interactions between water, shade, and temperature?
+#### 7M1. Recall the tulips example from the chapter. Suppose another set of treatments adjusted the temperature in the greenhouse over two levels: cold and hot. The data in the chapter were collected at the cold temperature. You find none of the plants grown under the hot temperature developed any blooms at all, regardless of the water and shade levels. Can you explain this result in terms of interactions between water, shade, and temperature?
 
-7M2. Can you invent a regression equation that would make the bloom size zero, whenever the
-temperature is hot?
+#### 7M2. Can you invent a regression equation that would make the bloom size zero, whenever the temperature is hot?
 
-7H1. Return to the data(tulips) example in the chapter. Now include the bed variable as a pre-
-dictor in the interaction model. Don’t interact bed with the other predictors; just include it as a main
-eff ect. Note that bed is categorical. So to use it properly, you will need to either construct dummy
-variables or rather an index variable, as explained in Chapter ??.
+#### 7H1. Return to the data(tulips) example in the chapter. Now include the bed variable as a predictor in the interaction model. Don’t interact bed with the other predictors; just include it as a main eff ect. Note that bed is categorical. So to use it properly, you will need to either construct dummy variables or rather an index variable, as explained in Chapter ??.
 
-7H2.  Use WAIC to compare the model from 7H1 to a model that omits bed. What do you infer
-from this comparison? Can you reconcile the WAIC results with the posterior distribution of the bed
-coeffi cients?
+#### 7H2.  Use WAIC to compare the model from 7H1 to a model that omits bed. What do you infer from this comparison? Can you reconcile the WAIC results with the posterior distribution of the bed coefficients?
 
-7H4. Th e values in data(nettle) are data on language diversity in 74 nations. 130 Th e meaning of
-each column is given below.
-(1) country: Name of the country
-(2) num.lang: Number of recognized languages spoken
-(3) area: Area in square kilometers
-(4) k.pop: Population, in thousands
-(5) num.stations: Number of weather stations that provided data for the next two columns
-(6) mean.growing.season: Average length of growing season, in months
-(7) sd.growing.season: Standard deviation of length of growing season, in months
-Use these data to evaluate the hypothesis that language diversity is partly a product of food se-
-curity. Th e notion is that, in productive ecologies, people don’t need large social networks to buffer
-them against risk of food shortfalls. Th is means ethnic groups can be smaller and more self-suffi cient,
-leading to more languages per capita. In contrast, in a poor ecology, there is more subsistence risk,
-and so human societies have adapted by building larger networks of mutual obligation to provide
-food insurance. Th is in turn creates social forces that help prevent languages from diversifying.
-Specifi cally, you will try to model the number of languages per capita as the outcome variable:
+#### 7H4. The values in data(nettle) are data on language diversity in 74 nations. 130 Th e meaning of each column is given below.
+#### (1) country: Name of the country
+#### (2) num.lang: Number of recognized languages spoken
+#### (3) area: Area in square kilometers
+#### (4) k.pop: Population, in thousands
+#### (5) num.stations: Number of weather stations that provided data for the next two columns
+#### (6) mean.growing.season: Average length of growing season, in months
+#### (7) sd.growing.season: Standard deviation of length of growing season, in months Use these data to evaluate the hypothesis that language diversity is partly a product of food security. Th e notion is that, in productive ecologies, people don’t need large social networks to buffer them against risk of food shortfalls. Th is means ethnic groups can be smaller and more self-suffi cient, leading to more languages per capita. In contrast, in a poor ecology, there is more subsistence risk, and so human societies have adapted by building larger networks of mutual obligation to provide food insurance. Th is in turn creates social forces that help prevent languages from diversifying. Specifi cally, you will try to model the number of languages per capita as the outcome variable:
 
 ```{r}
 ## R code 8.27
 #d$lang.per.cap <- d$num.lang / d$k.pop
 ```
 
-Use the logarithm of this new variable as your regression outcome. (A count model would be better
-here, but you’ll learn those later, in Chapter 11.)
-Th is problem is open ended, allowing you to decide how you address the hypotheses and the
-uncertain advice the modeling provides. If you think you need to use WAIC anyplace, please do. If
-you think you need certain priors, argue for them. If you think you need to plot predictions in a
-certain way, please do. Just try to honestly evaluate the main eff ects of both mean.growing.season
-and sd.growing.season, as well as their two-way interaction, as outlined in parts (a), (b), and (c)
-below. If you are not sure which approach to use, try several.
-(a) Evaluate the hypothesis that language diversity, as measured by log(lang.per.cap), is pos-
-itively associated with the average length of the growing season, mean.growing.season. Consider
-log(area) in your regression(s) as a covariate (not an interaction). Interpret your results.
-(b) Now evaluate the hypothesis that language diversity is negatively associated with the stan-
-dard deviation of length of growing season, sd.growing.season. Th is hypothesis follows from
-uncertainty in harvest favoring social insurance through larger social networks and therefore fewer
-languages. Again, consider log(area) as a covariate (not an interaction). Interpret your results.
-(c) Finally, evaluate the hypothesis that mean.growing.season and sd.growing.season in-
-teract to synergistically reduce language diversity. Th e idea is that, in nations with longer average
-growing seasons, high variance makes storage and redistribution even more important than it would
-be otherwise. Th at way, people can cooperate to preserve and protect windfalls to be used during the
-droughts. Th ese forces in turn may lead to greater social integration and fewer languages.
+#### Use the logarithm of this new variable as your regression outcome. (A count model would be better here, but you’ll learn those later, in Chapter 11.)
+#### This problem is open ended, allowing you to decide how you address the hypotheses and the uncertain advice the modeling provides. If you think you need to use WAIC anyplace, please do. If you think you need certain priors, argue for them. If you think you need to plot predictions in a certain way, please do. Just try to honestly evaluate the main eff ects of both mean.growing.season and sd.growing.season, as well as their two-way interaction, as outlined in parts (a), (b), and (c) below. If you are not sure which approach to use, try several. 
+##### (a) Evaluate the hypothesis that language diversity, as measured by log(lang.per.cap), is positively associated with the average length of the growing season, mean.growing.season. Consider log(area) in your regression(s) as a covariate (not an interaction). Interpret your results.
+##### (b) Now evaluate the hypothesis that language diversity is negatively associated with the standard deviation of length of growing season, sd.growing.season. Th is hypothesis follows from uncertainty in harvest favoring social insurance through larger social networks and therefore fewer languages. Again, consider log(area) as a covariate (not an interaction). Interpret your results.
+##### (c) Finally, evaluate the hypothesis that mean.growing.season and sd.growing.season interact to synergistically reduce language diversity. Th e idea is that, in nations with longer average growing seasons, high variance makes storage and redistribution even more important than it would be otherwise. Th at way, people can cooperate to preserve and protect windfalls to be used during the droughts. Th ese forces in turn may lead to greater social integration and fewer languages.
