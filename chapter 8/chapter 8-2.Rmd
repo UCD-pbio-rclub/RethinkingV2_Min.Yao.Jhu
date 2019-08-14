@@ -366,28 +366,328 @@ for ( s in -1:1 ) {
 
 #### 7M1. Recall the tulips example from the chapter. Suppose another set of treatments adjusted the temperature in the greenhouse over two levels: cold and hot. The data in the chapter were collected at the cold temperature. You find none of the plants grown under the hot temperature developed any blooms at all, regardless of the water and shade levels. Can you explain this result in terms of interactions between water, shade, and temperature?
 
+> Because we find none of the plants grown under the hot temperature developed any blooms at all, this indicates that the relationship between blossoms and water and the relationship between blossoms and shade depend upon temperature. Therefore, there are interactions (blossoms-shade, blossoms-water, shade-water, blossoms-shade-water).
+
 #### 7M2. Can you invent a regression equation that would make the bloom size zero, whenever the temperature is hot?
 
-#### 7H1. Return to the data(tulips) example in the chapter. Now include the bed variable as a predictor in the interaction model. Don’t interact bed with the other predictors; just include it as a main eff ect. Note that bed is categorical. So to use it properly, you will need to either construct dummy variables or rather an index variable, as explained in Chapter ??.
+$$ μi = α + βW*Wi + βS*Si + βT*Ti + βWS*Wi*Si+ βWT*Wi*Ti + βST*Si*Ti + βWST*Wi*Si*Ti$$
+
+Set cold temperature = 1 (Ti=1); hot temperature = 0 (Ti=0)
+
+$$ μi = α + βW*Wi + βS*Si + βWS*Wi*Si $$
+
+When Ti=0, the full regression equation will perform the same as it did without temperature.
+
+In short,
+$$ bloom ~ is_temp_cold * (α + βW*Wi + βS*Si + βWS*Wi*Si)$$
+
+#### 7H1. Return to the data (tulips) example in the chapter. Now include the bed variable as a predictor in the interaction model. Don’t interact bed with the other predictors; just include it as a main effect. Note that bed is categorical. So to use it properly, you will need to either construct dummy variables or rather an index variable, as explained in Chapter ??.
+
+```{r}
+## R code 8.19
+library(rethinking)
+data(tulips)
+d <- tulips
+str(d)
+## R code 8.20
+d$blooms_std <- d$blooms / max(d$blooms)
+d$water_cent <- d$water - mean(d$water)
+d$shade_cent <- d$shade - mean(d$shade)
+# add bed index
+d$bed.idx <- coerce_index(d$bed)
+
+## R code 8.23
+m8.6 <- quap(
+    alist(
+        blooms_std ~ dnorm( mu , sigma ) ,
+        mu <- a + bw*water_cent + bs*shade_cent ,
+        a ~ dnorm( 0.5 , 0.25 ) ,
+        bw ~ dnorm( 0 , 0.25 ) ,
+        bs ~ dnorm( 0 , 0.25 ) ,
+        sigma ~ dexp( 1 )
+    ) ,
+    data=d )
+precis(m8.6)
+
+## R code 8.24
+m8.7 <- quap(
+    alist(
+        blooms_std ~ dnorm( mu , sigma ) ,
+        mu <- a + bw*water_cent + bs*shade_cent + bws*water_cent*shade_cent ,
+        a ~ dnorm( 0.5 , 0.25 ) ,
+        bw ~ dnorm( 0 , 0.25 ) ,
+        bs ~ dnorm( 0 , 0.25 ) ,
+        bws ~ dnorm( 0 , 0.25 ) ,
+        sigma ~ dexp( 1 )
+    ) ,
+    data=d )
+precis(m8.7)
+
+## new model
+m7H1 <- quap(
+    alist(
+        blooms_std ~ dnorm( mu , sigma ) ,
+        mu <- a[bed.idx] + bw*water_cent + bs*shade_cent + bws*water_cent*shade_cent ,
+        a[bed.idx] ~ dnorm( 0.5 , 0.25 ) ,
+        bw ~ dnorm( 0 , 0.25 ) ,
+        bs ~ dnorm( 0 , 0.25 ) ,
+        bws ~ dnorm( 0 , 0.25 ) ,
+        sigma ~ dexp( 1 )
+    ) ,
+    data=d )
+precis(m7H1, depth = 2)
+
+coeftab(m8.6, m8.7, m7H1)
+
+# add interaction of water and shade with bed
+m7H2 <- quap(
+    alist(
+        blooms_std ~ dnorm( mu , sigma ) ,
+        mu <- a[bed.idx] + bw[bed.idx]*water_cent + bs[bed.idx]*shade_cent + bws*water_cent*shade_cent ,
+        a[bed.idx] ~ dnorm( 0.5 , 0.25 ) ,
+        bw[bed.idx] ~ dnorm( 0 , 0.25 ) ,
+        bs[bed.idx] ~ dnorm( 0 , 0.25 ) ,
+        bws ~ dnorm( 0 , 0.25 ) ,
+        sigma ~ dexp( 1 )
+    ) ,
+    data=d )
+precis(m7H2, depth = 2)
+coeftab(m8.6, m8.7, m7H1, m7H2)
+
+```
 
 #### 7H2.  Use WAIC to compare the model from 7H1 to a model that omits bed. What do you infer from this comparison? Can you reconcile the WAIC results with the posterior distribution of the bed coefficients?
 
-#### 7H4. The values in data(nettle) are data on language diversity in 74 nations. 130 Th e meaning of each column is given below.
+```{r}
+compare(m8.6, m8.7, m7H1)
+compare(m8.6, m8.7, m7H1, m7H2)
+
+samples <- extract.samples(m7H1)
+str(samples)
+
+hist(samples$a[,1], xlim=c(0,0.6), col=col.alpha('blue',0.3))
+hist(samples$a[,2], add=T, col=col.alpha('red',0.3))
+hist(samples$a[,3], add=T, col=col.alpha('yellow',0.3))
+
+dens(samples$a[,1], xlim=c(0,0.6), col='blue')
+dens(samples$a[,2], add=T, col='red')
+dens(samples$a[,3], add=T, col='black')
+
+dens(samples$a[,1]-samples$a[,2], xlim=c(-0.3,0.2), col='blue')
+dens(samples$a[,1]-samples$a[,3], add=T, col='red')
+dens(samples$a[,2]-samples$a[,3], add=T, col='black')
+```
+
+
+#### 7H4. The values in data (nettle) are data on language diversity in 74 nations. 130 The meaning of each column is given below.
 #### (1) country: Name of the country
 #### (2) num.lang: Number of recognized languages spoken
 #### (3) area: Area in square kilometers
 #### (4) k.pop: Population, in thousands
 #### (5) num.stations: Number of weather stations that provided data for the next two columns
 #### (6) mean.growing.season: Average length of growing season, in months
-#### (7) sd.growing.season: Standard deviation of length of growing season, in months Use these data to evaluate the hypothesis that language diversity is partly a product of food security. Th e notion is that, in productive ecologies, people don’t need large social networks to buffer them against risk of food shortfalls. Th is means ethnic groups can be smaller and more self-suffi cient, leading to more languages per capita. In contrast, in a poor ecology, there is more subsistence risk, and so human societies have adapted by building larger networks of mutual obligation to provide food insurance. Th is in turn creates social forces that help prevent languages from diversifying. Specifi cally, you will try to model the number of languages per capita as the outcome variable:
+#### (7) sd.growing.season: Standard deviation of length of growing season, in months 
+
+Use these data to evaluate the hypothesis that language diversity is partly a product of food security. The notion is that, in productive ecologies, people don’t need large social networks to buffer them against risk of food shortfalls. This means ethnic groups can be smaller and more self-sufficient, leading to more languages per capita. In contrast, in a poor ecology, there is more subsistence risk, and so human societies have adapted by building larger networks of mutual obligation to provide food insurance. This in turn creates social forces that help prevent languages from diversifying. Specifically, you will try to model the number of languages per capita as the outcome variable:
+
+```{r}
+data(nettle)
+d <- nettle
+str(d)
+```
 
 ```{r}
 ## R code 8.27
-#d$lang.per.cap <- d$num.lang / d$k.pop
+d$lang.per.cap <- d$num.lang / d$k.pop
 ```
 
 #### Use the logarithm of this new variable as your regression outcome. (A count model would be better here, but you’ll learn those later, in Chapter 11.)
-#### This problem is open ended, allowing you to decide how you address the hypotheses and the uncertain advice the modeling provides. If you think you need to use WAIC anyplace, please do. If you think you need certain priors, argue for them. If you think you need to plot predictions in a certain way, please do. Just try to honestly evaluate the main eff ects of both mean.growing.season and sd.growing.season, as well as their two-way interaction, as outlined in parts (a), (b), and (c) below. If you are not sure which approach to use, try several. 
+
+```{r}
+d$log.lang.per.cap <- log(d$lang.per.cap)
+d$log.area <- log(d$area)
+d$log.area.c <- d$log.area - mean(d$log.area)
+d$mean.growing.season.c <- d$mean.growing.season - mean(d$mean.growing.season)
+d$sd.growing.season.c <- d$sd.growing.season - mean(d$sd.growing.season)
+str(d)
+```
+
+#### This problem is open ended, allowing you to decide how you address the hypotheses and the uncertain advice the modeling provides. If you think you need to use WAIC anyplace, please do. If you think you need certain priors, argue for them. If you think you need to plot predictions in a certain way, please do. Just try to honestly evaluate the main effects of both mean.growing.season and sd.growing.season, as well as their two-way interaction, as outlined in parts (a), (b), and (c) below. If you are not sure which approach to use, try several. 
+
 ##### (a) Evaluate the hypothesis that language diversity, as measured by log(lang.per.cap), is positively associated with the average length of the growing season, mean.growing.season. Consider log(area) in your regression(s) as a covariate (not an interaction). Interpret your results.
+
+```{r}
+m7H4.a.1 <- quap(
+  alist(
+    log.lang.per.cap ~ dnorm( mu , sigma ),
+    mu <- a + bM*mean.growing.season.c,
+    a ~ dnorm(-5, 5),
+    bM ~ dnorm(0, 5),
+    sigma ~ dunif(0, 10)
+  ),
+  data = d
+)
+precis(m7H4.a.1)
+
+m7H4.a.2 <- quap(
+  alist(
+    log.lang.per.cap ~ dnorm( mu , sigma ),
+    mu <- a + bM*mean.growing.season.c + bA*log.area.c,
+    a ~ dnorm(-5, 5),
+    bM ~ dnorm(0, 5),
+    bA ~ dnorm(0, 5),
+    sigma ~ dunif(0, 10)
+  ),
+  data = d
+)
+precis(m7H4.a.2)
+
+m7H4.a.3 <- quap(
+  alist(
+    log.lang.per.cap ~ dnorm( mu , sigma ),
+    mu <- a + bM*mean.growing.season.c + bA*log.area.c + bMA*mean.growing.season.c*log.area.c,
+    a ~ dnorm(-5, 5),
+    bM ~ dnorm(0, 5),
+    bA ~ dnorm(0, 5),
+    bMA ~ dnorm(0, 5),
+    sigma ~ dunif(0, 10)
+  ),
+  data = d
+)
+precis(m7H4.a.3)
+
+compare(m7H4.a.1, m7H4.a.2, m7H4.a.3)
+coeftab(m7H4.a.1, m7H4.a.2, m7H4.a.3)
+plot(coeftab(m7H4.a.1, m7H4.a.2, m7H4.a.3))
+```
+
+> m7H4.a.1 (model without area) is the best model.
+
 ##### (b) Now evaluate the hypothesis that language diversity is negatively associated with the standard deviation of length of growing season, sd.growing.season. Th is hypothesis follows from uncertainty in harvest favoring social insurance through larger social networks and therefore fewer languages. Again, consider log(area) as a covariate (not an interaction). Interpret your results.
-##### (c) Finally, evaluate the hypothesis that mean.growing.season and sd.growing.season interact to synergistically reduce language diversity. Th e idea is that, in nations with longer average growing seasons, high variance makes storage and redistribution even more important than it would be otherwise. Th at way, people can cooperate to preserve and protect windfalls to be used during the droughts. Th ese forces in turn may lead to greater social integration and fewer languages.
+
+```{r}
+m7H4.b.1 <- quap(
+  alist(
+    log.lang.per.cap ~ dnorm( mu , sigma ),
+    mu <- a + bS*sd.growing.season.c,
+    a ~ dnorm(-5, 5),
+    bS ~ dnorm(0, 5),
+    sigma ~ dunif(0, 10)
+  ),
+  data = d
+)
+precis(m7H4.b.1)
+
+m7H4.b.2 <- quap(
+  alist(
+    log.lang.per.cap ~ dnorm( mu , sigma ),
+    mu <- a + bS*sd.growing.season.c + bA*log.area.c,
+    a ~ dnorm(-5, 5),
+    bS ~ dnorm(0, 5),
+    bA ~ dnorm(0, 5),
+    sigma ~ dunif(0, 10)
+  ),
+  data = d
+)
+precis(m7H4.b.2)
+
+m7H4.b.3 <- quap(
+  alist(
+    log.lang.per.cap ~ dnorm( mu , sigma ),
+    mu <- a + bS*sd.growing.season.c + bA*log.area.c + bSA*sd.growing.season.c*log.area.c,
+    a ~ dnorm(-5, 5),
+    bS ~ dnorm(0, 5),
+    bA ~ dnorm(0, 5),
+    bSA ~ dnorm(0, 5),
+    sigma ~ dunif(0, 10)
+  ),
+  data = d
+)
+precis(m7H4.b.3)
+
+compare(m7H4.b.1, m7H4.b.2, m7H4.b.3)
+coeftab(m7H4.b.1, m7H4.b.2, m7H4.b.3)
+plot(coeftab(m7H4.b.1, m7H4.b.2, m7H4.b.3))
+```
+
+> m7H4.b.3 is the best model (with interaction between sd.growing.season.c & log.area.c). 
+
+##### (c) Finally, evaluate the hypothesis that mean.growing.season and sd.growing.season interact to synergistically reduce language diversity. The idea is that, in nations with longer average growing seasons, high variance makes storage and redistribution even more important than it would be otherwise. That way, people can cooperate to preserve and protect windfalls to be used during the droughts. These forces in turn may lead to greater social integration and fewer languages.
+
+```{r}
+m7H4.c.1 <- quap(
+  alist(
+    log.lang.per.cap ~ dnorm( mu , sigma ),
+    mu <- a + bM*mean.growing.season.c + bS*sd.growing.season.c,
+    a ~ dnorm(-5, 5),
+    bM ~ dnorm(0, 5),
+    bS ~ dnorm(0, 5),
+    sigma ~ dunif(0, 10)
+  ),
+  data = d
+)
+precis(m7H4.c.1)
+
+m7H4.c.2 <- quap(
+  alist(
+    log.lang.per.cap ~ dnorm( mu , sigma ),
+    mu <- a + bM*mean.growing.season.c + bS*sd.growing.season.c + bMS*mean.growing.season.c*sd.growing.season.c,
+    a ~ dnorm(-5, 5),
+    bM ~ dnorm(0, 5),
+    bS ~ dnorm(0, 5),
+    bMS ~ dnorm(0, 5),
+    sigma ~ dunif(0, 10)
+  ),
+  data = d
+)
+precis(m7H4.c.2)
+
+compare(m7H4.c.1,m7H4.c.2)
+coeftab(m7H4.c.1,m7H4.c.2)
+plot(coeftab(m7H4.c.1,m7H4.c.2))
+```
+
+> m7H4.c.2 is a better model (with interaction between mean.growing.season.c & sd.growing.season.c).
+
+```{r}
+m7H4.2 <- quap(
+  alist(
+    log.lang.per.cap ~ dnorm( mu , sigma ),
+    mu <- a + bM*mean.growing.season.c + bS*sd.growing.season.c + bMS*mean.growing.season.c*sd.growing.season.c + bA*log.area.c,
+    a ~ dnorm(-5, 5),
+    bM ~ dnorm(0, 5),
+    bS ~ dnorm(0, 5),
+    bMS ~ dnorm(0, 5),
+    bA ~ dnorm(0, 5),
+    sigma ~ dunif(0, 10)
+  ),
+  data = d
+)
+precis(m7H4.2)
+
+compare(m7H4.c.1,m7H4.c.2, m7H4.2)
+
+m7H4.3 <- quap(
+  alist(
+    log.lang.per.cap ~ dnorm( mu , sigma ),
+    mu <- a + bM*mean.growing.season.c + bS*sd.growing.season.c + bMS*mean.growing.season.c*sd.growing.season.c + bA*log.area.c + bSA*sd.growing.season.c*log.area.c,
+    a ~ dnorm(-5, 5),
+    bM ~ dnorm(0, 5),
+    bS ~ dnorm(0, 5),
+    bMS ~ dnorm(0, 5),
+    bA ~ dnorm(0, 5),
+    bSA ~ dnorm(0, 5),
+    sigma ~ dunif(0, 10)
+  ),
+  data = d
+)
+precis(m7H4.3)
+
+compare(m7H4.c.1,m7H4.c.2, m7H4.2, m7H4.3)
+coeftab(m7H4.c.1,m7H4.c.2, m7H4.2, m7H4.3)
+plot(coeftab(m7H4.c.1,m7H4.c.2, m7H4.2, m7H4.3))
+
+```
+
+> Therefore, my best model is m7H4.3.
+
