@@ -857,6 +857,45 @@ str(d)
 ##  $ sd.growing.season.c  : num  0.591 0.171 2.471 -0.969 -0.709 ...
 ```
 
+```r
+summary(d)
+```
+
+```
+##        country      num.lang           area             k.pop       
+##  Algeria   : 1   Min.   :  1.00   Min.   :  12189   Min.   :   102  
+##  Angola    : 1   1st Qu.: 17.25   1st Qu.: 167708   1st Qu.:  3829  
+##  Australia : 1   Median : 40.00   Median : 434796   Median :  9487  
+##  Bangladesh: 1   Mean   : 89.73   Mean   : 880698   Mean   : 33574  
+##  Benin     : 1   3rd Qu.: 93.75   3rd Qu.:1080316   3rd Qu.: 24745  
+##  Bolivia   : 1   Max.   :862.00   Max.   :8511965   Max.   :849638  
+##  (Other)   :68                                                      
+##   num.stations    mean.growing.season sd.growing.season
+##  Min.   :  1.00   Min.   : 0.000      Min.   :0.0000   
+##  1st Qu.: 10.00   1st Qu.: 5.348      1st Qu.:0.9375   
+##  Median : 20.50   Median : 7.355      Median :1.6900   
+##  Mean   : 37.91   Mean   : 7.041      Mean   :1.6992   
+##  3rd Qu.: 44.75   3rd Qu.: 9.283      3rd Qu.:2.1075   
+##  Max.   :272.00   Max.   :12.000      Max.   :5.8700   
+##                                                        
+##   lang.per.cap       log.lang.per.cap     log.area        log.area.c      
+##  Min.   :0.0000931   Min.   :-9.2814   Min.   : 9.408   Min.   :-3.52662  
+##  1st Qu.:0.0019901   1st Qu.:-6.2196   1st Qu.:12.029   1st Qu.:-0.90595  
+##  Median :0.0041066   Median :-5.4952   Median :12.981   Median : 0.04564  
+##  Mean   :0.0206464   Mean   :-5.4566   Mean   :12.935   Mean   : 0.00000  
+##  3rd Qu.:0.0100059   3rd Qu.:-4.6111   3rd Qu.:13.892   3rd Qu.: 0.95742  
+##  Max.   :0.6809816   Max.   :-0.3842   Max.   :15.957   Max.   : 3.02207  
+##                                                                           
+##  mean.growing.season.c sd.growing.season.c
+##  Min.   :-7.0415       Min.   :-1.699189  
+##  1st Qu.:-1.6940       1st Qu.:-0.761689  
+##  Median : 0.3135       Median :-0.009189  
+##  Mean   : 0.0000       Mean   : 0.000000  
+##  3rd Qu.: 2.2410       3rd Qu.: 0.408311  
+##  Max.   : 4.9585       Max.   : 4.170811  
+## 
+```
+
 #### This problem is open ended, allowing you to decide how you address the hypotheses and the uncertain advice the modeling provides. If you think you need to use WAIC anyplace, please do. If you think you need certain priors, argue for them. If you think you need to plot predictions in a certain way, please do. Just try to honestly evaluate the main effects of both mean.growing.season and sd.growing.season, as well as their two-way interaction, as outlined in parts (a), (b), and (c) below. If you are not sure which approach to use, try several. 
 
 ##### (a) Evaluate the hypothesis that language diversity, as measured by log(lang.per.cap), is positively associated with the average length of the growing season, mean.growing.season. Consider log(area) in your regression(s) as a covariate (not an interaction). Interpret your results.

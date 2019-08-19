@@ -510,6 +510,7 @@ d$log.area.c <- d$log.area - mean(d$log.area)
 d$mean.growing.season.c <- d$mean.growing.season - mean(d$mean.growing.season)
 d$sd.growing.season.c <- d$sd.growing.season - mean(d$sd.growing.season)
 str(d)
+summary(d)
 ```
 
 #### This problem is open ended, allowing you to decide how you address the hypotheses and the uncertain advice the modeling provides. If you think you need to use WAIC anyplace, please do. If you think you need certain priors, argue for them. If you think you need to plot predictions in a certain way, please do. Just try to honestly evaluate the main effects of both mean.growing.season and sd.growing.season, as well as their two-way interaction, as outlined in parts (a), (b), and (c) below. If you are not sure which approach to use, try several. 
