@@ -7,8 +7,54 @@ output:
     keep_md: yes
 ---
 
-```{r}
+
+```r
 library(rethinking)
+```
+
+```
+## Loading required package: rstan
+```
+
+```
+## Warning: package 'rstan' was built under R version 3.5.3
+```
+
+```
+## Loading required package: ggplot2
+```
+
+```
+## Loading required package: StanHeaders
+```
+
+```
+## Warning: package 'StanHeaders' was built under R version 3.5.3
+```
+
+```
+## rstan (Version 2.18.2, GitRev: 2e1f913d3ca3)
+```
+
+```
+## For execution on a local, multicore CPU with excess RAM we recommend calling
+## options(mc.cores = parallel::detectCores()).
+## To avoid recompilation of unchanged Stan programs, we recommend calling
+## rstan_options(auto_write = TRUE)
+```
+
+```
+## For improved execution time, we recommend calling
+## Sys.setenv(LOCAL_CPPFLAGS = '-march=native')
+## although this causes Stan to throw an error on a few processors.
+```
+
+```
+## Loading required package: parallel
+```
+
+```
+## rethinking (Version 1.88)
 ```
 
 
@@ -16,7 +62,8 @@ library(rethinking)
 
 ## 9.1. Good King Markov and His island kingdom
 
-```{r}
+
+```r
 ## R code 9.1
 num_weeks <- 1e5
 positions <- rep(0,num_weeks)
@@ -38,11 +85,14 @@ for ( i in 1:num_weeks ) {
 hist(positions)
 ```
 
+![](chapter_9_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
 ## 9.2. Metropolis, Gibbs, and Sadness
 ### 9.2.1. Gibbs sampling.
 ### 9.2.2. High-dimensional sadness.
 
-```{r}
+
+```r
 ## R code 9.2
 D <- 10
 T <- 1e3
@@ -51,6 +101,8 @@ rad_dist <- function( Y ) sqrt( sum(Y^2) )
 Rd <- sapply( 1:T , function(i) rad_dist( Y[i,] ) )
 dens( Rd )
 ```
+
+![](chapter_9_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 
 ## 9.6. Summary
