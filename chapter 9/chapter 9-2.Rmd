@@ -191,7 +191,7 @@ precis( m8.5 , depth=2 )
 ```{r}
 ## R code 9.11
 dat_slim <- list(
-    log_gpd_std = dd$log_gdp_std,
+    log_gdp_std = dd$log_gdp_std,
     rugged_std = dd$rugged_std,
     cid = as.integer( dd$cid )
 )
@@ -306,7 +306,37 @@ m9.5 <- ulam(
     ) ,
     data=list(y=y) , chains=2 )
 precis( m9.5 )
+```
 
+## 9.6. Summary
+
+## 9.7. Practice
+### Easy.
+#### 8E1. Which of the following is a requirement of the simple Metropolis algorithm?
+#### (1) The parameters must be discrete.
+> No. The parameter values can take on a continuous range of values as usual
+#### (2) The likelihood function must be Gaussian.
+> No.
+#### (3) The proposal distribution must be symmetric.
+> Yes. The Metropolis algorithm works whenever the probability of proposing a jump to B from A is equal to the probability of proposing A from B, when the proposal distribution is symmetric.
+
+#### 8E2. Gibbs sampling is more efficient than the Metropolis algorithm. How does it achieve this extra efficiency? Are there any limitations to the Gibbs sampling strategy?
+>  The improvement arises from adaptive proposals in which the distribution of proposed parameter values adjusts itself intelligently, depending upon the parameter values at the moment.
+
+
+
+#### 8E3. Which sort of parameters can Hamiltonian Monte Carlo not handle? Can you explain why?
+
+
+#### 8M1. Re-estimate the terrain ruggedness model from the chapter, but now using a uniform prior and an exponential prior for the standard deviation, sigma. The uniform prior should be dunif(0,10) and the exponential should be dexp(1). Do the diff erent priors have any detectible infl uence on the posterior distribution?
+
+
+#### 8M2. Th e Cauchy and exponential priors from the terrain ruggedness model are very weak. They can be made more informative by reducing their scale. Compare the dcauchy and dexp priors for progressively smaller values of the scaling parameter. As these priors become stronger, how does each infl uence the posterior distribution?
+
+
+#### 8H1. Run the model below and then inspect the posterior distribution and explain what it is accomplishing.
+
+```{r}
 ## R code 9.25
 mp <- map2stan(
     alist(
@@ -316,7 +346,13 @@ mp <- map2stan(
     data=list(y=1),
     start=list(a=0,b=0),
     iter=1e4, warmup=100 , WAIC=FALSE )
+```
 
+#### Compare the samples for the parameters a and b. Can you explain the diff erent trace plots, using what you know about the Cauchy distribution?
+
+#### 8H2. Recall the divorce rate example from Chapter 5. Repeat that analysis, using map2stan this time, fi tting models m5.1, m5.2, and m5.3. Use compare to compare the models on the basis of WAIC. Explain the results.
+
+```{r}
 ## R code 9.26
 N <- 100                          # number of individuals
 height <- rnorm(N,10,2)           # sim total height of each
@@ -355,17 +391,6 @@ m5.8s2 <- map2stan(
     start=list(a=10,bl=0,br=0,sigma=1) )
 ```
 
-## 9.6. Summary
 
-## 9.7. Practice
-### Easy.
-#### 8E1. Which of the following is a requirement of the simple Metropolis algorithm?
-#### (1) The parameters must be discrete.
-> No. The parameter values can take on a continuous range of values as usual
-#### (2) The likelihood function must be Gaussian.
-> No.
-#### (3) The proposal distribution must be symmetric.
-> Yes. The Metropolis algorithm works whenever the probability of proposing a jump to B from A is equal to the probability of proposing A from B, when the proposal distribution is symmetric.
+#### optional: 8H6. Modify the Metropolis algorithm code from the chapter to write your own simple MCMC estimator for globe tossing data and model from Chapter
 
-#### 8E2. Gibbs sampling is more efficient than the Metropolis algorithm. How does it achieve this extra efficiency? Are there any limitations to the Gibbs sampling strategy?
->  The improvement arises from adaptive proposals in which the distribution of proposed parameter values adjusts itself intelligently, depending upon the parameter values at the moment.
