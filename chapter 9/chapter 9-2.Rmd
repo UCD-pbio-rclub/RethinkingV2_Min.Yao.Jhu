@@ -109,7 +109,9 @@ for ( i in 1:n_samples ) {
     points( Q$traj[L+1,1] , Q$traj[L+1,2] , pch=ifelse( Q$accept==1 , 16 , 1 ) ,
         col=ifelse( abs(Q$dH)>0.1 , "red" , "black" ) )
 }
+```
 
+```{r}
 ## R code 9.6
 HMC2 <- function (U, grad_U, epsilon, L, current_q) {
   q = current_q
@@ -196,6 +198,8 @@ dat_slim <- list(
     cid = as.integer( dd$cid )
 )
 str(dat_slim)
+
+library(rstan)
 
 ## R code 9.12
 m9.1 <- ulam(
