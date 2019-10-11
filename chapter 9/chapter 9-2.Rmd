@@ -714,7 +714,7 @@ traceplot( m9.1_test1 )
 trankplot( m9.1_test1 , n_cols=2 )
 ```
 
-
+> warmup = 100 is fine, but less than that. The problem shows up.
 
 
 #### 8H1. Run the model below and then inspect the posterior distribution and explain what it is accomplishing.
@@ -745,7 +745,6 @@ pairs( mp )
 traceplot( mp )
 trankplot( mp , n_cols=2 )
 ```
-
 
 #### Compare the samples for the parameters a and b. Can you explain the different trace plots, using what you know about the Cauchy distribution?
 
@@ -784,6 +783,7 @@ m5.8s <- map2stan(
         sigma ~ dcauchy( 0 , 1 )
     ) ,
     data=d, chains=4,
+    log_lik = TRUE,
     start=list(a=10,bl=0,br=0,sigma=1) )
 ```
 
@@ -802,6 +802,7 @@ m5.8s2 <- map2stan(
         sigma ~ dcauchy( 0 , 1 )
     ) ,
     data=d, chains=4,
+    log_lik = TRUE,
     start=list(a=10,bl=0,br=0,sigma=1) )
 ```
 
@@ -824,14 +825,24 @@ precis( m5.8s2 , 2 )
 pairs( m5.8s )
 pairs( m5.8s2 )
 
-coeftab(m5.8s, m5.8s2)
+trankplot(m5.8s)
+trankplot(m5.8s2)
+
+plotchains(m5.8s)
+plotchains(m5.8s2)
+
+#coeftab(m5.8s, m5.8s2)
 compare(m5.8s, m5.8s2)
 ```
 
+> bR is always postive, bL is always negative.
+
+> Second model has worse convergence and smaller n_eff for bl, br coefficients
 
 ### 8H4. For the two models fit in the previous problem, use DIC or WAIC to compare the effective numbers of parameters for each model. Which model has more effective parameters? Why?
 
 ```{r}
+
 compare(m5.8s, m5.8s2)
 
 WAIC(m5.8s)  
@@ -839,7 +850,7 @@ WAIC(m5.8s2)
 
 ```
 
-> Effective number of parameters for the second model is smaller. pWAIC is defined as sum of variance of the points likelihood, thus the second model has smaller variance of data likelihood(==> it's 'more restricted')
+> Effective number of parameters for the second model is smaller. pWAIC is defined as sum of variance of the points likelihood, thus the second model has smaller variance of data likelihood, 'more restricted'
 
 #### optional: 8H6. Modify the Metropolis algorithm code from the chapter to write your own simple MCMC estimator for globe tossing data and model from Chapter
 

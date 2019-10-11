@@ -322,9 +322,9 @@ m9.1 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.074 seconds (Warm-up)
-## Chain 1:                0.053 seconds (Sampling)
-## Chain 1:                0.127 seconds (Total)
+## Chain 1:  Elapsed Time: 0.073 seconds (Warm-up)
+## Chain 1:                0.052 seconds (Sampling)
+## Chain 1:                0.125 seconds (Total)
 ## Chain 1:
 ```
 
@@ -374,9 +374,9 @@ show( m9.1 )
 ## Sampling durations (seconds):
 ##         warmup sample total
 ## chain:1   0.10   0.06  0.16
-## chain:2   0.09   0.06  0.15
-## chain:3   0.11   0.07  0.18
-## chain:4   0.10   0.07  0.17
+## chain:2   0.14   0.10  0.24
+## chain:3   0.18   0.10  0.28
+## chain:4   0.08   0.06  0.14
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -460,9 +460,9 @@ m9.2 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.085 seconds (Warm-up)
-## Chain 1:                0.353 seconds (Sampling)
-## Chain 1:                0.438 seconds (Total)
+## Chain 1:  Elapsed Time: 0.099 seconds (Warm-up)
+## Chain 1:                0.373 seconds (Sampling)
+## Chain 1:                0.472 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL 'd26c527083e7eda89b17a8c2eccd6019' NOW (CHAIN 2).
@@ -485,9 +485,9 @@ m9.2 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.12 seconds (Warm-up)
-## Chain 2:                0.144 seconds (Sampling)
-## Chain 2:                0.264 seconds (Total)
+## Chain 2:  Elapsed Time: 0.116 seconds (Warm-up)
+## Chain 2:                0.142 seconds (Sampling)
+## Chain 2:                0.258 seconds (Total)
 ## Chain 2:
 ```
 
@@ -599,8 +599,8 @@ m9.3 <- ulam(
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
 ## Chain 1:  Elapsed Time: 0.02 seconds (Warm-up)
-## Chain 1:                0.016 seconds (Sampling)
-## Chain 1:                0.036 seconds (Total)
+## Chain 1:                0.013 seconds (Sampling)
+## Chain 1:                0.033 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '593afb1307e5b69f89a21ad207f22894' NOW (CHAIN 2).
@@ -623,9 +623,9 @@ m9.3 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.021 seconds (Warm-up)
-## Chain 2:                0.026 seconds (Sampling)
-## Chain 2:                0.047 seconds (Total)
+## Chain 2:  Elapsed Time: 0.023 seconds (Warm-up)
+## Chain 2:                0.03 seconds (Sampling)
+## Chain 2:                0.053 seconds (Total)
 ## Chain 2:
 ```
 
@@ -693,9 +693,9 @@ m9.4 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 1.679 seconds (Warm-up)
-## Chain 1:                2.015 seconds (Sampling)
-## Chain 1:                3.694 seconds (Total)
+## Chain 1:  Elapsed Time: 1.759 seconds (Warm-up)
+## Chain 1:                2.121 seconds (Sampling)
+## Chain 1:                3.88 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL 'e6372181749abf126ca67665f3f2df39' NOW (CHAIN 2).
@@ -718,9 +718,9 @@ m9.4 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 1.688 seconds (Warm-up)
-## Chain 2:                1.982 seconds (Sampling)
-## Chain 2:                3.67 seconds (Total)
+## Chain 2:  Elapsed Time: 1.791 seconds (Warm-up)
+## Chain 2:                2.091 seconds (Sampling)
+## Chain 2:                3.882 seconds (Total)
 ## Chain 2:
 ```
 
@@ -807,9 +807,9 @@ m9.4.2 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 32.586 seconds (Warm-up)
-## Chain 1:                38.332 seconds (Sampling)
-## Chain 1:                70.918 seconds (Total)
+## Chain 1:  Elapsed Time: 33.458 seconds (Warm-up)
+## Chain 1:                38.553 seconds (Sampling)
+## Chain 1:                72.011 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL 'e6372181749abf126ca67665f3f2df39' NOW (CHAIN 2).
@@ -832,9 +832,9 @@ m9.4.2 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 31.964 seconds (Warm-up)
-## Chain 2:                45.743 seconds (Sampling)
-## Chain 2:                77.707 seconds (Total)
+## Chain 2:  Elapsed Time: 30.495 seconds (Warm-up)
+## Chain 2:                43.831 seconds (Sampling)
+## Chain 2:                74.326 seconds (Total)
 ## Chain 2:
 ```
 
@@ -905,9 +905,9 @@ m9.5 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.542 seconds (Warm-up)
-## Chain 1:                0.613 seconds (Sampling)
-## Chain 1:                1.155 seconds (Total)
+## Chain 1:  Elapsed Time: 2.55 seconds (Warm-up)
+## Chain 1:                2.85 seconds (Sampling)
+## Chain 1:                5.4 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '60743fdda5f692fb7902c70d7f6403b7' NOW (CHAIN 2).
@@ -930,9 +930,9 @@ m9.5 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.694 seconds (Warm-up)
-## Chain 2:                0.742 seconds (Sampling)
-## Chain 2:                1.436 seconds (Total)
+## Chain 2:  Elapsed Time: 3.271 seconds (Warm-up)
+## Chain 2:                3.384 seconds (Sampling)
+## Chain 2:                6.655 seconds (Total)
 ## Chain 2:
 ```
 
@@ -1048,10 +1048,10 @@ show( m9.1 )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   0.08   0.06  0.14
-## chain:2   0.12   0.17  0.29
-## chain:3   0.12   0.18  0.30
-## chain:4   0.15   0.11  0.26
+## chain:1   0.42   0.31  0.74
+## chain:2   0.55   0.30  0.85
+## chain:3   0.41   0.22  0.63
+## chain:4   0.32   0.20  0.52
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -1114,10 +1114,10 @@ show( m9.1_unif )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   0.11   0.11  0.22
-## chain:2   0.15   0.12  0.27
-## chain:3   0.10   0.08  0.18
-## chain:4   0.09   0.07  0.16
+## chain:1   0.20   0.12  0.32
+## chain:2   0.10   0.10  0.21
+## chain:3   0.09   0.08  0.17
+## chain:4   0.12   0.08  0.20
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -1180,10 +1180,10 @@ show( m9.1_cauchy )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   0.10   0.06  0.16
-## chain:2   0.17   0.10  0.27
-## chain:3   0.15   0.10  0.25
-## chain:4   0.09   0.06  0.15
+## chain:1   0.15   0.09  0.24
+## chain:2   0.13   0.07  0.20
+## chain:3   0.20   0.10  0.30
+## chain:4   0.10   0.07  0.18
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -1249,10 +1249,10 @@ show( m9.1_0.1 )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   0.08   0.07  0.15
-## chain:2   0.14   0.11  0.25
-## chain:3   0.10   0.10  0.20
-## chain:4   0.08   0.06  0.14
+## chain:1   0.16   0.12  0.28
+## chain:2   0.11   0.11  0.22
+## chain:3   0.16   0.13  0.29
+## chain:4   0.09   0.06  0.15
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -1315,10 +1315,10 @@ show( m9.1_0.01 )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   0.10   0.07  0.17
-## chain:2   0.14   0.07  0.21
-## chain:3   0.17   0.10  0.28
-## chain:4   0.08   0.08  0.16
+## chain:1   0.15   0.10  0.25
+## chain:2   0.15   0.11  0.26
+## chain:3   0.14   0.10  0.24
+## chain:4   0.09   0.08  0.17
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -1381,10 +1381,10 @@ show( m9.1_cauchy_0.1 )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   0.21   0.16  0.37
-## chain:2   0.13   0.09  0.22
-## chain:3   0.12   0.06  0.18
-## chain:4   0.12   0.06  0.18
+## chain:1   0.21   0.11  0.32
+## chain:2   0.14   0.06  0.20
+## chain:3   0.15   0.11  0.26
+## chain:4   0.10   0.06  0.16
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -1447,10 +1447,10 @@ show( m9.1_cauchy_0.01 )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   0.10   0.07  0.17
-## chain:2   0.18   0.06  0.24
-## chain:3   0.15   0.06  0.21
-## chain:4   0.19   0.22  0.41
+## chain:1   0.18   0.09  0.27
+## chain:2   0.11   0.09  0.20
+## chain:3   0.11   0.07  0.18
+## chain:4   0.09   0.07  0.16
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -1521,10 +1521,10 @@ show( m9.1 )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   0.19   0.15  0.34
-## chain:2   0.10   0.06  0.16
-## chain:3   0.09   0.06  0.15
-## chain:4   0.09   0.06  0.15
+## chain:1   0.08   0.07  0.15
+## chain:2   0.16   0.10  0.26
+## chain:3   0.09   0.10  0.19
+## chain:4   0.08   0.07  0.15
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -1591,10 +1591,10 @@ show( m9.1_test100 )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   0.03   0.34  0.37
-## chain:2   0.03   0.42  0.45
-## chain:3   0.03   0.37  0.40
-## chain:4   0.03   0.39  0.42
+## chain:1   0.03   0.41  0.44
+## chain:2   0.03   0.53  0.55
+## chain:3   0.03   0.39  0.42
+## chain:4   0.02   0.33  0.36
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -1687,10 +1687,10 @@ show( m9.1_test10 )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1      0   0.20  0.20
-## chain:2      0   0.19  0.19
-## chain:3      0   0.05  0.05
-## chain:4      0   0.27  0.27
+## chain:1      0   0.23  0.23
+## chain:2      0   0.20  0.20
+## chain:3      0   0.06  0.06
+## chain:4      0   0.39  0.39
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -1790,8 +1790,8 @@ show( m9.1_test5 )
 ## Sampling durations (seconds):
 ##         warmup sample total
 ## chain:1      0   0.04  0.04
-## chain:2      0   0.03  0.03
-## chain:3      0   0.04  0.04
+## chain:2      0   0.05  0.05
+## chain:3      0   0.05  0.05
 ## chain:4      0   0.05  0.05
 ## 
 ## Formula:
@@ -1887,10 +1887,10 @@ show( m9.1_test1 )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1      0   0.30  0.30
+## chain:1      0   0.53  0.53
 ## chain:2      0   0.03  0.03
-## chain:3      0   0.35  0.35
-## chain:4      0   0.02  0.02
+## chain:3      0   0.50  0.50
+## chain:4      0   0.03  0.03
 ## 
 ## Formula:
 ## log_gdp_std ~ dnorm(mu, sigma)
@@ -1929,7 +1929,7 @@ trankplot( m9.1_test1 , n_cols=2 )
 
 ![](chapter-9-2_files/figure-html/unnamed-chunk-25-2.png)<!-- -->![](chapter-9-2_files/figure-html/unnamed-chunk-25-3.png)<!-- -->
 
-
+> warmup = 100 is fine, but less than that. The problem shows up.
 
 
 #### 8H1. Run the model below and then inspect the posterior distribution and explain what it is accomplishing.
@@ -1968,10 +1968,10 @@ show( mp )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   0.00   0.64  0.65
-## chain:2   0.00   0.58  0.58
-## chain:3   0.00   0.57  0.58
-## chain:4   0.01   0.37  0.38
+## chain:1   0.01   0.75  0.76
+## chain:2   0.00   0.92  0.92
+## chain:3   0.01   0.69  0.69
+## chain:4   0.01   0.51  0.52
 ## 
 ## Formula:
 ## a ~ dnorm(0, 1)
@@ -2009,7 +2009,6 @@ trankplot( mp , n_cols=2 )
 ```
 
 ![](chapter-9-2_files/figure-html/unnamed-chunk-27-2.png)<!-- -->![](chapter-9-2_files/figure-html/unnamed-chunk-27-3.png)<!-- -->
-
 
 #### Compare the samples for the parameters a and b. Can you explain the different trace plots, using what you know about the Cauchy distribution?
 
@@ -2050,12 +2049,13 @@ m5.8s <- map2stan(
         sigma ~ dcauchy( 0 , 1 )
     ) ,
     data=d, chains=4,
+    log_lik = TRUE,
     start=list(a=10,bl=0,br=0,sigma=1) )
 ```
 
 ```
 ## 
-## SAMPLING FOR MODEL '8a7d680bf19ef797d07c4143ade81ef7' NOW (CHAIN 1).
+## SAMPLING FOR MODEL '38fb21f5c1559990189b1227c0a7886d' NOW (CHAIN 1).
 ## Chain 1: 
 ## Chain 1: Gradient evaluation took 0 seconds
 ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
@@ -2075,12 +2075,12 @@ m5.8s <- map2stan(
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 6.794 seconds (Warm-up)
-## Chain 1:                8.048 seconds (Sampling)
-## Chain 1:                14.842 seconds (Total)
+## Chain 1:  Elapsed Time: 7.047 seconds (Warm-up)
+## Chain 1:                7.984 seconds (Sampling)
+## Chain 1:                15.031 seconds (Total)
 ## Chain 1: 
 ## 
-## SAMPLING FOR MODEL '8a7d680bf19ef797d07c4143ade81ef7' NOW (CHAIN 2).
+## SAMPLING FOR MODEL '38fb21f5c1559990189b1227c0a7886d' NOW (CHAIN 2).
 ## Chain 2: 
 ## Chain 2: Gradient evaluation took 0 seconds
 ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
@@ -2100,12 +2100,12 @@ m5.8s <- map2stan(
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 7.372 seconds (Warm-up)
-## Chain 2:                7.748 seconds (Sampling)
-## Chain 2:                15.12 seconds (Total)
+## Chain 2:  Elapsed Time: 7.702 seconds (Warm-up)
+## Chain 2:                8.033 seconds (Sampling)
+## Chain 2:                15.735 seconds (Total)
 ## Chain 2: 
 ## 
-## SAMPLING FOR MODEL '8a7d680bf19ef797d07c4143ade81ef7' NOW (CHAIN 3).
+## SAMPLING FOR MODEL '38fb21f5c1559990189b1227c0a7886d' NOW (CHAIN 3).
 ## Chain 3: 
 ## Chain 3: Gradient evaluation took 0 seconds
 ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
@@ -2125,12 +2125,12 @@ m5.8s <- map2stan(
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 7.705 seconds (Warm-up)
-## Chain 3:                8.531 seconds (Sampling)
-## Chain 3:                16.236 seconds (Total)
+## Chain 3:  Elapsed Time: 7.281 seconds (Warm-up)
+## Chain 3:                8.408 seconds (Sampling)
+## Chain 3:                15.689 seconds (Total)
 ## Chain 3: 
 ## 
-## SAMPLING FOR MODEL '8a7d680bf19ef797d07c4143ade81ef7' NOW (CHAIN 4).
+## SAMPLING FOR MODEL '38fb21f5c1559990189b1227c0a7886d' NOW (CHAIN 4).
 ## Chain 4: 
 ## Chain 4: Gradient evaluation took 0 seconds
 ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
@@ -2150,9 +2150,9 @@ m5.8s <- map2stan(
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 7.254 seconds (Warm-up)
-## Chain 4:                8.151 seconds (Sampling)
-## Chain 4:                15.405 seconds (Total)
+## Chain 4:  Elapsed Time: 7.466 seconds (Warm-up)
+## Chain 4:                8.149 seconds (Sampling)
+## Chain 4:                15.615 seconds (Total)
 ## Chain 4:
 ```
 
@@ -2185,12 +2185,13 @@ m5.8s2 <- map2stan(
         sigma ~ dcauchy( 0 , 1 )
     ) ,
     data=d, chains=4,
+    log_lik = TRUE,
     start=list(a=10,bl=0,br=0,sigma=1) )
 ```
 
 ```
 ## 
-## SAMPLING FOR MODEL 'a9eaf576b50399f7c1a42db606a78d69' NOW (CHAIN 1).
+## SAMPLING FOR MODEL 'de81417d347d4868673b1585c0e62413' NOW (CHAIN 1).
 ## Chain 1: 
 ## Chain 1: Gradient evaluation took 0 seconds
 ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
@@ -2210,12 +2211,12 @@ m5.8s2 <- map2stan(
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 7.665 seconds (Warm-up)
-## Chain 1:                9.116 seconds (Sampling)
-## Chain 1:                16.781 seconds (Total)
+## Chain 1:  Elapsed Time: 7.15 seconds (Warm-up)
+## Chain 1:                8.367 seconds (Sampling)
+## Chain 1:                15.517 seconds (Total)
 ## Chain 1: 
 ## 
-## SAMPLING FOR MODEL 'a9eaf576b50399f7c1a42db606a78d69' NOW (CHAIN 2).
+## SAMPLING FOR MODEL 'de81417d347d4868673b1585c0e62413' NOW (CHAIN 2).
 ## Chain 2: 
 ## Chain 2: Gradient evaluation took 0 seconds
 ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
@@ -2235,12 +2236,12 @@ m5.8s2 <- map2stan(
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 6.776 seconds (Warm-up)
-## Chain 2:                8.066 seconds (Sampling)
-## Chain 2:                14.842 seconds (Total)
+## Chain 2:  Elapsed Time: 6.519 seconds (Warm-up)
+## Chain 2:                7.5 seconds (Sampling)
+## Chain 2:                14.019 seconds (Total)
 ## Chain 2: 
 ## 
-## SAMPLING FOR MODEL 'a9eaf576b50399f7c1a42db606a78d69' NOW (CHAIN 3).
+## SAMPLING FOR MODEL 'de81417d347d4868673b1585c0e62413' NOW (CHAIN 3).
 ## Chain 3: 
 ## Chain 3: Gradient evaluation took 0 seconds
 ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
@@ -2260,12 +2261,12 @@ m5.8s2 <- map2stan(
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 8.477 seconds (Warm-up)
-## Chain 3:                7.66 seconds (Sampling)
-## Chain 3:                16.137 seconds (Total)
+## Chain 3:  Elapsed Time: 6.74 seconds (Warm-up)
+## Chain 3:                7.294 seconds (Sampling)
+## Chain 3:                14.034 seconds (Total)
 ## Chain 3: 
 ## 
-## SAMPLING FOR MODEL 'a9eaf576b50399f7c1a42db606a78d69' NOW (CHAIN 4).
+## SAMPLING FOR MODEL 'de81417d347d4868673b1585c0e62413' NOW (CHAIN 4).
 ## Chain 4: 
 ## Chain 4: Gradient evaluation took 0 seconds
 ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
@@ -2285,9 +2286,9 @@ m5.8s2 <- map2stan(
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 7.084 seconds (Warm-up)
-## Chain 4:                9.385 seconds (Sampling)
-## Chain 4:                16.469 seconds (Total)
+## Chain 4:  Elapsed Time: 6.698 seconds (Warm-up)
+## Chain 4:                9.11 seconds (Sampling)
+## Chain 4:                15.808 seconds (Total)
 ## Chain 4:
 ```
 
@@ -2332,10 +2333,10 @@ show( m5.8s )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   6.79   8.05 14.84
-## chain:2   7.37   7.75 15.12
-## chain:3   7.70   8.53 16.24
-## chain:4   7.25   8.15 15.40
+## chain:1   7.05   7.98 15.03
+## chain:2   7.70   8.03 15.73
+## chain:3   7.28   8.41 15.69
+## chain:4   7.47   8.15 15.61
 ## 
 ## Formula:
 ## height ~ dnorm(mu, sigma)
@@ -2359,10 +2360,10 @@ show( m5.8s2 )
 ## 
 ## Sampling durations (seconds):
 ##         warmup sample total
-## chain:1   7.66   9.12 16.78
-## chain:2   6.78   8.07 14.84
-## chain:3   8.48   7.66 16.14
-## chain:4   7.08   9.38 16.47
+## chain:1   7.15   8.37 15.52
+## chain:2   6.52   7.50 14.02
+## chain:3   6.74   7.29 14.03
+## chain:4   6.70   9.11 15.81
 ## 
 ## Formula:
 ## height ~ dnorm(mu, sigma)
@@ -2415,28 +2416,44 @@ pairs( m5.8s2 )
 ![](chapter-9-2_files/figure-html/unnamed-chunk-31-2.png)<!-- -->
 
 ```r
-coeftab(m5.8s, m5.8s2)
+trankplot(m5.8s)
+trankplot(m5.8s2)
+```
+
+![](chapter-9-2_files/figure-html/unnamed-chunk-31-3.png)<!-- -->
+
+```r
+plotchains(m5.8s)
 ```
 
 ```
-##       m5.8s   m5.8s2 
-## a        0.65    0.68
-## bl      -2.22   -2.26
-## br       4.30    4.33
-## sigma    0.61    0.61
-## nobs      100     100
+## Warning: Ignoring unknown parameters: ask
 ```
 
 ```r
+plotchains(m5.8s2)
+```
+
+```
+## Warning: Ignoring unknown parameters: ask
+```
+
+```r
+#coeftab(m5.8s, m5.8s2)
 compare(m5.8s, m5.8s2)
 ```
 
 ```
-##           WAIC    pWAIC     dWAIC    weight       SE       dSE
-## m5.8s2 186.131 3.118123 0.0000000 0.5658699 10.35666        NA
-## m5.8s  186.661 3.353227 0.5300399 0.4341301 10.34286 0.1783166
+##           WAIC    pWAIC     dWAIC    weight       SE dSE
+## m5.8s2 186.131 3.118123 0.0000000 0.5658699 10.35666  NA
+## m5.8s  186.661 3.353227 0.5300399 0.4341301 10.34286  NA
 ```
 
+![](chapter-9-2_files/figure-html/unnamed-chunk-31-4.png)<!-- -->
+
+> bR is always postive, bL is always negative.
+
+> Second model has worse convergence and smaller n_eff for bl, br coefficients
 
 ### 8H4. For the two models fit in the previous problem, use DIC or WAIC to compare the effective numbers of parameters for each model. Which model has more effective parameters? Why?
 
@@ -2446,9 +2463,9 @@ compare(m5.8s, m5.8s2)
 ```
 
 ```
-##           WAIC    pWAIC     dWAIC    weight       SE       dSE
-## m5.8s2 186.131 3.118123 0.0000000 0.5658699 10.35666        NA
-## m5.8s  186.661 3.353227 0.5300399 0.4341301 10.34286 0.1783166
+##           WAIC    pWAIC     dWAIC    weight       SE dSE
+## m5.8s2 186.131 3.118123 0.0000000 0.5658699 10.35666  NA
+## m5.8s  186.661 3.353227 0.5300399 0.4341301 10.34286  NA
 ```
 
 ```r
@@ -2479,7 +2496,7 @@ WAIC(m5.8s2)
 ## [1] 10.35666
 ```
 
-> Effective number of parameters for the second model is smaller. pWAIC is defined as sum of variance of the points likelihood, thus the second model has smaller variance of data likelihood(==> it's 'more restricted')
+> Effective number of parameters for the second model is smaller. pWAIC is defined as sum of variance of the points likelihood, thus the second model has smaller variance of data likelihood, 'more restricted'
 
 #### optional: 8H6. Modify the Metropolis algorithm code from the chapter to write your own simple MCMC estimator for globe tossing data and model from Chapter
 
