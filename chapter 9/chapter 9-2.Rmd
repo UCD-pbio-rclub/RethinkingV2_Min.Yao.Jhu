@@ -364,7 +364,7 @@ traceplot(m9.5)
 
 > HMC requires continuous parameters. It can’t glide through a discrete parameter.
 
-#### 8E4. Explain the diff erence between the effective number of samples, n_eff as calculated by Stan, and the actual number of samples.
+### 8E4. Explain the diff erence between the effective number of samples, n_eff as calculated by Stan, and the actual number of samples.
 
 > The effective number of samples is an estimate of the number of independent samples from the posterior distribution. Ideal samples should be entirely uncorrelated. Markov chains are typically autocorrelated, so that sequential samples are not entirely independent. Stan chains tend to be less autocorrelated than those produced by other engines, but there is always some autocorrelation. Stan provides an estimate of effective number of samples as n_eff.
 
@@ -584,7 +584,135 @@ traceplot( m9.1_cauchy_0.01 )
 trankplot( m9.1_cauchy_0.01 , n_cols=2 )
 ```
 
-#### 8M3. Re-estimate one of the Stan models from the chapter, but at different numbers of warmup iterations. Be sure to use the same number of sampling iterations in each case. Compare the n_eff values. How much warmup is enough?
+### 8M3. Re-estimate one of the Stan models from the chapter, but at different numbers of warmup iterations. Be sure to use the same number of sampling iterations in each case. Compare the n_eff values. How much warmup is enough?
+
+```{r}
+## R code 9.14
+m9.1 <- ulam(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu <- a[cid] + b[cid]*( rugged_std - 0.215 ) ,
+        a[cid] ~ dnorm( 1 , 0.1 ) ,
+        b[cid] ~ dnorm( 0 , 0.3 ) ,
+        sigma ~ dexp( 1 )
+    ) ,
+    data=dat_slim , chains=4 , cores=4 , iter=1000 )
+
+## R code 9.15
+show( m9.1 )
+
+## R code 9.16
+precis( m9.1 , 2 )
+
+## R code 9.17
+pairs( m9.1 )
+
+## R code 9.18
+traceplot( m9.1 )
+trankplot( m9.1 , n_cols=2 )
+
+```
+
+```{r}
+m9.1_test100 <- ulam(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu <- a[cid] + b[cid]*( rugged_std - 0.215 ) ,
+        a[cid] ~ dnorm( 1 , 0.1 ) ,
+        b[cid] ~ dnorm( 0 , 0.3 ) ,
+        sigma ~ dexp( 1 )
+    ) ,
+    data=dat_slim , chains=4 , cores=4 , warmup=100 , iter=1000 )
+
+## R code 9.15
+show( m9.1_test100 )
+
+## R code 9.16
+precis( m9.1_test100 , 2 )
+
+## R code 9.17
+pairs( m9.1_test100 )
+
+## R code 9.18
+traceplot( m9.1_test100 )
+trankplot( m9.1_test100 , n_cols=2 )
+```
+
+```{r}
+m9.1_test10 <- ulam(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu <- a[cid] + b[cid]*( rugged_std - 0.215 ) ,
+        a[cid] ~ dnorm( 1 , 0.1 ) ,
+        b[cid] ~ dnorm( 0 , 0.3 ) ,
+        sigma ~ dexp( 1 )
+    ) ,
+    data=dat_slim , chains=4 , cores=4 , warmup=10 , iter=1000 )
+
+## R code 9.15
+show( m9.1_test10 )
+
+## R code 9.16
+precis( m9.1_test10 , 2 )
+
+## R code 9.17
+pairs( m9.1_test10 )
+
+## R code 9.18
+traceplot( m9.1_test10 )
+trankplot( m9.1_test10 , n_cols=2 )
+```
+
+```{r}
+m9.1_test5 <- ulam(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu <- a[cid] + b[cid]*( rugged_std - 0.215 ) ,
+        a[cid] ~ dnorm( 1 , 0.1 ) ,
+        b[cid] ~ dnorm( 0 , 0.3 ) ,
+        sigma ~ dexp( 1 )
+    ) ,
+    data=dat_slim , chains=4 , cores=4 , warmup=5 , iter=1000 )
+
+## R code 9.15
+show( m9.1_test5 )
+
+## R code 9.16
+precis( m9.1_test5 , 2 )
+
+## R code 9.17
+pairs( m9.1_test5 )
+
+## R code 9.18
+traceplot( m9.1_test5 )
+trankplot( m9.1_test5 , n_cols=2 )
+```
+
+
+```{r}
+m9.1_test1 <- ulam(
+    alist(
+        log_gdp_std ~ dnorm( mu , sigma ) ,
+        mu <- a[cid] + b[cid]*( rugged_std - 0.215 ) ,
+        a[cid] ~ dnorm( 1 , 0.1 ) ,
+        b[cid] ~ dnorm( 0 , 0.3 ) ,
+        sigma ~ dexp( 1 )
+    ) ,
+    data=dat_slim , chains=4 , cores=4 , warmup=1 , iter=1000 )
+
+## R code 9.15
+show( m9.1_test1 )
+
+## R code 9.16
+precis( m9.1_test1 , 2 )
+
+## R code 9.17
+pairs( m9.1_test1 )
+
+## R code 9.18
+traceplot( m9.1_test1 )
+trankplot( m9.1_test1 , n_cols=2 )
+```
 
 
 
@@ -593,19 +721,40 @@ trankplot( m9.1_cauchy_0.01 , n_cols=2 )
 
 ```{r}
 ## R code 9.25
-mp <- map2stan(
+mp <- ulam(
     alist(
         a ~ dnorm(0,1),
         b ~ dcauchy(0,1)
     ),
     data=list(y=1),
     start=list(a=0,b=0),
-    iter=1e4, warmup=100 , WAIC=FALSE )
+    iter=1e4, warmup=100, chains = 4, cores = 4)
 ```
 
-#### Compare the samples for the parameters a and b. Can you explain the diff erent trace plots, using what you know about the Cauchy distribution?
+```{r}
+## R code 9.15
+show( mp )
 
-#### 8H2. Recall the divorce rate example from Chapter 5. Repeat that analysis, using map2stan this time, fi tting models m5.1, m5.2, and m5.3. Use compare to compare the models on the basis of WAIC. Explain the results.
+## R code 9.16
+precis( mp , 2 )
+
+## R code 9.17
+pairs( mp )
+
+## R code 9.18
+traceplot( mp )
+trankplot( mp , n_cols=2 )
+```
+
+
+#### Compare the samples for the parameters a and b. Can you explain the different trace plots, using what you know about the Cauchy distribution?
+
+#### 8H2. Recall the divorce rate example from Chapter 5. Repeat that analysis, using ulam this time, fitting models m5.1, m5.2, and m5.3. Use compare to compare the models on the basis of WAIC. Explain the results.
+
+### 8H3. Sometimes changing a prior for one parameter has unanticipated effects on other parameters. This is because when a parameter is highly correlated with another parameter in the posterior, the prior influences both parameters. Here’s an example to work and think through.
+
+Go back to the leg length example in Chapter 5. Here is the code again, which simulates height
+and leg lengths for 100 imagined individuals:
 
 ```{r}
 ## R code 9.26
@@ -618,7 +767,12 @@ leg_right <- leg_prop*height +    # sim right leg as proportion + error
     rnorm( N , 0 , 0.02 )
                                   # combine into data frame
 d <- data.frame(height,leg_left,leg_right)
+```
 
+And below is the model you fit before, resulting in a highly correlated posterior for the two beta
+parameters. This time, fit the model using map2stan:
+
+```{r}
 ## R code 9.27
 m5.8s <- map2stan(
     alist(
@@ -631,7 +785,12 @@ m5.8s <- map2stan(
     ) ,
     data=d, chains=4,
     start=list(a=10,bl=0,br=0,sigma=1) )
+```
 
+Compare the posterior distribution produced by the code above to the posterior distribution pro-
+duced when you change the prior for br so that it is strictly positive:
+
+```{r}
 ## R code 9.28
 m5.8s2 <- map2stan(
     alist(
@@ -646,6 +805,41 @@ m5.8s2 <- map2stan(
     start=list(a=10,bl=0,br=0,sigma=1) )
 ```
 
+Note that T[0,] on the right-hand side of the prior for br. What the T[0,] does is truncate the normal distribution so that it has positive probability only above zero. In other words, that prior ensures that the posterior distribution for br will have no probability mass below zero.
+Compare the two posterior distributions for m5.8s and m5.8s2. What has changed in the posterior distribution of both beta parameters? Can you explain the change induced by the change in prior?
+
+```{r}
+#plot(m5.8s)
+#plot(m5.8s2)
+
+## R code 9.15
+show( m5.8s )
+show( m5.8s2 )
+
+## R code 9.16
+precis( m5.8s , 2 )
+precis( m5.8s2 , 2 )
+
+## R code 9.17
+pairs( m5.8s )
+pairs( m5.8s2 )
+
+coeftab(m5.8s, m5.8s2)
+compare(m5.8s, m5.8s2)
+```
+
+
+### 8H4. For the two models fit in the previous problem, use DIC or WAIC to compare the effective numbers of parameters for each model. Which model has more effective parameters? Why?
+
+```{r}
+compare(m5.8s, m5.8s2)
+
+WAIC(m5.8s)  
+WAIC(m5.8s2) 
+
+```
+
+> Effective number of parameters for the second model is smaller. pWAIC is defined as sum of variance of the points likelihood, thus the second model has smaller variance of data likelihood(==> it's 'more restricted')
 
 #### optional: 8H6. Modify the Metropolis algorithm code from the chapter to write your own simple MCMC estimator for globe tossing data and model from Chapter
 
