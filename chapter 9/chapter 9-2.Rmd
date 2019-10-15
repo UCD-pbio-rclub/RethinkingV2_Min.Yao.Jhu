@@ -783,7 +783,7 @@ m5.8s <- map2stan(
         sigma ~ dcauchy( 0 , 1 )
     ) ,
     data=d, chains=4,
-    log_lik = TRUE,
+    #log_lik = TRUE,
     start=list(a=10,bl=0,br=0,sigma=1) )
 ```
 
@@ -802,7 +802,7 @@ m5.8s2 <- map2stan(
         sigma ~ dcauchy( 0 , 1 )
     ) ,
     data=d, chains=4,
-    log_lik = TRUE,
+    #log_lik = TRUE,
     start=list(a=10,bl=0,br=0,sigma=1) )
 ```
 
@@ -826,9 +826,11 @@ pairs( m5.8s )
 pairs( m5.8s2 )
 
 trankplot(m5.8s)
-trankplot(m5.8s2)
 
 plotchains(m5.8s)
+
+trankplot(m5.8s2)
+
 plotchains(m5.8s2)
 
 #coeftab(m5.8s, m5.8s2)
@@ -837,7 +839,7 @@ compare(m5.8s, m5.8s2)
 
 > bR is always postive, bL is always negative.
 
-> Second model has worse convergence and smaller n_eff for bl, br coefficients
+> Second model has worse convergence and smaller n_eff for a, bl, br and sigma 
 
 ### 8H4. For the two models fit in the previous problem, use DIC or WAIC to compare the effective numbers of parameters for each model. Which model has more effective parameters? Why?
 
