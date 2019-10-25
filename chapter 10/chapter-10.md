@@ -164,6 +164,7 @@ dens( as.numeric(H[1,]) , adj=0.1 )
 
 ![](chapter-10_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
+
 ```r
 ## R code 10.11
 entropies <- as.numeric(H[1,])
@@ -174,7 +175,7 @@ max(entropies)
 ```
 
 ```
-## [1] 1.221729
+## [1] 1.221728
 ```
 
 ```r
@@ -184,7 +185,7 @@ distributions[ which.max(entropies) ]
 
 ```
 ## [[1]]
-## [1] 0.09005196 0.20998212 0.20991395 0.49005196
+## [1] 0.08979197 0.20991148 0.21050459 0.48979197
 ```
 
 ## 10.2. Generalized linear models

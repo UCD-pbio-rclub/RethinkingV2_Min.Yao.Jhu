@@ -74,7 +74,9 @@ sim.p <- function(G=1.4) {
 ## R code 10.10
 H <- replicate( 1e5 , sim.p(1.4) )
 dens( as.numeric(H[1,]) , adj=0.1 )
+```
 
+```{r}
 ## R code 10.11
 entropies <- as.numeric(H[1,])
 distributions <- H[2,]
