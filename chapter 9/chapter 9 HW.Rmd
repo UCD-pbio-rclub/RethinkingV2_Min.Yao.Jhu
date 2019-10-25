@@ -124,9 +124,9 @@ trankplot( HW9_m2 , n_cols=2 )
 ```{r}
 new_wine3 <- list(
   S = scale(data_wine$score),
-  R = as.integer(data_wine$flight), #white=2, red=1
-  W = as.integer(data_wine$wine.amer)+1, #American=2, French=1
-  J = as.integer(data_wine$judge.amer)+1 #American=2, French=1
+  R = as.integer(data_wine$flight)-1, #white=1, red=0
+  W = as.integer(data_wine$wine.amer), #American=1, French=0
+  J = as.integer(data_wine$judge.amer) #American=1, French=0
   )
 summary(new_wine3)
 str(new_wine3)
