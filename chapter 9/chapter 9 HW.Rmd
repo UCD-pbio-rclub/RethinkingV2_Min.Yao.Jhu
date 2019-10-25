@@ -23,9 +23,9 @@ str(data_wine)
 head(data_wine)
 
 new_wine <- list(
-  S = standardize(data_wine$score),
   jid = as.integer(data_wine$judge),
-  wid = as.integer(data_wine$wine)
+  wid = as.integer(data_wine$wine),
+  S = scale(data_wine$score)
   )
 summary(new_wine)
 str(new_wine)
@@ -37,12 +37,14 @@ HW9_m1 <- ulam(
   alist(
     S ~ dnorm( mu , sigma ),
     mu <- a[jid] + w[wid],
-    a[jid] ~ dnorm(0,0.5),
-    w[wid] ~ dnorm(0,0.5),
+    a[jid] ~ dnorm(0,1),
+    w[wid] ~ dnorm(0,1),
     sigma ~ dexp(1)
     ), 
   data=new_wine , chains=4 , cores=4 )
 ```
+
+> Because we standardized the outcome, we can use N(0,1) for the outcome.
 
 ```{r}
 ## R code 9.15
@@ -72,15 +74,95 @@ trankplot( HW9_m1 , n_cols=2 )
 #### Use indicator or index variables to model the influence of these features on the scores. Omit the individual judge and wine index variables from Problem 1. Do not include interaction effects yet. Again use ulam, justify your priors, and be sure to check the chains. What do you conclude about the differences among the wines and judges? Try to relate the results to the inferences in Problem 1.
 
 ```{r}
+new_wine2 <- list(
+  S = scale(data_wine$score),
+  RID = as.integer(data_wine$flight), #white=2, red=1
+  WID = as.integer(data_wine$wine.amer)+1, #American=2, French=1
+  JID = as.integer(data_wine$judge.amer)+1 #American=2, French=1
+  )
+summary(new_wine2)
+str(new_wine2)
+```
+
+```{r}
+HW9_m2 <- ulam(
+  alist(
+    S ~ dnorm( mu , sigma ),
+    mu <- W[WID] + J[JID] + R[RID],
+    W[WID] ~ dnorm( 0 , 1 ), 
+    J[JID] ~ dnorm( 0 , 1 ), 
+    R[RID] ~ dnorm( 0 , 1 ),
+    sigma ~ dexp(1)
+    ),
+  data=new_wine2 , chains=4 , cores=4 )
+precis( HW9_m2 , 2 )
+```
+
+```{r}
+## R code 9.15
+show( HW9_m2 )
+
+## R code 9.16
+
+plot(precis( HW9_m2 , 2 ))
+
+## R code 9.17
+pairs( HW9_m2 )
+
+## R code 9.18
+traceplot( HW9_m2 )
+
+trankplot( HW9_m2 , n_cols=2 )
 
 ```
 
+> There is no big difference between red or white wine, American or French wines, and American or French judges. American judges seem to give slightly higher scores. French wines seems to be slightly prefered.
 
-
-#### 3. Now consider two-way interactions among the three features. You should end up with three diff erent interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead. What do you conclude about the features and the scores? Can you relate the results of your model(s) to the individual judge and wine inferences from Problem 1?
+#### 3. Now consider two-way interactions among the three features. You should end up with three different interaction terms in your model. These will be easier to build, if you use indicator variables. Again use ulam, justify your priors, and be sure to check the chains. Explain what each interaction means. Be sure to interpret the model’s predictions on the outcome scale (mu, the expected score), not on the scale of individual parameters. You can use link to help with this, or just use your knowledge of the linear model instead. What do you conclude about the features and the scores? Can you relate the results of your model(s) to the individual judge and wine inferences from Problem 1?
 
 
 ```{r}
-
+new_wine3 <- list(
+  S = scale(data_wine$score),
+  R = as.integer(data_wine$flight), #white=2, red=1
+  W = as.integer(data_wine$wine.amer)+1, #American=2, French=1
+  J = as.integer(data_wine$judge.amer)+1 #American=2, French=1
+  )
+summary(new_wine3)
+str(new_wine3)
 ```
 
+```{r}
+HW9_m3 <- ulam(
+  alist(
+    S ~ dnorm( mu , sigma ),
+    mu <- a + bW*W + bJ*J + bR*R + bWJ*W*J + bWR*W*R + bJR*J*R,
+    a ~ dnorm(0,0.5),
+    bW ~ dnorm(0,1),
+    bJ ~ dnorm(0,1),
+    bR ~ dnorm(0,1),
+    bWJ ~ dnorm(0,0.5),
+    bWR ~ dnorm(0,0.5),
+    bJR ~ dnorm(0,0.5),
+    sigma ~ dexp(1)
+    ),
+  data=new_wine3 , chains=4 , cores=4 )
+```
+
+```{r}
+## R code 9.15
+show( HW9_m3 )
+
+## R code 9.16
+precis( HW9_m3 , 2 )
+plot(precis( HW9_m3 , 2 ))
+
+## R code 9.17
+pairs( HW9_m3 )
+
+## R code 9.18
+traceplot( HW9_m3 )
+
+trankplot( HW9_m3 , n_cols=2 )
+
+```
