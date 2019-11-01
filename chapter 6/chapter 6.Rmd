@@ -300,6 +300,8 @@ b_GC <- 0 # direct effect of G on C
 b_PC <- 1 # direct effect of P on C
 b_U <- 2  # direct effect of U on P and C
 
+library(Rlab)
+
 ## R code 6.27
 set.seed(1)
 U <- 2*rbern( N , 0.5 ) - 1
