@@ -2,7 +2,9 @@
 title: "chapter 11"
 author: "Min-Yao"
 date: "2019/10/28"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 # 11. God Spiked the Integers
