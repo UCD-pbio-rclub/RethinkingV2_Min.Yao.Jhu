@@ -17,7 +17,7 @@ c( mean(y) , var(y) )
 ```
 
 ```
-## [1] 0.9980500 0.9971562
+## [1] 1.00031 1.00724
 ```
 
 ### 11.2.1. Example: Oceanic tool complexity.
@@ -119,7 +119,7 @@ mean( lambda )
 ```
 
 ```
-## [1] 80034892283
+## [1] 3.22041e+12
 ```
 
 ```r
@@ -208,9 +208,9 @@ m11.9 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.02 seconds (Warm-up)
-## Chain 1:                0.016 seconds (Sampling)
-## Chain 1:                0.036 seconds (Total)
+## Chain 1:  Elapsed Time: 0.011 seconds (Warm-up)
+## Chain 1:                0.011 seconds (Sampling)
+## Chain 1:                0.022 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '1016dad00d71412e9dffb1c8f58132a3' NOW (CHAIN 2).
@@ -233,9 +233,9 @@ m11.9 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.026 seconds (Warm-up)
-## Chain 2:                0.043 seconds (Sampling)
-## Chain 2:                0.069 seconds (Total)
+## Chain 2:  Elapsed Time: 0.012 seconds (Warm-up)
+## Chain 2:                0.012 seconds (Sampling)
+## Chain 2:                0.024 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '1016dad00d71412e9dffb1c8f58132a3' NOW (CHAIN 3).
@@ -258,9 +258,9 @@ m11.9 <- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.034 seconds (Warm-up)
-## Chain 3:                0.035 seconds (Sampling)
-## Chain 3:                0.069 seconds (Total)
+## Chain 3:  Elapsed Time: 0.011 seconds (Warm-up)
+## Chain 3:                0.011 seconds (Sampling)
+## Chain 3:                0.022 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '1016dad00d71412e9dffb1c8f58132a3' NOW (CHAIN 4).
@@ -283,9 +283,9 @@ m11.9 <- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.028 seconds (Warm-up)
-## Chain 4:                0.021 seconds (Sampling)
-## Chain 4:                0.049 seconds (Total)
+## Chain 4:  Elapsed Time: 0.012 seconds (Warm-up)
+## Chain 4:                0.011 seconds (Sampling)
+## Chain 4:                0.023 seconds (Total)
 ## Chain 4:
 ```
 
@@ -329,8 +329,8 @@ m11.10 <- ulam(
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
 ## Chain 1:  Elapsed Time: 0.041 seconds (Warm-up)
-## Chain 1:                0.031 seconds (Sampling)
-## Chain 1:                0.072 seconds (Total)
+## Chain 1:                0.044 seconds (Sampling)
+## Chain 1:                0.085 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '764b6f1d9a7aa55a03b1520aed83f315' NOW (CHAIN 2).
@@ -353,9 +353,9 @@ m11.10 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.039 seconds (Warm-up)
-## Chain 2:                0.032 seconds (Sampling)
-## Chain 2:                0.071 seconds (Total)
+## Chain 2:  Elapsed Time: 0.04 seconds (Warm-up)
+## Chain 2:                0.033 seconds (Sampling)
+## Chain 2:                0.073 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '764b6f1d9a7aa55a03b1520aed83f315' NOW (CHAIN 3).
@@ -378,9 +378,9 @@ m11.10 <- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.035 seconds (Warm-up)
-## Chain 3:                0.039 seconds (Sampling)
-## Chain 3:                0.074 seconds (Total)
+## Chain 3:  Elapsed Time: 0.039 seconds (Warm-up)
+## Chain 3:                0.038 seconds (Sampling)
+## Chain 3:                0.077 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '764b6f1d9a7aa55a03b1520aed83f315' NOW (CHAIN 4).
@@ -403,9 +403,9 @@ m11.10 <- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.041 seconds (Warm-up)
-## Chain 4:                0.032 seconds (Sampling)
-## Chain 4:                0.073 seconds (Total)
+## Chain 4:  Elapsed Time: 0.038 seconds (Warm-up)
+## Chain 4:                0.033 seconds (Sampling)
+## Chain 4:                0.071 seconds (Total)
 ## Chain 4:
 ```
 
@@ -525,9 +525,9 @@ m11.11 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.621 seconds (Warm-up)
-## Chain 1:                0.463 seconds (Sampling)
-## Chain 1:                1.084 seconds (Total)
+## Chain 1:  Elapsed Time: 0.573 seconds (Warm-up)
+## Chain 1:                0.453 seconds (Sampling)
+## Chain 1:                1.026 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '1d9bfc94a8db83d885271311e6e47d39' NOW (CHAIN 2).
@@ -550,9 +550,9 @@ m11.11 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.705 seconds (Warm-up)
-## Chain 2:                0.863 seconds (Sampling)
-## Chain 2:                1.568 seconds (Total)
+## Chain 2:  Elapsed Time: 0.534 seconds (Warm-up)
+## Chain 2:                0.722 seconds (Sampling)
+## Chain 2:                1.256 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '1d9bfc94a8db83d885271311e6e47d39' NOW (CHAIN 3).
@@ -575,9 +575,9 @@ m11.11 <- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.591 seconds (Warm-up)
-## Chain 3:                1.14 seconds (Sampling)
-## Chain 3:                1.731 seconds (Total)
+## Chain 3:  Elapsed Time: 0.542 seconds (Warm-up)
+## Chain 3:                0.79 seconds (Sampling)
+## Chain 3:                1.332 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '1d9bfc94a8db83d885271311e6e47d39' NOW (CHAIN 4).
@@ -600,9 +600,9 @@ m11.11 <- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.652 seconds (Warm-up)
-## Chain 4:                0.537 seconds (Sampling)
-## Chain 4:                1.189 seconds (Total)
+## Chain 4:  Elapsed Time: 0.529 seconds (Warm-up)
+## Chain 4:                0.517 seconds (Sampling)
+## Chain 4:                1.046 seconds (Total)
 ## Chain 4:
 ```
 
@@ -997,9 +997,9 @@ m11.4H <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.086 seconds (Warm-up)
-## Chain 1:                0.076 seconds (Sampling)
-## Chain 1:                0.162 seconds (Total)
+## Chain 1:  Elapsed Time: 0.091 seconds (Warm-up)
+## Chain 1:                0.078 seconds (Sampling)
+## Chain 1:                0.169 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL 'c9936c189bcb1ec56c3a4929e210fc30' NOW (CHAIN 2).
@@ -1022,8 +1022,8 @@ m11.4H <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.079 seconds (Warm-up)
-## Chain 2:                0.065 seconds (Sampling)
+## Chain 2:  Elapsed Time: 0.074 seconds (Warm-up)
+## Chain 2:                0.07 seconds (Sampling)
 ## Chain 2:                0.144 seconds (Total)
 ## Chain 2: 
 ## 
@@ -1047,9 +1047,9 @@ m11.4H <- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.075 seconds (Warm-up)
-## Chain 3:                0.068 seconds (Sampling)
-## Chain 3:                0.143 seconds (Total)
+## Chain 3:  Elapsed Time: 0.076 seconds (Warm-up)
+## Chain 3:                0.073 seconds (Sampling)
+## Chain 3:                0.149 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL 'c9936c189bcb1ec56c3a4929e210fc30' NOW (CHAIN 4).
@@ -1072,9 +1072,9 @@ m11.4H <- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.079 seconds (Warm-up)
-## Chain 4:                0.073 seconds (Sampling)
-## Chain 4:                0.152 seconds (Total)
+## Chain 4:  Elapsed Time: 0.086 seconds (Warm-up)
+## Chain 4:                0.071 seconds (Sampling)
+## Chain 4:                0.157 seconds (Total)
 ## Chain 4:
 ```
 
@@ -1151,15 +1151,15 @@ m11.4H2 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.101 seconds (Warm-up)
-## Chain 1:                0.1 seconds (Sampling)
-## Chain 1:                0.201 seconds (Total)
+## Chain 1:  Elapsed Time: 0.106 seconds (Warm-up)
+## Chain 1:                0.099 seconds (Sampling)
+## Chain 1:                0.205 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '20f2450b964865dc34de9447c141353b' NOW (CHAIN 2).
 ## Chain 2: 
-## Chain 2: Gradient evaluation took 0.001 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+## Chain 2: Gradient evaluation took 0 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
 ## Chain 2: Adjust your expectations accordingly!
 ## Chain 2: 
 ## Chain 2: 
@@ -1176,9 +1176,9 @@ m11.4H2 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.113 seconds (Warm-up)
-## Chain 2:                0.109 seconds (Sampling)
-## Chain 2:                0.222 seconds (Total)
+## Chain 2:  Elapsed Time: 0.112 seconds (Warm-up)
+## Chain 2:                0.124 seconds (Sampling)
+## Chain 2:                0.236 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '20f2450b964865dc34de9447c141353b' NOW (CHAIN 3).
@@ -1201,9 +1201,9 @@ m11.4H2 <- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.11 seconds (Warm-up)
-## Chain 3:                0.113 seconds (Sampling)
-## Chain 3:                0.223 seconds (Total)
+## Chain 3:  Elapsed Time: 0.114 seconds (Warm-up)
+## Chain 3:                0.117 seconds (Sampling)
+## Chain 3:                0.231 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '20f2450b964865dc34de9447c141353b' NOW (CHAIN 4).
@@ -1226,8 +1226,8 @@ m11.4H2 <- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.103 seconds (Warm-up)
-## Chain 4:                0.134 seconds (Sampling)
+## Chain 4:  Elapsed Time: 0.105 seconds (Warm-up)
+## Chain 4:                0.132 seconds (Sampling)
 ## Chain 4:                0.237 seconds (Total)
 ## Chain 4:
 ```
@@ -1403,10 +1403,10 @@ precis( PDFm3.2 )
 ```
 
 ```
-##         mean         sd       5.5%      94.5%    n_eff     Rhat
-## c  1.2919752 0.05088947  1.2078346  1.3712197 506.6097 1.003208
-## b  0.6224595 0.07596082  0.5045358  0.7465401 660.4917 1.003701
-## a -4.7976623 0.22785431 -5.1705847 -4.4329568 548.1207 1.002203
+##         mean         sd       5.5%     94.5%    n_eff     Rhat
+## c  1.2949154 0.05240668  1.2124693  1.378846 448.0079 1.002394
+## b  0.6188776 0.07985435  0.4896039  0.743901 545.5621 1.001825
+## a -4.8112060 0.23324304 -5.1935536 -4.446911 501.2784 1.001720
 ```
 
 
@@ -1445,7 +1445,7 @@ library(ggdag)
 ```r
 # S = social_learning, B = brain, R = research_effort
 
-dag <- dagitty("dag{B -> R -> L; B->L }")
+dag <- dagitty("dag{B -> R -> S; B->S }")
 tidy_dagitty(dag)
 ```
 
@@ -1455,10 +1455,10 @@ tidy_dagitty(dag)
 ## # A tibble: 4 x 8
 ##   name      x     y direction to     xend  yend circular
 ##   <chr> <dbl> <dbl> <fct>     <chr> <dbl> <dbl> <lgl>   
-## 1 B      1.16  2.09 ->        L      2.11  2.42 FALSE   
-## 2 B      1.16  2.09 ->        R      1.92  1.44 FALSE   
-## 3 R      1.92  1.44 ->        L      2.11  2.42 FALSE   
-## 4 L      2.11  2.42 <NA>      <NA>  NA    NA    FALSE
+## 1 B      4.63  1.32 ->        R      4.96  2.26 FALSE   
+## 2 B      4.63  1.32 ->        S      3.98  2.07 FALSE   
+## 3 R      4.96  2.26 ->        S      3.98  2.07 FALSE   
+## 4 S      3.98  2.07 <NA>      <NA>  NA    NA    FALSE
 ```
 
 ```r

@@ -411,7 +411,7 @@ library(ggdag)
 
 # S = social_learning, B = brain, R = research_effort
 
-dag <- dagitty("dag{B -> R -> L; B->L }")
+dag <- dagitty("dag{B -> R -> S; B->S }")
 tidy_dagitty(dag)
 ggdag(dag, layout = "circle")
 ```
