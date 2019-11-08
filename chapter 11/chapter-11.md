@@ -197,8 +197,8 @@ m11.4 <- ulam(
 ## 
 ## SAMPLING FOR MODEL '7792d8704b89b351a44288bb97dd1b8c' NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 0.001 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+## Chain 1: Gradient evaluation took 0 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -215,15 +215,15 @@ m11.4 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.808 seconds (Warm-up)
-## Chain 1:                0.916 seconds (Sampling)
-## Chain 1:                1.724 seconds (Total)
+## Chain 1:  Elapsed Time: 0.807 seconds (Warm-up)
+## Chain 1:                0.904 seconds (Sampling)
+## Chain 1:                1.711 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '7792d8704b89b351a44288bb97dd1b8c' NOW (CHAIN 2).
 ## Chain 2: 
-## Chain 2: Gradient evaluation took 0.001 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+## Chain 2: Gradient evaluation took 0 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
 ## Chain 2: Adjust your expectations accordingly!
 ## Chain 2: 
 ## Chain 2: 
@@ -240,15 +240,15 @@ m11.4 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.914 seconds (Warm-up)
-## Chain 2:                0.864 seconds (Sampling)
-## Chain 2:                1.778 seconds (Total)
+## Chain 2:  Elapsed Time: 0.916 seconds (Warm-up)
+## Chain 2:                0.86 seconds (Sampling)
+## Chain 2:                1.776 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '7792d8704b89b351a44288bb97dd1b8c' NOW (CHAIN 3).
 ## Chain 3: 
-## Chain 3: Gradient evaluation took 0 seconds
-## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 3: Gradient evaluation took 0.001 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 3: Adjust your expectations accordingly!
 ## Chain 3: 
 ## Chain 3: 
@@ -265,9 +265,9 @@ m11.4 <- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.835 seconds (Warm-up)
-## Chain 3:                0.807 seconds (Sampling)
-## Chain 3:                1.642 seconds (Total)
+## Chain 3:  Elapsed Time: 0.829 seconds (Warm-up)
+## Chain 3:                0.817 seconds (Sampling)
+## Chain 3:                1.646 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '7792d8704b89b351a44288bb97dd1b8c' NOW (CHAIN 4).
@@ -290,9 +290,9 @@ m11.4 <- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.81 seconds (Warm-up)
-## Chain 4:                0.684 seconds (Sampling)
-## Chain 4:                1.494 seconds (Total)
+## Chain 4:  Elapsed Time: 0.805 seconds (Warm-up)
+## Chain 4:                0.672 seconds (Sampling)
+## Chain 4:                1.477 seconds (Total)
 ## Chain 4:
 ```
 
@@ -436,15 +436,15 @@ m11.5 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 1.671 seconds (Warm-up)
-## Chain 1:                1.535 seconds (Sampling)
-## Chain 1:                3.206 seconds (Total)
+## Chain 1:  Elapsed Time: 1.7 seconds (Warm-up)
+## Chain 1:                1.554 seconds (Sampling)
+## Chain 1:                3.254 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '1e8ca8c75419cf9bc49e27f99cb338e6' NOW (CHAIN 2).
 ## Chain 2: 
-## Chain 2: Gradient evaluation took 0 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 2: Gradient evaluation took 0.001 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 2: Adjust your expectations accordingly!
 ## Chain 2: 
 ## Chain 2: 
@@ -461,9 +461,9 @@ m11.5 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 1.615 seconds (Warm-up)
-## Chain 2:                1.565 seconds (Sampling)
-## Chain 2:                3.18 seconds (Total)
+## Chain 2:  Elapsed Time: 1.827 seconds (Warm-up)
+## Chain 2:                1.603 seconds (Sampling)
+## Chain 2:                3.43 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '1e8ca8c75419cf9bc49e27f99cb338e6' NOW (CHAIN 3).
@@ -486,15 +486,15 @@ m11.5 <- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 1.78 seconds (Warm-up)
-## Chain 3:                1.493 seconds (Sampling)
-## Chain 3:                3.273 seconds (Total)
+## Chain 3:  Elapsed Time: 1.822 seconds (Warm-up)
+## Chain 3:                1.533 seconds (Sampling)
+## Chain 3:                3.355 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '1e8ca8c75419cf9bc49e27f99cb338e6' NOW (CHAIN 4).
 ## Chain 4: 
-## Chain 4: Gradient evaluation took 0 seconds
-## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 4: Gradient evaluation took 0.001 seconds
+## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 4: Adjust your expectations accordingly!
 ## Chain 4: 
 ## Chain 4: 
@@ -511,9 +511,9 @@ m11.5 <- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 1.727 seconds (Warm-up)
-## Chain 4:                1.484 seconds (Sampling)
-## Chain 4:                3.211 seconds (Total)
+## Chain 4:  Elapsed Time: 1.939 seconds (Warm-up)
+## Chain 4:                1.508 seconds (Sampling)
+## Chain 4:                3.447 seconds (Total)
 ## Chain 4:
 ```
 
@@ -550,9 +550,9 @@ m11.4 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.971 seconds (Warm-up)
-## Chain 1:                1.074 seconds (Sampling)
-## Chain 1:                2.045 seconds (Total)
+## Chain 1:  Elapsed Time: 0.978 seconds (Warm-up)
+## Chain 1:                1.064 seconds (Sampling)
+## Chain 1:                2.042 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '80e2b6267e3dc4ff0c2916d0cf0879e8' NOW (CHAIN 2).
@@ -575,9 +575,9 @@ m11.4 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.946 seconds (Warm-up)
-## Chain 2:                0.742 seconds (Sampling)
-## Chain 2:                1.688 seconds (Total)
+## Chain 2:  Elapsed Time: 0.942 seconds (Warm-up)
+## Chain 2:                0.743 seconds (Sampling)
+## Chain 2:                1.685 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '80e2b6267e3dc4ff0c2916d0cf0879e8' NOW (CHAIN 3).
@@ -600,9 +600,9 @@ m11.4 <- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 1.044 seconds (Warm-up)
-## Chain 3:                0.792 seconds (Sampling)
-## Chain 3:                1.836 seconds (Total)
+## Chain 3:  Elapsed Time: 1.041 seconds (Warm-up)
+## Chain 3:                0.794 seconds (Sampling)
+## Chain 3:                1.835 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '80e2b6267e3dc4ff0c2916d0cf0879e8' NOW (CHAIN 4).
@@ -625,9 +625,9 @@ m11.4 <- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 1.045 seconds (Warm-up)
-## Chain 4:                0.846 seconds (Sampling)
-## Chain 4:                1.891 seconds (Total)
+## Chain 4:  Elapsed Time: 1.016 seconds (Warm-up)
+## Chain 4:                0.838 seconds (Sampling)
+## Chain 4:                1.854 seconds (Total)
 ## Chain 4:
 ```
 
@@ -724,9 +724,9 @@ m11.4_stan <- stan( model_code=m11.4_stan_code , data=dat_list , chains=4 )
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 1.57 seconds (Warm-up)
-## Chain 1:                1.351 seconds (Sampling)
-## Chain 1:                2.921 seconds (Total)
+## Chain 1:  Elapsed Time: 1.784 seconds (Warm-up)
+## Chain 1:                1.516 seconds (Sampling)
+## Chain 1:                3.3 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '80e2b6267e3dc4ff0c2916d0cf0879e8' NOW (CHAIN 2).
@@ -749,15 +749,15 @@ m11.4_stan <- stan( model_code=m11.4_stan_code , data=dat_list , chains=4 )
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 1.556 seconds (Warm-up)
-## Chain 2:                1.367 seconds (Sampling)
-## Chain 2:                2.923 seconds (Total)
+## Chain 2:  Elapsed Time: 1.751 seconds (Warm-up)
+## Chain 2:                1.462 seconds (Sampling)
+## Chain 2:                3.213 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '80e2b6267e3dc4ff0c2916d0cf0879e8' NOW (CHAIN 3).
 ## Chain 3: 
-## Chain 3: Gradient evaluation took 0 seconds
-## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 3: Gradient evaluation took 0.001 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 3: Adjust your expectations accordingly!
 ## Chain 3: 
 ## Chain 3: 
@@ -774,9 +774,9 @@ m11.4_stan <- stan( model_code=m11.4_stan_code , data=dat_list , chains=4 )
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 1.62 seconds (Warm-up)
-## Chain 3:                1.337 seconds (Sampling)
-## Chain 3:                2.957 seconds (Total)
+## Chain 3:  Elapsed Time: 1.873 seconds (Warm-up)
+## Chain 3:                1.539 seconds (Sampling)
+## Chain 3:                3.412 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '80e2b6267e3dc4ff0c2916d0cf0879e8' NOW (CHAIN 4).
@@ -799,9 +799,9 @@ m11.4_stan <- stan( model_code=m11.4_stan_code , data=dat_list , chains=4 )
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 1.552 seconds (Warm-up)
-## Chain 4:                1.368 seconds (Sampling)
-## Chain 4:                2.92 seconds (Total)
+## Chain 4:  Elapsed Time: 1.721 seconds (Warm-up)
+## Chain 4:                1.525 seconds (Sampling)
+## Chain 4:                3.246 seconds (Total)
 ## Chain 4:
 ```
 
@@ -873,8 +873,8 @@ m11.6 <- ulam(
 ## 
 ## SAMPLING FOR MODEL 'fe7afceed303d5d7dc6e181ecdd9c372' NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 0 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 1: Gradient evaluation took 0.001 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -891,9 +891,9 @@ m11.6 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.099 seconds (Warm-up)
-## Chain 1:                0.08 seconds (Sampling)
-## Chain 1:                0.179 seconds (Total)
+## Chain 1:  Elapsed Time: 0.122 seconds (Warm-up)
+## Chain 1:                0.095 seconds (Sampling)
+## Chain 1:                0.217 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL 'fe7afceed303d5d7dc6e181ecdd9c372' NOW (CHAIN 2).
@@ -916,9 +916,9 @@ m11.6 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.096 seconds (Warm-up)
-## Chain 2:                0.105 seconds (Sampling)
-## Chain 2:                0.201 seconds (Total)
+## Chain 2:  Elapsed Time: 0.1 seconds (Warm-up)
+## Chain 2:                0.114 seconds (Sampling)
+## Chain 2:                0.214 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL 'fe7afceed303d5d7dc6e181ecdd9c372' NOW (CHAIN 3).
@@ -941,9 +941,9 @@ m11.6 <- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.096 seconds (Warm-up)
-## Chain 3:                0.105 seconds (Sampling)
-## Chain 3:                0.201 seconds (Total)
+## Chain 3:  Elapsed Time: 0.107 seconds (Warm-up)
+## Chain 3:                0.107 seconds (Sampling)
+## Chain 3:                0.214 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL 'fe7afceed303d5d7dc6e181ecdd9c372' NOW (CHAIN 4).
@@ -966,9 +966,9 @@ m11.6 <- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.098 seconds (Warm-up)
-## Chain 4:                0.091 seconds (Sampling)
-## Chain 4:                0.189 seconds (Total)
+## Chain 4:  Elapsed Time: 0.224 seconds (Warm-up)
+## Chain 4:                0.178 seconds (Sampling)
+## Chain 4:                0.402 seconds (Total)
 ## Chain 4:
 ```
 
@@ -1210,11 +1210,19 @@ m10.17 <- map(
 
 ```r
 p <- 0.35
-p/(1-p)
+log(p/(1-p))
 ```
 
 ```
-## [1] 0.5384615
+## [1] -0.6190392
+```
+
+```r
+logit(0.35)
+```
+
+```
+## [1] -0.6190392
 ```
 
 
@@ -1230,20 +1238,28 @@ $\ p = L/(1+L)$
 
 
 ```r
-logit <- 3.2
-logit/(1+logit)
+inv_logit(3.2)
 ```
 
 ```
-## [1] 0.7619048
+## [1] 0.9608343
+```
+
+```r
+L <- 3.2
+exp(L)/(1+exp(L))
+```
+
+```
+## [1] 0.9608343
 ```
 
 
 #### 10E3. Suppose that a coefficient in a logistic regression has value 1.7. What does this imply about the proportional change in odds of the outcome?
 
-$\ logit(p)=log(p/(1-p))=1.7$
+$$\ logit(p)=log(p/(1-p))=1.7$$
 
-$\ p/(1-p)=exp(1.7)$
+$$\ p/(1-p)=exp(1.7)$$
 
 
 ```r
@@ -1586,12 +1602,12 @@ tidy_dagitty(dag)
 ## # A tibble: 6 x 8
 ##   name      x     y direction to     xend  yend circular
 ##   <chr> <dbl> <dbl> <fct>     <chr> <dbl> <dbl> <lgl>   
-## 1 C      4.63  7.16 ->        A      5.14  8.12 FALSE   
-## 2 C      4.63  7.16 ->        D      4.22  8.17 FALSE   
-## 3 D      4.22  8.17 ->        A      5.14  8.12 FALSE   
-## 4 G      4.74  9.13 ->        A      5.14  8.12 FALSE   
-## 5 G      4.74  9.13 ->        D      4.22  8.17 FALSE   
-## 6 A      5.14  8.12 <NA>      <NA>  NA    NA    FALSE
+## 1 C      6.92  6.87 ->        A      6.52  5.86 FALSE   
+## 2 C      6.92  6.87 ->        D      7.44  5.91 FALSE   
+## 3 D      7.44  5.91 ->        A      6.52  5.86 FALSE   
+## 4 G      7.04  4.89 ->        A      6.52  5.86 FALSE   
+## 5 G      7.04  4.89 ->        D      7.44  5.91 FALSE   
+## 6 A      6.52  5.86 <NA>      <NA>  NA    NA    FALSE
 ```
 
 ```r

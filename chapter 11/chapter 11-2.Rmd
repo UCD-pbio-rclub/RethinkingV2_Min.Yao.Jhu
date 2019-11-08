@@ -223,65 +223,20 @@ k <- as.numeric(coef(m_pois))
 exp(k[1])/(exp(k[1])+exp(k[2]))
 ```
 
-## 11.3. Censoring and survival
 
-```{r}
-## R code 11.62
-N <- 2
-x <- replicate( 1e5 , min(runif(N,1,100)) )
+### 10E4. Why do Poisson regressions sometimes require the use of an off set? Provide an example.
 
-## R code 11.63
-N <- 10
-M <- 2
-x <- replicate( 1e5 , sort(runif(N,1,100))[M] )
+### 10M2. If a coeffi cient in a Poisson regression has value 1.7, what does this imply about the change in the outcome?
 
-## R code 11.64
-library(rethinking)
-data(AustinCats)
-d <- AustinCats
+### 10M3. Explain why the logit link is appropriate for a binomial generalized linear model.
 
-d$adopt <- ifelse( d$out_event=="Adoption" , 1L , 0L )
-dat <- list(
-    days_to_event = as.numeric( d$days_to_event ),
-    color_id = ifelse( d$color=="Black" , 1L , 2L ) ,
-    adopted = d$adopt
-)
+### 10M4. Explain why the log link is appropriate for a Poisson generalized linear model.
 
-m11.14 <- ulam(
-    alist(
-        days_to_event|adopted==1 ~ exponential( lambda ),
-        days_to_event|adopted==0 ~ custom(exponential_lccdf( !Y | lambda )),
-        lambda <- 1.0/mu,
-        log(mu) <- a[color_id],
-        a[color_id] ~ normal(0,1)
-    ), data=dat , chains=4 , cores=4 )
+### 10H4. Th e data contained in data(salamanders) are counts of salamanders (Plethodon elongatus) from 47 diff erent 49-m 2 plots in northern California. 175 Th e column SALAMAN is the count in each plot, and the columns PCTCOVER and FORESTAGE are percent of ground cover and age of trees in the plot, respectively. You will model SALAMAN as a Poisson variable.
 
-precis( m11.14 , 2 )
+#### (a) Model the relationship between density and percent cover, using a log-link (same as the example in the book and lecture). Use weakly informative priors of your choosing. Check the quadratic approximation again, by comparing map to map2stan. Th en plot the expected counts and their 89% interval against percent cover. In which ways does the model do a good job? In which ways does it do a bad job?
 
-## R code 11.65
-post <- extract.samples( m11.14 )
-post$D <- exp(post$a)
-precis( post , 2 )
+#### (b) Can you improve the model by using the other predictor, FORESTAGE? Try any models you think useful. Can you explain why FORESTAGE helps or does not help with prediction?
 
-## R code 11.66
-model{
-    vector[22356] lambda;
-    b ~ normal( 0 , 1 );
-    a ~ normal( 0 , 1 );
-    for ( i in 1:22356 ) {
-        lambda[i] = a + b * black[i];
-        lambda[i] = exp(lambda[i]);
-    }
-    for ( i in 1:22356 )
-        if ( adopted[i] == 0 ) target += exponential_lccdf(days_to_event[i] | lambda[i]);
-    for ( i in 1:22356 )
-        if ( adopted[i] == 1 ) days_to_event[i] ~ exponential( lambda[i] );
-}
+### Week6 PDF # 3 
 
-## R code 11.67
-    for ( i in 1:22356 ) {
-        if ( adopted[i] == 0 ) target += -lambda[i]*days_to_event[i];
-        if ( adopted[i] == 1 ) target += log(lambda[i]) - lambda[i]*days_to_event[i];
-    }
-
-```

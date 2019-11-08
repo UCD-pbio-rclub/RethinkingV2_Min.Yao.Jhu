@@ -392,7 +392,8 @@ m10.17 <- map(
 
 ```{r}
 p <- 0.35
-p/(1-p)
+log(p/(1-p))
+logit(0.35)
 ```
 
 
@@ -407,16 +408,17 @@ $\ p = L/(1+L)$
 
 
 ```{r}
-logit <- 3.2
-logit/(1+logit)
+inv_logit(3.2)
+L <- 3.2
+exp(L)/(1+exp(L))
 ```
 
 
 #### 10E3. Suppose that a coefficient in a logistic regression has value 1.7. What does this imply about the proportional change in odds of the outcome?
 
-$\ logit(p)=log(p/(1-p))=1.7$
+$$\ logit(p)=log(p/(1-p))=1.7$$
 
-$\ p/(1-p)=exp(1.7)$
+$$\ p/(1-p)=exp(1.7)$$
 
 ```{r}
 exp(1.7)

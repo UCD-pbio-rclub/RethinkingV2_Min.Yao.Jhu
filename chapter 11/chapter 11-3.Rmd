@@ -1,0 +1,71 @@
+---
+title: "chapter 11-3"
+author: "Min-Yao"
+date: "2019/11/8"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+## 11.3. Censoring and survival
+
+```{r}
+## R code 11.62
+N <- 2
+x <- replicate( 1e5 , min(runif(N,1,100)) )
+
+## R code 11.63
+N <- 10
+M <- 2
+x <- replicate( 1e5 , sort(runif(N,1,100))[M] )
+
+## R code 11.64
+library(rethinking)
+data(AustinCats)
+d <- AustinCats
+
+d$adopt <- ifelse( d$out_event=="Adoption" , 1L , 0L )
+dat <- list(
+    days_to_event = as.numeric( d$days_to_event ),
+    color_id = ifelse( d$color=="Black" , 1L , 2L ) ,
+    adopted = d$adopt
+)
+
+m11.14 <- ulam(
+    alist(
+        days_to_event|adopted==1 ~ exponential( lambda ),
+        days_to_event|adopted==0 ~ custom(exponential_lccdf( !Y | lambda )),
+        lambda <- 1.0/mu,
+        log(mu) <- a[color_id],
+        a[color_id] ~ normal(0,1)
+    ), data=dat , chains=4 , cores=4 )
+
+precis( m11.14 , 2 )
+
+## R code 11.65
+post <- extract.samples( m11.14 )
+post$D <- exp(post$a)
+precis( post , 2 )
+
+## R code 11.66
+model{
+    vector[22356] lambda;
+    b ~ normal( 0 , 1 );
+    a ~ normal( 0 , 1 );
+    for ( i in 1:22356 ) {
+        lambda[i] = a + b * black[i];
+        lambda[i] = exp(lambda[i]);
+    }
+    for ( i in 1:22356 )
+        if ( adopted[i] == 0 ) target += exponential_lccdf(days_to_event[i] | lambda[i]);
+    for ( i in 1:22356 )
+        if ( adopted[i] == 1 ) days_to_event[i] ~ exponential( lambda[i] );
+}
+
+## R code 11.67
+    for ( i in 1:22356 ) {
+        if ( adopted[i] == 0 ) target += -lambda[i]*days_to_event[i];
+        if ( adopted[i] == 1 ) target += log(lambda[i]) - lambda[i]*days_to_event[i];
+    }
+
+```
