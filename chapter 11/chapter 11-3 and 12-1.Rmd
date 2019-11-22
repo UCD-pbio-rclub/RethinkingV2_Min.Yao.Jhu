@@ -2,19 +2,31 @@
 title: "chapter 11-3 and chapter 12-1"
 author: "Min-Yao"
 date: "2019/11/21"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
+## 11.3. Censoring and survival
+
 ```{r}
+library(rethinking)
 ## R code 11.62
 N <- 2
 x <- replicate( 1e5 , min(runif(N,1,100)) )
+dens(x)
 
 ## R code 11.63
 N <- 10
 M <- 2
 x <- replicate( 1e5 , sort(runif(N,1,100))[M] )
+dens(x)
+```
 
+### 11.3.1. Simulated cats.
+### 11.3.2. Actual cats.
+
+```{r}
 ## R code 11.64
 library(rethinking)
 data(AustinCats)
@@ -43,27 +55,116 @@ post <- extract.samples( m11.14 )
 post$D <- exp(post$a)
 precis( post , 2 )
 
-## R code 11.66
-model{
-    vector[22356] lambda;
-    b ~ normal( 0 , 1 );
-    a ~ normal( 0 , 1 );
-    for ( i in 1:22356 ) {
-        lambda[i] = a + b * black[i];
-        lambda[i] = exp(lambda[i]);
-    }
-    for ( i in 1:22356 )
-        if ( adopted[i] == 0 ) target += exponential_lccdf(days_to_event[i] | lambda[i]);
-    for ( i in 1:22356 )
-        if ( adopted[i] == 1 ) days_to_event[i] ~ exponential( lambda[i] );
-}
+### R code 11.66
+#model{
+#    vector[22356] lambda;
+#    b ~ normal( 0 , 1 );
+#    a ~ normal( 0 , 1 );
+#    for ( i in 1:22356 ) {
+#        lambda[i] = a + b * black[i];
+#        lambda[i] = exp(lambda[i]);
+#    }
+#    for ( i in 1:22356 )
+#        if ( adopted[i] == 0 ) target += exponential_lccdf(days_to_event[i] | lambda[i]);
+#    for ( i in 1:22356 )
+#        if ( adopted[i] == 1 ) days_to_event[i] ~ exponential( lambda[i] );
+#}
 
-## R code 11.67
-    for ( i in 1:22356 ) {
-        if ( adopted[i] == 0 ) target += -lambda[i]*days_to_event[i];
-        if ( adopted[i] == 1 ) target += log(lambda[i]) - lambda[i]*days_to_event[i];
-    }
+### R code 11.67
+#    for ( i in 1:22356 ) {
+#        if ( adopted[i] == 0 ) target += -lambda[i]*days_to_event[i];
+#        if ( adopted[i] == 1 ) target += log(lambda[i]) - lambda[i]*days_to_event[i];
+#    }
 ```
+
+## 11.4. Summary
+
+### 10H3 (more binomial practice, so relevant to previous weeks, but good for us)
+The data contained in library(MASS);data(eagles) are records of salmon pirating attempts by Bald Eagles in Washington State. See ?eagles for details. While one eagle feeds, sometimes another will swoop in and try to steal the salmon from it. Call the feeding eagle the “victim” and the thief the “pirate.” Use the available data to build a binomial GLM of successful pirating attempts.
+
+(a) Consider the following model:
+y i ~ Binomial(n i; p i)
+log pi/(1 - pi) = a + bP Pi + bV Vi + bA Ai
+a ~ Normal (0 ; 10)
+bP ~ Normal (0 ; 5)
+bV ~ Normal (0 ; 5)
+bA ~ Normal (0 ; 5)
+where y is the number of successful attempts, n is the total number of attempts, P is a dummy variable indicating whether or not the pirate had large body size, V is a dummy variable indicating whether or not the victim had large body size, and fi nally A is a dummy variable indicating whether or not the pirate was an adult. Fit the model above to the eagles data, using both map and map2stan. Is the quadratic approximation okay?
+
+```{r}
+#?eagles
+library(MASS)
+data(eagles)
+d <- eagles
+str(d)
+head(d)
+summary(d)
+```
+
+```{r}
+d$p_is_l <- ifelse(d$P=='L', 1L, 0L) # P: Size of pirating eagle (L = large, S = small).
+d$p_is_a <- ifelse(d$A=='A', 1L, 0L) # A: Age of pirating eagle (I = immature, A = adult).
+d$v_is_l <- ifelse(d$V=='L', 1L, 0L) # V: Size of victim eagle (L = large, S = small).
+
+d$prob <- d$y/d$n # y: Number of successful attempts. n: Total number of attempts.
+
+# prior trimmed data list
+dat_list <- list(
+    p_is_l = d$p_is_l,
+    p_is_a = d$p_is_a,
+    v_is_l = d$v_is_l,
+    y = d$y,
+    n = d$n)
+
+str(dat_list)
+head(dat_list)
+summary(dat_list)
+```
+
+```{r}
+m10H3.a <- ulam(
+    alist(
+        y ~ dbinom(n, p),
+        logit(p) <- a + bp*p_is_l + bv*v_is_l + ba*p_is_a,
+        a ~ dnorm(0, 10),
+        c(bp, bv, ba) ~ dnorm(0, 5)), 
+    data=dat_list, chains=4, cores = 4)
+precis(m10H3.a)
+
+```
+
+
+(b) Now interpret the estimates. If the quadratic approximation turned out okay, then it’s okay to use the map estimates. Otherwise stick to map2stan estimates. Then plot the posterior predictions. Compute and display both (1) the predicted probability of success and its 89% interval for each row (i) in the data, as well as (2) the predicted success count and its 89% interval. What different information does each type of posterior prediction provide?
+
+```{r}
+plot(precis(m10H3.a))
+postcheck(m10H3.a, prob=0.89)
+pairs(m10H3.a)
+```
+
+
+(c) Now try to improve the model. Consider an interaction between the pirate’s size and age (immature or adult). Compare this model to the previous one, using WAIC. Interpret.
+
+```{r}
+m10H3.c <- ulam(
+  alist(
+    y ~ dbinom(n, p),
+    logit(p) <- a + bp*p_is_l + bv*v_is_l + ba*p_is_a + bpa*p_is_l*p_is_a,
+    a ~ dnorm(0, 10),
+    c(bp, bv, ba, bpa) ~ dnorm(0, 5)), 
+  data=dat_list, chains=4, cores = 4)
+precis(m10H3.c)
+pairs(m10H3.c)
+compare(m10H3.a, m10H3.c)
+postcheck(m10H3.c, prob=0.89)
+```
+
+
+# 12 Monsters and Mixtures
+
+## 12.1. Over-dispersed outcomes
+
+### 12.1.1. Beta-binomial.
 
 ```{r}
 ## R code 12.1
@@ -72,6 +173,19 @@ theta <- 5
 curve( dbeta2(x,pbar,theta) , from=0 , to=1 ,
     xlab="probability" , ylab="Density" )
 
+pbar <- 0.5
+theta <- 2
+curve( dbeta2(x,pbar,theta) , from=0 , to=1 ,
+    xlab="probability" , ylab="Density" )
+
+pbar <- 0.5
+theta <- 1
+curve( dbeta2(x,pbar,theta) , from=0 , to=1 ,
+    xlab="probability" , ylab="Density" )
+```
+
+
+```{r}
 ## R code 12.2
 library(rethinking)
 data(UCBadmit)
@@ -90,7 +204,9 @@ m12.1 <- ulam(
 post <- extract.samples( m12.1 )
 post$da <- post$a[,1] - post$a[,2]
 precis( post , depth=2 )
+```
 
+```{r}
 ## R code 12.4
 gid <- 2
 # draw posterior mean beta distribution
@@ -107,7 +223,11 @@ mtext( "distribution of female admission rates" )
 
 ## R code 12.5
 postcheck( m12.1 )
+```
 
+### 12.1.2. Negative-binomial or gamma-Poisson.
+
+```{r}
 ## R code 12.6
 library(rethinking)
 data(Kline)
@@ -129,7 +249,15 @@ m12.3 <- ulam(
         g ~ dexp(1),
         phi ~ dexp(1)
     ), data=dat2 , chains=4 , log_lik=TRUE )
+```
 
+### 12.1.3. Over-dispersion, entropy, and information criteria.
+
+## 12.2. Zero-infl ated outcomes
+
+### 12.2.1. Example: Zero-infl ated Poisson.
+
+```{r}
 ## R code 12.7
 # define parameters
 prob_drink <- 0.2 # 20% of days
@@ -179,3 +307,26 @@ m12.4_alt <- ulam(
     ) , data=list(y=as.integer(y)) , chains=4 )
 ```
 
+## 12.6. Practice
+
+### 11E3. When count data are zero-inflated, using a model that ignores zero-inflation will tend to induce which kind of inferential error?
+
+### 11E4. Over-dispersion is common in count data. Give an example of a natural process that might produce over-dispersed counts. Can you also give an example of a process that might produce underdispersed counts?
+
+### 11M3. (optional).  Can you modify the derivation of the zero-infl ated Poisson distribution (ZIPoisson) from the chapter to construct a zero-infl ated binomial distribution?
+
+### 11H6. 
+#### The data in data(Fish) are records of visits to a national park. See ?Fish for details. The question of interest is how many fi sh an average visitor takes per hour, when fi shing. Th e problemis that not everyone tried to fi sh, so the fish_caught numbers are zero-infl ated. As with the monks example in the chapter, there is a process that determines who is fi shing (working) and another process that determines fi sh per hour (manuscripts per day), conditional on fi shing (working). We want to model both. Otherwise we’ll end up with an underestimate of rate of fi sh extraction from the park. You will model these data using zero-infl ated Poisson GLMs. Predict fish_caught as a function of any of the other variables you think are relevant. One thing you must do, however, is use a proper Poisson off set/exposure in the Poisson portion of the zero-infl ated model. Th en usethe hours variable to construct the off set. Th is will adjust the model for the diff ering amount of time individuals spent in the park.
+
+### 11H1. 
+#### In 2014, a paper was published that was entitled “Female hurricanes are deadlier than male hurricanes.” 185 As the title suggests, the paper claimed that hurricanes with female names have caused greater loss of life, and the explanation given is that people unconsciously rate female hurricanes as less dangerous and so are less likely to evacuate. Statisticians severely criticized the paper aft er publication. Here, you’ll explore the complete data used in the paper and consider the hypothesis that hurricanes with female names are deadlier. Load the data with:
+
+```{r}
+library(rethinking)
+data(Hurricanes)
+```
+
+#### Acquaint yourself with the columns by inspecting the help ?Hurricanes. In this problem, you’ll focus on predicting deaths using femininity of each hurricane’s name. Fit and interpret the simplest possible model, a Poisson model of deaths using femininity as a predictor. You can use map or map2stan. Compare the model to an intercept-only Poisson model of deaths. How strong is the association between femininity of name and deaths? Which storms does the model fit (retrodict) well? Which storms does it fit poorly?
+
+### 11H2. 
+#### Counts are nearly always over-dispersed relative to Poisson. So fi t a gamma-Poisson (aka negative-binomial) model to predict deaths using femininity. Show that the over-dispersed model no longer shows as precise a positive association between femininity and deaths, with an 89% interval that overlaps zero. Can you explain why the association diminished in strength?
