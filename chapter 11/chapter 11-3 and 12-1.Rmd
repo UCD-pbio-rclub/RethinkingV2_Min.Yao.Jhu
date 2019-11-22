@@ -253,9 +253,9 @@ m12.3 <- ulam(
 
 ### 12.1.3. Over-dispersion, entropy, and information criteria.
 
-## 12.2. Zero-infl ated outcomes
+## 12.2. Zero-inflated outcomes
 
-### 12.2.1. Example: Zero-infl ated Poisson.
+### 12.2.1. Example: Zero-inflated Poisson.
 
 ```{r}
 ## R code 12.7
@@ -279,7 +279,9 @@ zeros_drink <- sum(drink)
 zeros_work <- sum(y==0 & drink==0)
 zeros_total <- sum(y==0)
 lines( c(0,0) , c(zeros_work,zeros_total) , lwd=4 , col=rangi2 )
+```
 
+```{r}
 ## R code 12.9
 m12.4 <- ulam(
     alist(
@@ -311,22 +313,163 @@ m12.4_alt <- ulam(
 
 ### 11E3. When count data are zero-inflated, using a model that ignores zero-inflation will tend to induce which kind of inferential error?
 
+> It will underestimate true value of "lambda" for Poisson regression or parameter "p" for Binomial regression, as it would try to explain large number of zeros with small values of lambda. Using an example from the chapter:
+
+```{r}
+## R code 12.7
+# define parameters
+prob_drink <- 0.2 # 20% of days
+rate_work <- 1    # average 1 manuscript per day
+
+# sample one year of production
+N <- 365
+
+# simulate days monks drink
+set.seed(365)
+drink <- rbinom( N , 1 , prob_drink )
+
+# simulate manuscripts completed
+y <- (1-drink)*rpois( N , rate_work )
+
+## fit zero-inflated Poisson 
+m12.4 <- ulam(
+    alist(
+        y ~ dzipois( p , lambda ),
+        logit(p) <- ap,
+        log(lambda) <- al,
+        ap ~ dnorm( -1.5 , 1 ),
+        al ~ dnorm( 1 , 0.5 )
+    ) , data=list(y=as.integer(y)) , chains=4 , log_lik=TRUE)
+precis( m12.4 )
+
+## fit ordinary Poisson
+m12.4_2 <- ulam(
+    alist(
+        y ~ dpois(lambda),
+        log(lambda) <- al,
+        al ~ dnorm( 1 , 0.5 )
+    ) , data=list(y=as.integer(y)) , chains=4 , log_lik=TRUE)
+precis( m12.4_2 )
+
+compare( m12.4, m12.4_2)
+```
+
+
 ### 11E4. Over-dispersion is common in count data. Give an example of a natural process that might produce over-dispersed counts. Can you also give an example of a process that might produce underdispersed counts?
 
-### 11M3. (optional).  Can you modify the derivation of the zero-infl ated Poisson distribution (ZIPoisson) from the chapter to construct a zero-infl ated binomial distribution?
+> One of possible artificial examples of under-dispersed variable is a Binomial varibale with all observations smaller than a threshold substituted with the threshold itself. For example, some tomato cultivars are suscetable to Cuscuta and some cultivars are resistant to Cuscuta. If we overexpress a R protein in suscetable clutivars, it will make susceptable plants become resistant. However, if the R gene expression is not high enough in some individual plants, then it won't be able to triger the resistant response. So, these individual plants will still be classified as susceptable.
+
+
+### 11M3. (optional).  Can you modify the derivation of the zero-inflated Poisson distribution (ZIPoisson) from the chapter to construct a zero-infl ated binomial distribution?
 
 ### 11H6. 
-#### The data in data(Fish) are records of visits to a national park. See ?Fish for details. The question of interest is how many fi sh an average visitor takes per hour, when fi shing. Th e problemis that not everyone tried to fi sh, so the fish_caught numbers are zero-infl ated. As with the monks example in the chapter, there is a process that determines who is fi shing (working) and another process that determines fi sh per hour (manuscripts per day), conditional on fi shing (working). We want to model both. Otherwise we’ll end up with an underestimate of rate of fi sh extraction from the park. You will model these data using zero-infl ated Poisson GLMs. Predict fish_caught as a function of any of the other variables you think are relevant. One thing you must do, however, is use a proper Poisson off set/exposure in the Poisson portion of the zero-infl ated model. Th en usethe hours variable to construct the off set. Th is will adjust the model for the diff ering amount of time individuals spent in the park.
+#### The data in data(Fish) are records of visits to a national park. See ?Fish for details. The question of interest is how many fish an average visitor takes per hour, when fishing. The problemis that not everyone tried to fish, so the fish_caught numbers are zero-inflated. As with the monks example in the chapter, there is a process that determines who is fishing (working) and another process that determines fish per hour (manuscripts per day), conditional on fishing (working). We want to model both. Otherwise we’ll end up with an underestimate of rate of fish extraction from the park. You will model these data using zero-inflated Poisson GLMs. Predict fish_caught as a function of any of the other variables you think are relevant. One thing you must do, however, is use a proper Poisson off set/exposure in the Poisson portion of the zero-infl ated model. Then usethe hours variable to construct the off set. Th is will adjust the model for the diff ering amount of time individuals spent in the park.
+
+```{r}
+library(rethinking)
+data("Fish")
+d <- Fish
+str(d)
+head(d)
+summary(d)
+#?Fish
+#fish_caught : Number of fish caught during visit
+#livebait : Whether or not group used livebait to fish
+#camper : Whether or not group had a camper
+#persons : Number of adults in group
+#child : Number of children in group
+#hours : Number of hours group spent in park
+```
+
+```{r}
+m11H6.1 <- ulam(
+  alist(
+    fish_caught ~ dzipois(p, lambda),
+    logit(p) <-  ap,
+    log(lambda) <- log(hours) + al,
+    ap ~ dnorm(0,10),
+    al ~ dnorm(0,10)),
+  data=d, chains=4 , cores=4, log_lik=TRUE)
+precis(m11H6.1)
+postcheck(m11H6.1)
+```
+
+```{r}
+
+```
 
 ### 11H1. 
-#### In 2014, a paper was published that was entitled “Female hurricanes are deadlier than male hurricanes.” 185 As the title suggests, the paper claimed that hurricanes with female names have caused greater loss of life, and the explanation given is that people unconsciously rate female hurricanes as less dangerous and so are less likely to evacuate. Statisticians severely criticized the paper aft er publication. Here, you’ll explore the complete data used in the paper and consider the hypothesis that hurricanes with female names are deadlier. Load the data with:
+#### In 2014, a paper was published that was entitled “Female hurricanes are deadlier than male hurricanes.” 185 As the title suggests, the paper claimed that hurricanes with female names have caused greater loss of life, and the explanation given is that people unconsciously rate female hurricanes as less dangerous and so are less likely to evacuate. Statisticians severely criticized the paper after publication. Here, you’ll explore the complete data used in the paper and consider the hypothesis that hurricanes with female names are deadlier. Load the data with:
 
 ```{r}
 library(rethinking)
 data(Hurricanes)
 ```
 
+
 #### Acquaint yourself with the columns by inspecting the help ?Hurricanes. In this problem, you’ll focus on predicting deaths using femininity of each hurricane’s name. Fit and interpret the simplest possible model, a Poisson model of deaths using femininity as a predictor. You can use map or map2stan. Compare the model to an intercept-only Poisson model of deaths. How strong is the association between femininity of name and deaths? Which storms does the model fit (retrodict) well? Which storms does it fit poorly?
+
+```{r}
+library(rethinking)
+data(Hurricanes)
+d <- Hurricanes
+str(d)
+head(d)
+summary(d)
+```
+
+```{r}
+# prior trimmed data list
+dat_list <- list(
+    femininity = d$femininity,
+    deaths = d$deaths)
+
+# fit Poisson regression using `femininity` as a predictor
+m11H1.1 <- ulam(
+  alist(
+    deaths ~ dpois( lambda ),
+    log(lambda) <- a + bf*femininity,
+    a ~ dnorm(0, 10),
+    bf ~ dnorm(0, 10)),
+  data = dat_list, chains=4 , cores=4, log_lik=TRUE)
+
+precis(m11H1.1)
+```
+
+```{r}
+# fit Poisson regression using intercept only
+m11H1.2 <- ulam(
+  alist(
+    deaths ~ dpois( lambda ),
+    log(lambda) <- alpha,
+    alpha ~ dnorm(0, 10)),
+  data = dat_list, chains=4 , cores=4, log_lik=TRUE)
+
+# compare models
+compare(m11H1.1, m11H1.2)
+```
+
+```{r}
+# plot posterior predictions
+prediction.data <- list(femininity = seq(from = 1, to = 11, length.out = 30))
+
+# simulate lambda values
+lambda <- link(fit = m11H1.1, data = prediction.data)
+lambda.mean <- apply(X = lambda, MARGIN = 2, FUN = mean)
+lambda.PI <- apply(X = lambda, MARGIN = 2, FUN = PI)
+
+# simulate Poisson predictions
+simulated.predictions <- sim(fit = m11H1.1, data = prediction.data)
+simulated.predictions.PI <- apply(X = simulated.predictions, MARGIN = 2, FUN = PI)
+
+plot( d$femininity, d$deaths, pch=16, col=rangi2, xlab="femininity", ylab="deaths" )
+lines(x = prediction.data$femininity, y = lambda.mean)
+shade(object = lambda.PI, lim = prediction.data$femininity)
+lines(x = prediction.data$femininity, y = simulated.predictions.PI[1,], lty = 2)
+lines(x = prediction.data$femininity, y = simulated.predictions.PI[2,], lty = 2)
+```
+
+> Summary: Intuitively, there is some hidden variable that better explains deaths.
 
 ### 11H2. 
 #### Counts are nearly always over-dispersed relative to Poisson. So fi t a gamma-Poisson (aka negative-binomial) model to predict deaths using femininity. Show that the over-dispersed model no longer shows as precise a positive association between femininity and deaths, with an 89% interval that overlaps zero. Can you explain why the association diminished in strength?
