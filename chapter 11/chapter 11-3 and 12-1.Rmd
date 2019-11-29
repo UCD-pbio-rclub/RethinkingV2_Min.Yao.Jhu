@@ -32,6 +32,9 @@ library(rethinking)
 data(AustinCats)
 d <- AustinCats
 
+?AustinCats
+str(d)
+
 d$adopt <- ifelse( d$out_event=="Adoption" , 1L , 0L )
 dat <- list(
     days_to_event = as.numeric( d$days_to_event ),
@@ -106,8 +109,6 @@ d$p_is_l <- ifelse(d$P=='L', 1L, 0L) # P: Size of pirating eagle (L = large, S =
 d$p_is_a <- ifelse(d$A=='A', 1L, 0L) # A: Age of pirating eagle (I = immature, A = adult).
 d$v_is_l <- ifelse(d$V=='L', 1L, 0L) # V: Size of victim eagle (L = large, S = small).
 
-d$prob <- d$y/d$n # y: Number of successful attempts. n: Total number of attempts.
-
 # prior trimmed data list
 dat_list <- list(
     p_is_l = d$p_is_l,
@@ -152,7 +153,7 @@ y.mean <- apply(X = y, MARGIN = 2, FUN = mean)
 y.PI <- apply(X = y, MARGIN = 2, FUN = PI)
 
 # plot the model predictions for `p` vs. the actual proportion of successes for each case
-d$success.proportion <- d$y / d$n
+d$success.proportion <- d$y/d$n # y: Number of successful attempts. n: Total number of attempts.
 plot(d$success.proportion, col=rangi2, ylab="successful proportion", xlab="case", xaxt="n", xlim=c(0.75,8.25) , ylim = c(0, 1), pch=16)
 axis(1, at=1:8, labels=c( "LAL","LAS","LIL","LIS","SAL","SAS","SIL","SIS" ))
 points( 1:8 , p.mean )
@@ -388,7 +389,7 @@ compare( m12.4, m12.4_2)
  L - probability of completed manuscripts with some average rate 
  $Pr(0|p,L) = Pr(drink|p) + Pr(work|p)* Pr(0|L) = p + (1-p) exp(-L)$
  
- yi ~ ZIPoisson(pi; Li)
+ yi ~ ZIBinomial(pi; Li)
 
 
 ### 11H6. 
@@ -450,6 +451,7 @@ postcheck(m11H6.0)
 compare(m11H6.0, m11H6.1)
 ```
 
+> A group that uses livebait has larger expected number of caught fishes per hour.
 
 ### 11H1. 
 #### In 2014, a paper was published that was entitled “Female hurricanes are deadlier than male hurricanes.” 185 As the title suggests, the paper claimed that hurricanes with female names have caused greater loss of life, and the explanation given is that people unconsciously rate female hurricanes as less dangerous and so are less likely to evacuate. Statisticians severely criticized the paper after publication. Here, you’ll explore the complete data used in the paper and consider the hypothesis that hurricanes with female names are deadlier. Load the data with:

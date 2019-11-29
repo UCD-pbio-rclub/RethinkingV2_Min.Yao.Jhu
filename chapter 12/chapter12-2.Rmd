@@ -1,0 +1,214 @@
+---
+title: "chapter 12-2"
+author: "Min-Yao"
+date: "2019/11/29"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+# 12 Monsters and Mixtures
+
+## 12.3. Ordered categorical outcomes
+
+### 12.3.1. Example: Moral intuition.
+
+```{r}
+## R code 12.12
+library(rethinking)
+data(Trolley)
+d <- Trolley
+```
+
+### 12.3.2. Describing an ordered distribution with intercepts.
+
+```{r}
+## R code 12.13
+simplehist( d$response , xlim=c(1,7) , xlab="response" )
+
+## R code 12.14
+# discrete proportion of each response value
+pr_k <- table( d$response ) / nrow(d)
+
+# cumsum converts to cumulative proportions
+cum_pr_k <- cumsum( pr_k )
+
+# plot
+plot( 1:7 , cum_pr_k , type="b" , xlab="response" ,
+ylab="cumulative proportion" , ylim=c(0,1) )
+
+## R code 12.15
+logit <- function(x) log(x/(1-x)) # convenience function
+( lco <- logit( cum_pr_k ) )
+
+## R code 12.16
+m12.5 <- ulam(
+    alist(
+        R ~ dordlogit( 0 , cutpoints ),
+        cutpoints ~ dnorm( 0 , 1.5 )
+    ) ,
+    data=list( R=d$response ), chains=4 , cores=3 )
+
+## R code 12.17
+m12.5q <- quap(
+    alist(
+        response ~ dordlogit( 0 , c(a1,a2,a3,a4,a5,a6) ),
+        c(a1,a2,a3,a4,a5,a6) ~ dnorm( 0 , 1.5 )
+    ) , data=d ,
+    start=list(a1=-2,a2=-1,a3=0,a4=1,a5=2,a6=2.5) )
+
+## R code 12.18
+precis( m12.5 , depth=2 )
+
+## R code 12.19
+inv_logit(coef(m12.5))
+```
+
+### 12.3.3. Adding predictor variables.
+
+```{r}
+## R code 12.20
+( pk <- dordlogit( 1:7 , 0 , coef(m12.5) ) )
+
+## R code 12.21
+sum( pk*(1:7) )
+
+## R code 12.22
+( pk <- dordlogit( 1:7 , 0 , coef(m12.5)-0.5 ) )
+
+## R code 12.23
+sum( pk*(1:7) )
+
+## R code 12.24
+dat <- list(
+    R = d$response,
+    A = d$action,
+    I = d$intention,
+    C = d$contact )
+m12.6 <- ulam(
+    alist(
+        R ~ dordlogit( phi , cutpoints ),
+        phi <- bA*A + bC*C + BI*I ,
+        BI <- bI + bIA*A + bIC*C ,
+        c(bA,bI,bC,bIA,bIC) ~ dnorm( 0 , 0.5 ),
+        cutpoints ~ dnorm( 0 , 1.5 )
+    ) , data=dat , chains=4 , cores=4 )
+precis( m12.6 )
+
+## R code 12.25
+plot( precis(m12.6) , xlim=c(-1.4,0) )
+
+## R code 12.26
+plot( NULL , type="n" , xlab="intention" , ylab="probability" ,
+    xlim=c(0,1) , ylim=c(0,1) , xaxp=c(0,1,1) , yaxp=c(0,1,2) )
+
+## R code 12.27
+kA <- 0     # value for action
+kC <- 0     # value for contact
+kI <- 0:1   # values of intention to calculate over
+pdat <- data.frame(A=kA,C=kC,I=kI)
+phi <- link( m12.6 , data=pdat )$phi
+
+## R code 12.28
+post <- extract.samples( m12.6 )
+for ( s in 1:50 ) {
+    pk <- pordlogit( 1:6 , phi[s,] , post$cutpoints[s,] )
+    for ( i in 1:6 ) lines( kI , pk[,i] , col=col.alpha("black",0.1) )
+}
+
+## R code 12.29
+kA <- 0     # value for action
+kC <- 1     # value for contact
+kI <- 0:1   # values of intention to calculate over
+pdat <- data.frame(A=kA,C=kC,I=kI)
+s <- sim( m12.6 , data=pdat )
+simplehist( s , xlab="response" )
+```
+
+## 12.4. Ordered categorical predictors
+
+```{r}
+## R code 12.30
+library(rethinking)
+data(Trolley)
+d <- Trolley
+levels(d$edu)
+
+## R code 12.31
+edu_levels <- c( 6 , 1 , 8 , 4 , 7 , 2 , 5 , 3 )
+d$edu_new <- edu_levels[ d$edu ]
+
+## R code 12.32
+library(gtools)
+set.seed(1805)
+delta <- rdirichlet( 10 , alpha=rep(2,7) )
+str(delta)
+
+## R code 12.33
+h <- 3
+plot( NULL , xlim=c(1,7) , ylim=c(0,0.4) , xlab="index" , ylab="probability" )
+for ( i in 1:nrow(delta) ) lines( 1:7 , delta[i,] , type="b" ,
+    pch=ifelse(i==h,16,1) , lwd=ifelse(i==h,4,1.5) ,
+    col=ifelse(i==h,"black",col.alpha("black",0.7)) )
+
+## R code 12.34
+dat <- list(
+    R = d$response ,
+    action = d$action,
+    intention = d$intention,
+    contact = d$contact,
+    E = as.integer( d$edu_new ),   # edu_new as an index
+    alpha = rep( 2.1 , 7 ) )       # delta prior
+
+m12.5 <- ulam(
+    alist(
+        R ~ ordered_logistic( phi , kappa ),
+        phi <- bE*sum( delta_j[1:E] ) + bA*action + bI*intention + bC*contact,
+        kappa ~ normal( 0 , 1.5 ),
+        c(bA,bI,bC,bE) ~ normal( 0 , 1 ),
+        vector[8]: delta_j <<- append_row( 0 , delta ),
+        simplex[7]: delta ~ dirichlet( alpha )
+    ),
+    data=dat , chains=3 , cores=3 )
+
+## R code 12.35
+precis( m12.5 , depth=2 , omit="cutpoints" )
+
+## R code 12.36
+delta_labels <- c("Elem","MidSch","SHS","HSG","SCol","Bach","Mast","Grad")
+pairs( m12.5 , pars="delta" , labels=delta_labels )
+
+## R code 12.37
+dat$edu_norm <- normalize( d$edu_new )
+m12.6 <- ulam(
+    alist(
+        y ~ ordered_logistic( mu , cutpoints ),
+        mu <- bE*edu_norm + bA*action + bI*intention + bC*contact,
+        c(bA,bI,bC,bE) ~ normal( 0 , 1 ),
+        cutpoints ~ normal( 0 , 1.5 )
+    ), data=dat , chains=3 , cores=3 )
+precis( m12.6 )
+```
+
+## 12.5. Summary
+## 12.6. Practice
+
+#### 11E1. What is the diff erence between an ordered categorical variable and an unordered one? Define and then give an example of each.
+
+#### 11E2. What kind of link function does an ordered logistic regression employ? How does it differ from an ordinary logit link?
+
+#### 11M1. At a certain university, employees are annually rated from 1 to 4 on their productivity, with 1 being least productive and 4 most productive. In a certain department at this certain university in a certain year, the numbers of employees receiving each rating were (from 1 to 4): 12, 36, 7, 41. Compute the log cumulative odds of each rating.
+
+#### 11M2. Make a version of Figure 12.5 for the employee ratings data given just above.
+
+
+
+```{r}
+## R code 12.38
+library(rethinking)
+data(Hurricanes)
+```
+
+PDF week 7 problems 1 and 2
+
+Optional: 11H3, 11H4
