@@ -18,6 +18,9 @@ output:
 library(rethinking)
 data(Trolley)
 d <- Trolley
+
+summary(d)
+str(d)
 ```
 
 ### 12.3.2. Describing an ordered distribution with intercepts.
@@ -25,7 +28,9 @@ d <- Trolley
 ```{r}
 ## R code 12.13
 simplehist( d$response , xlim=c(1,7) , xlab="response" )
+```
 
+```{r}
 ## R code 12.14
 # discrete proportion of each response value
 pr_k <- table( d$response ) / nrow(d)
@@ -36,11 +41,18 @@ cum_pr_k <- cumsum( pr_k )
 # plot
 plot( 1:7 , cum_pr_k , type="b" , xlab="response" ,
 ylab="cumulative proportion" , ylim=c(0,1) )
+```
 
+```{r}
 ## R code 12.15
 logit <- function(x) log(x/(1-x)) # convenience function
 ( lco <- logit( cum_pr_k ) )
 
+plot( 1:7 , lco , type="b" , xlab="response" ,
+ylab="log-cumulative-odds" , ylim=c(-2,2) )
+```
+
+```{r}
 ## R code 12.16
 m12.5 <- ulam(
     alist(
@@ -59,9 +71,11 @@ m12.5q <- quap(
 
 ## R code 12.18
 precis( m12.5 , depth=2 )
+precis( m12.5q , depth=2 )
 
 ## R code 12.19
 inv_logit(coef(m12.5))
+inv_logit(coef(m12.5q))
 ```
 
 ### 12.3.3. Adding predictor variables.
@@ -78,7 +92,9 @@ sum( pk*(1:7) )
 
 ## R code 12.23
 sum( pk*(1:7) )
+```
 
+```{r}
 ## R code 12.24
 dat <- list(
     R = d$response,
@@ -93,8 +109,10 @@ m12.6 <- ulam(
         c(bA,bI,bC,bIA,bIC) ~ dnorm( 0 , 0.5 ),
         cutpoints ~ dnorm( 0 , 1.5 )
     ) , data=dat , chains=4 , cores=4 )
-precis( m12.6 )
+precis( m12.6 , depth=2)
+```
 
+```{r}
 ## R code 12.25
 plot( precis(m12.6) , xlim=c(-1.4,0) )
 
@@ -115,6 +133,60 @@ for ( s in 1:50 ) {
     pk <- pordlogit( 1:6 , phi[s,] , post$cutpoints[s,] )
     for ( i in 1:6 ) lines( kI , pk[,i] , col=col.alpha("black",0.1) )
 }
+
+## R code 12.26
+plot( NULL , type="n" , xlab="intention" , ylab="probability" ,
+    xlim=c(0,1) , ylim=c(0,1) , xaxp=c(0,1,1) , yaxp=c(0,1,2) )
+
+## R code 12.27
+kA <- 1     # value for action
+kC <- 0     # value for contact
+kI <- 0:1   # values of intention to calculate over
+pdat <- data.frame(A=kA,C=kC,I=kI)
+phi <- link( m12.6 , data=pdat )$phi
+
+## R code 12.28
+post <- extract.samples( m12.6 )
+for ( s in 1:50 ) {
+    pk <- pordlogit( 1:6 , phi[s,] , post$cutpoints[s,] )
+    for ( i in 1:6 ) lines( kI , pk[,i] , col=col.alpha("black",0.1) )
+}
+
+## R code 12.26
+plot( NULL , type="n" , xlab="intention" , ylab="probability" ,
+    xlim=c(0,1) , ylim=c(0,1) , xaxp=c(0,1,1) , yaxp=c(0,1,2) )
+
+## R code 12.27
+kA <- 0     # value for action
+kC <- 1     # value for contact
+kI <- 0:1   # values of intention to calculate over
+pdat <- data.frame(A=kA,C=kC,I=kI)
+phi <- link( m12.6 , data=pdat )$phi
+
+## R code 12.28
+post <- extract.samples( m12.6 )
+for ( s in 1:50 ) {
+    pk <- pordlogit( 1:6 , phi[s,] , post$cutpoints[s,] )
+    for ( i in 1:6 ) lines( kI , pk[,i] , col=col.alpha("black",0.1) )
+}
+```
+
+```{r}
+## R code 12.29
+kA <- 0     # value for action
+kC <- 0     # value for contact
+kI <- 0:1   # values of intention to calculate over
+pdat <- data.frame(A=kA,C=kC,I=kI)
+s <- sim( m12.6 , data=pdat )
+simplehist( s , xlab="response" )
+
+## R code 12.29
+kA <- 1     # value for action
+kC <- 0     # value for contact
+kI <- 0:1   # values of intention to calculate over
+pdat <- data.frame(A=kA,C=kC,I=kI)
+s <- sim( m12.6 , data=pdat )
+simplehist( s , xlab="response" )
 
 ## R code 12.29
 kA <- 0     # value for action
@@ -159,6 +231,7 @@ dat <- list(
     contact = d$contact,
     E = as.integer( d$edu_new ),   # edu_new as an index
     alpha = rep( 2.1 , 7 ) )       # delta prior
+str(dat)
 
 m12.5 <- ulam(
     alist(
@@ -180,35 +253,215 @@ pairs( m12.5 , pars="delta" , labels=delta_labels )
 
 ## R code 12.37
 dat$edu_norm <- normalize( d$edu_new )
+str(dat)
+
 m12.6 <- ulam(
     alist(
         y ~ ordered_logistic( mu , cutpoints ),
         mu <- bE*edu_norm + bA*action + bI*intention + bC*contact,
         c(bA,bI,bC,bE) ~ normal( 0 , 1 ),
         cutpoints ~ normal( 0 , 1.5 )
-    ), data=dat , chains=3 , cores=3 )
+    ), 
+    data=dat , chains=3 , cores=3 )
 precis( m12.6 )
 ```
 
 ## 12.5. Summary
 ## 12.6. Practice
 
-#### 11E1. What is the diff erence between an ordered categorical variable and an unordered one? Define and then give an example of each.
+#### 11E1. What is the difference between an ordered categorical variable and an unordered one? Define and then give an example of each.
+
+> Ordered categorical variables have a natural ordering of levels within ordered category variable. For example, rating of the movie 4 is greater(better) than rating 3. The difference between levels is not equal and usually subjective. Increasing a rating from 1 to 2, in general, is very different from moving it from 4 to 5. 
+
+> However, levels of the unordered categorical variable are not comparable. Examples of unordered categorical variable include gender (Male/Female).
+
 
 #### 11E2. What kind of link function does an ordered logistic regression employ? How does it differ from an ordinary logit link?
 
+> Ordered logistic regression employs 'cumulative logit link' function (log-cumulative-odds). This means constructing the odds of a cumulative probability and then taking a logarithm. For each level, this function returns a sum of probabilities of all levels less than or equal to a given one (P(y<=k)).
+
 #### 11M1. At a certain university, employees are annually rated from 1 to 4 on their productivity, with 1 being least productive and 4 most productive. In a certain department at this certain university in a certain year, the numbers of employees receiving each rating were (from 1 to 4): 12, 36, 7, 41. Compute the log cumulative odds of each rating.
+
+```{r}
+ratings <- c(12, 36, 7, 41)
+ratings.proportions <- ratings / sum(ratings)
+ratings.proportions.cdf <- cumsum(ratings.proportions)
+log.cumulative.odds <- log(ratings.proportions.cdf / (1 - ratings.proportions.cdf))
+print(log.cumulative.odds)
+```
 
 #### 11M2. Make a version of Figure 12.5 for the employee ratings data given just above.
 
+```{r}
+## R code 12.14
 
+# plot
+plot( 1:4 , ratings.proportions.cdf , type="b" , xlab="response" ,
+ylab="cumulative proportion" , ylim=c(0,1) )
+
+prev <- 0
+prev2 <- 0
+for(i in 1:4){
+  lines(c(i,i),c(0,ratings.proportions.cdf[i]), lwd=4)
+  lines(c(i+0.03,i+0.03), c(prev, ratings.proportions.cdf[i]), lwd=4, col='blue')
+  #if(i>1){
+  #  lines(c(i-1+0.03, i+0.03), c(prev2,  prev))
+  #}
+  prev2 <- prev
+  prev <- ratings.proportions.cdf[i]
+}
+```
+
+#### PDF week 7 problems 1. In the Trolley data—data(Trolley)—we saw how education level (modeled as an ordered category) is associated with responses. Is this association causal? One plausible confound is that education is also associated with age, through a causal process: People are older when they finish school than when they begin it. Reconsider the Trolley data in this light. Draw a DAG that represents hypothetical causal relationships among response, education, and age. Which statical model or models do you need to evaluate the causal infl uence of education on responses? Fit these models to the trolley data. What do you conclude about the causal relationships among these three variables?
+
+```{r}
+library(dagitty)
+library(ggdag)
+# R = response; E = education, A = age
+dag <- dagitty("dag{A -> E -> R; A -> R }")
+tidy_dagitty(dag)
+ggdag(dag, layout = "circle")
+```
+
+```{r}
+## R code 12.30
+library(rethinking)
+data(Trolley)
+d <- Trolley
+levels(d$edu)
+
+## R code 12.31
+edu_levels <- c( 6 , 1 , 8 , 4 , 7 , 2 , 5 , 3 )
+d$edu_new <- edu_levels[ d$edu ]
+str(d)
+```
+```{r}
+## R code 12.34
+dat <- list(
+    R = d$response ,
+    action = d$action,
+    intention = d$intention,
+    contact = d$contact,
+    E = as.integer( d$edu_new ),   # edu_new as an index
+    alpha = rep( 2.1 , 7 ),        # delta prior
+    edu_norm = normalize( d$edu_new ),
+    age = scale(d$age))       
+str(dat)
+```
+
+```{r}
+mweek7.1 <- ulam(
+    alist(
+        R ~ ordered_logistic( phi , kappa ),
+        phi <- bE*sum( delta_j[1:E] ) + bA*action + BI*intention + bC*contact +bAG*Age,
+        BI <- bI + bIA*action + bIC*contact ,
+        kappa ~ normal( 0 , 1.5 ),
+        c(bA,bI,bC,bE,bAG,bIA,bIC) ~ normal( 0 , 1 ),
+        vector[8]: delta_j <<- append_row( 0 , delta ),
+        simplex[7]: delta ~ dirichlet( alpha )
+    ),
+    data=dat , chains=4 , cores=4 )
+precis(mweek7.1)
+```
+
+
+#### PDF week 7 problems 2. Consider one more variable in the Trolley data: Gender. Suppose that gender might influence education as well as response directly. Draw the DAG now that includes response, education, age, and gender. Using only the DAG, is it possible that the inferences from Problem 1 are confounded by gender? If so, define any additional models you need to infer the causal influence of education on response. What do you conclude?
+
+```{r}
+library(dagitty)
+library(ggdag)
+# R = response; E = education, A = age, G = gender
+dag <- dagitty("dag{A -> E -> R; A -> R ; G -> E ; G -> R }")
+tidy_dagitty(dag)
+ggdag(dag, layout = "circle")
+```
+
+```{r}
+dat$male <- d$male
+str(dat)
+mweek7.2 <- ulam(
+    alist(
+        R ~ ordered_logistic( phi , kappa ),
+        phi <- bE*sum( delta_j[1:E] ) + bA*action + BI*intention + bC*contact + bAG*Age + bM*male,
+        BI <- bI + bIA*action + bIC*contact ,
+        kappa ~ normal( 0 , 1.5 ),
+        c(bA,bI,bC,bE,bAG,bIA,bIC,bM) ~ normal( 0 , 1 ),
+        vector[8]: delta_j <<- append_row( 0 , delta ),
+        simplex[7]: delta ~ dirichlet( alpha )
+    ),
+    data=dat , chains=4 , cores=4 )
+precis(mweek7.2)
+```
+
+
+#### Optional: 
+#### 11H3. In order to infer a strong association between deaths and femininity, it’s necessary to include an interaction effect. In the data, there are two measures of a hurricane’s potential to cause death: damage_norm and min_pressure. Consult ?Hurricanes for their meanings. It makes some sense to imagine that femininity of a name matters more when the hurricane is itself deadly. This implies an interaction between femininity and either or both of damage_norm and min_pressure. Fit a series of models evaluating these interactions. Interpret and compare the models. In interpreting the estimates, it may help to generate counterfactual predictions contrasting hurricanes with masculine and feminine names. Are the effect sizes plausible?
+
+name : Given name of hurricane
+
+year : Year of hurricane
+
+deaths : number of deaths
+
+category : Severity code for storm
+
+min_pressure : Minimum pressure, a measure of storm strength; low is stronger
+
+damage_norm : Normalized estimate of damage in dollars
+
+female : Indicator variable for female name
+
+femininity : 1-11 scale from totally masculine (1) to totally feminine (11) for name. Average of 9 scores from 9 raters.
 
 ```{r}
 ## R code 12.38
 library(rethinking)
 data(Hurricanes)
+d <- Hurricanes
+str(d)
+#?Hurricanes
 ```
 
-PDF week 7 problems 1 and 2
+```{r}
+d$damage_norm_std <- (d$damage_norm - mean(d$damage_norm)) / sd(d$damage_norm)
+d$femininity_std <- (d$femininity - mean(d$femininity)) / sd(d$femininity)
+d$min_pressure_std <- (d$min_pressure - mean(d$min_pressure)) / sd(d$min_pressure)
 
-Optional: 11H3, 11H4
+# fit a series of models with varying interactions
+model.11H1.single.interaction.damage <- ulam(
+  alist(
+    deaths ~ dpois( lambda ),
+    log(lambda) <- alpha + beta_femininity_damage_norm*femininity_std*damage_norm_std,
+    alpha ~ dnorm(0, 10),
+    beta_femininity_damage_norm ~ dnorm(0, 1)
+  ),
+  data = d, chains=4, cores=4, log_lik=TRUE
+)
+```
+
+
+```{r}
+normalise <- function(x){
+  (x-mean(x))/sd(x)
+}
+d$damage_norm_c <- normalise(d$damage_norm)
+d$femininity_c <- normalise(d$femininity)
+d$min_pressure_c <- normalise(d$min_pressure)
+str(d)
+```
+```{r}
+m11h3 <- ulam(
+  alist(
+    deaths ~ dpois(mu),
+    log(mu) ~ a + b_fem*femininity_c + b_dam*damage_norm_c + b_mp*min_pressure_c,
+    a ~ dnorm(0, 10),
+    c(b_fem,b_dam,b_mp) ~ dnorm(0, 2)),
+  data=d, chains=4, cores=4, log_lik=TRUE)
+
+precis(m11h3)
+postcheck(m11h3, window = 100)
+```
+
+
+#### 11H4 In the original hurricanes paper, storm damage (damage_norm) was used directly. This assumption implies that mortality increases exponentially with a linear increase in storm strength, because a Poisson regression uses a log link. So it’s worth exploring an alternative hypothesis: that the logarithm of storm strength is what matters. Explore this by using the logarithm of damage_norm as a predictor. Using the best model structure from the previous problem, compare a model that uses log(damage_norm) to a model that uses damage_norm directly. Compare their DIC/WAIC values as well as their implied predictions. What do you conclude?
+
