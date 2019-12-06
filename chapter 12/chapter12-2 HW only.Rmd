@@ -191,3 +191,22 @@ postcheck(m11h3, window = 100)
 ```
 
 #### 11H4 In the original hurricanes paper, storm damage (damage_norm) was used directly. This assumption implies that mortality increases exponentially with a linear increase in storm strength, because a Poisson regression uses a log link. So it’s worth exploring an alternative hypothesis: that the logarithm of storm strength is what matters. Explore this by using the logarithm of damage_norm as a predictor. Using the best model structure from the previous problem, compare a model that uses log(damage_norm) to a model that uses damage_norm directly. Compare their DIC/WAIC values as well as their implied predictions. What do you conclude?
+
+```{r}
+dat_list$log_damage_norm_c <- normalise(log(d$damage_norm))
+str(dat_list)
+
+m11h4 <- ulam(
+  alist(
+    deaths ~ dpois( lambda ),
+    log(lambda) <- a + b_fem*femininity_c + b_dam*log_damage_norm_c + b_mp*min_pressure_c,
+    a ~ dnorm(0, 10),
+    c(b_fem,b_dam,b_mp) ~ dnorm(0, 2)),
+  data = dat_list, chains=4 , cores=4, log_lik=TRUE)
+
+precis(m11h4)
+postcheck(m11h4, window = 100)
+plot(precis(m11h3))
+plot(precis(m11h4))
+```
+
