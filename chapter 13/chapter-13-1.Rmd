@@ -1,0 +1,182 @@
+---
+title: "chapter 13"
+author: "Min-Yao"
+date: "2020/1/7"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+# 13 Models With Memory
+## 13.1. Example: Multilevel tadpoles
+```{r}
+## R code 13.1
+library(rethinking)
+data(reedfrogs)
+d <- reedfrogs
+str(d)
+
+## R code 13.2
+# make the tank cluster variable
+d$tank <- 1:nrow(d)
+
+dat <- list(
+    S = d$surv,
+    N = d$density,
+    tank = d$tank )
+
+# approximate posterior
+m13.1 <- ulam(
+    alist(
+        S ~ dbinom( N , p ) ,
+        logit(p) <- a[tank] ,
+        a[tank] ~ dnorm( 0 , 1.5 )
+    ), data=dat , chains=4 , log_lik=TRUE )
+
+## R code 13.3
+m13.2 <- ulam(
+    alist(
+        S ~ dbinom( N , p ) ,
+        logit(p) <- a[tank] ,
+        a[tank] ~ dnorm( a_bar , sigma ) ,
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 )
+    ), data=dat , chains=4 , log_lik=TRUE )
+
+## R code 13.4
+compare( m13.1 , m13.2 )
+
+## R code 13.5
+# extract Stan samples
+post <- extract.samples(m13.2)
+
+# compute median intercept for each tank
+# also transform to probability with logistic
+d$propsurv.est <- logistic( apply( post$a , 2 , mean ) )
+
+# display raw proportions surviving in each tank
+plot( d$propsurv , ylim=c(0,1) , pch=16 , xaxt="n" ,
+    xlab="tank" , ylab="proportion survival" , col=rangi2 )
+axis( 1 , at=c(1,16,32,48) , labels=c(1,16,32,48) )
+
+# overlay posterior means
+points( d$propsurv.est )
+
+# mark posterior mean probability across tanks
+abline( h=mean(inv_logit(post$a_bar)) , lty=2 )
+
+# draw vertical dividers between tank densities
+abline( v=16.5 , lwd=0.5 )
+abline( v=32.5 , lwd=0.5 )
+text( 8 , 0 , "small tanks" )
+text( 16+8 , 0 , "medium tanks" )
+text( 32+8 , 0 , "large tanks" )
+
+## R code 13.6
+# show first 100 populations in the posterior
+plot( NULL , xlim=c(-3,4) , ylim=c(0,0.35) ,
+    xlab="log-odds survive" , ylab="Density" )
+for ( i in 1:100 )
+    curve( dnorm(x,post$a_bar[i],post$sigma[i]) , add=TRUE ,
+    col=col.alpha("black",0.2) )
+
+# sample 8000 imaginary tanks from the posterior distribution
+sim_tanks <- rnorm( 8000 , post$a_bar , post$sigma )
+
+# transform to probability and visualize
+dens( inv_logit(sim_tanks) , lwd=2 , adj=0.1 )
+```
+
+## 13.2. Varying eff ects and the underfi tting/overfi tting trade-off
+### 13.2.1. The model.
+### 13.2.2. Assign values to the parameters.
+```{r}
+## R code 13.7
+a_bar <- 1.5
+sigma <- 1.5
+nponds <- 60
+Ni <- as.integer( rep( c(5,10,25,35) , each=15 ) )
+
+## R code 13.8
+set.seed(5005)
+a_pond <- rnorm( nponds , mean=a_bar , sd=sigma )
+
+## R code 13.9
+dsim <- data.frame( pond=1:nponds , Ni=Ni , true_a=a_pond )
+
+## R code 13.10
+class(1:3)
+class(c(1,2,3))
+```
+
+### 13.2.3. Simulate survivors.
+
+```{r}
+## R code 13.11
+dsim$Si <- rbinom( nponds , prob=logistic(dsim$true_a) , size=dsim$Ni )
+```
+
+### 13.2.4. Compute the no-pooling estimates.
+```{r}
+## R code 13.12
+dsim$p_nopool <- dsim$Si / dsim$Ni
+```
+
+### 13.2.5. Compute the partial-pooling estimates.
+```{r}
+## R code 13.13
+dat <- list( Si=dsim$Si , Ni=dsim$Ni , pond=dsim$pond )
+m13.3 <- ulam(
+    alist(
+        Si ~ dbinom( Ni , p ),
+        logit(p) <- a_pond[pond],
+        a_pond[pond] ~ dnorm( a_bar , sigma ),
+        a_bar ~ dnorm( 0 , 1.5 ),
+        sigma ~ dexp( 1 )
+    ), data=dat , chains=4 )
+
+## R code 13.14
+precis( m13.3 , depth=2 )
+
+## R code 13.15
+post <- extract.samples( m13.3 )
+dsim$p_partpool <- apply( inv_logit(post$a_pond) , 2 , mean )
+
+## R code 13.16
+dsim$p_true <- inv_logit( dsim$true_a )
+
+## R code 13.17
+nopool_error <- abs( dsim$p_nopool - dsim$p_true )
+partpool_error <- abs( dsim$p_partpool - dsim$p_true )
+
+## R code 13.18
+plot( 1:60 , nopool_error , xlab="pond" , ylab="absolute error" ,
+    col=rangi2 , pch=16 )
+points( 1:60 , partpool_error )
+
+## R code 13.19
+nopool_avg <- aggregate(nopool_error,list(dsim$Ni),mean)
+partpool_avg <- aggregate(partpool_error,list(dsim$Ni),mean)
+
+## R code 13.20
+a <- 1.5
+sigma <- 1.5
+nponds <- 60
+Ni <- as.integer( rep( c(5,10,25,35) , each=15 ) )
+a_pond <- rnorm( nponds , mean=a , sd=sigma )
+dsim <- data.frame( pond=1:nponds , Ni=Ni , true_a=a_pond )
+dsim$Si <- rbinom( nponds,prob=inv_logit( dsim$true_a ),size=dsim$Ni )
+dsim$p_nopool <- dsim$Si / dsim$Ni
+newdat <- list(Si=dsim$Si,Ni=dsim$Ni,pond=1:nponds)
+m13.3new <- stan( fit=m13.3@stanfit , data=newdat , chains=4 )
+
+post <- extract.samples( m13.3new )
+dsim$p_partpool <- apply( inv_logit(post$a_pond) , 2 , mean )
+dsim$p_true <- inv_logit( dsim$true_a )
+nopool_error <- abs( dsim$p_nopool - dsim$p_true )
+partpool_error <- abs( dsim$p_partpool - dsim$p_true )
+plot( 1:60 , nopool_error , xlab="pond" , ylab="absolute error" , col=rangi2 , pch=16 )
+points( 1:60 , partpool_error )
+```
+
+
