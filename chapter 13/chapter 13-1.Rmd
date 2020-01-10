@@ -45,7 +45,9 @@ m13.2 <- ulam(
 
 ## R code 13.4
 compare( m13.1 , m13.2 )
+```
 
+```{r}
 ## R code 13.5
 # extract Stan samples
 post <- extract.samples(m13.2)
@@ -71,7 +73,9 @@ abline( v=32.5 , lwd=0.5 )
 text( 8 , 0 , "small tanks" )
 text( 16+8 , 0 , "medium tanks" )
 text( 32+8 , 0 , "large tanks" )
+```
 
+```{r}
 ## R code 13.6
 # show first 100 populations in the posterior
 plot( NULL , xlim=c(-3,4) , ylim=c(0,0.35) ,
@@ -87,7 +91,7 @@ sim_tanks <- rnorm( 8000 , post$a_bar , post$sigma )
 dens( inv_logit(sim_tanks) , lwd=2 , adj=0.1 )
 ```
 
-## 13.2. Varying eff ects and the underfi tting/overfi tting trade-off
+## 13.2. Varying effects and the underfitting/overfitting trade-off
 ### 13.2.1. The model.
 ### 13.2.2. Assign values to the parameters.
 ```{r}
@@ -137,7 +141,9 @@ m13.3 <- ulam(
 
 ## R code 13.14
 precis( m13.3 , depth=2 )
+```
 
+```{r}
 ## R code 13.15
 post <- extract.samples( m13.3 )
 dsim$p_partpool <- apply( inv_logit(post$a_pond) , 2 , mean )
@@ -153,7 +159,9 @@ partpool_error <- abs( dsim$p_partpool - dsim$p_true )
 plot( 1:60 , nopool_error , xlab="pond" , ylab="absolute error" ,
     col=rangi2 , pch=16 )
 points( 1:60 , partpool_error )
+```
 
+```{r}
 ## R code 13.19
 nopool_avg <- aggregate(nopool_error,list(dsim$Ni),mean)
 partpool_avg <- aggregate(partpool_error,list(dsim$Ni),mean)
@@ -187,28 +195,57 @@ points( 1:60 , partpool_error )
 
 ### 12E1. Which of the following priors will produce more shrinkage in the estimates? (a) αtank ∼ Normal(0, 1); (b) αtank ∼ Normal(0, 2).
 
+> I think (a) will produce more shrinkage in the estimates, as it is more 'regularising'(narrow because of lower sigma), thus I expect it forces estimates to be shifted to the mean more than (b). It results in stronger shrinkage.
+
 ### 12E2. Make the following model into a multilevel model.
 y i ∼ Binomial(1, p i)
-logit(p i) = α
-group[i] + βx i
+logit(p i) = αgroup[i] + βxi
 αgroup ∼ Normal(0, 10)
+β ∼ Normal(0, 1)
+
+> multilevel model
+
+y_i ~ Binomial(1,p_i)
+logit(p_i) = a[i] + beta*x_i
+αgroup ∼ Normal(α_bar, sigma)
+α_bar ~ Normal(0, 10)
+sigma ~ Exponential(1)
 β ∼ Normal(0, 1)
 
 ### 12E3. Make the following model into a multilevel model.
 y i ∼ Normal(µi, σ)
-µi = α
-group[i] + βx i
+µi = αgroup[i] + βx i
 αgroup ∼ Normal(0, 10)
+β ∼ Normal(0, 1)
+σ ∼ HalfCauchy(0, 2)
+
+> multilevel model
+
+y i ∼ Normal(µi, σ)
+µi = αgroup[i] + βx i
+αgroup ∼ Normal(α_bar, sigma)
+α_bar ~ Normal(0, 10)
+sigma ~ Exponential(1)
 β ∼ Normal(0, 1)
 σ ∼ HalfCauchy(0, 2)
 
 ### Medium.
 
-### 12M1. Revisit the Reed frog survival data, data(reedfrogs), and add the predation and size treatment variables to the varying intercepts model. Consider models with either main eff ect alone, both main eff ects, as well as a model including both and their interaction. Instead of focusing on inferences about these two predictor variables, focus on the inferred variation across tanks. Explain why it changes as it does across models.
+### 12M1. Revisit the Reed frog survival data, data(reedfrogs), and add the predation and size treatment variables to the varying intercepts model. Consider models with either main effect alone, both main effects, as well as a model including both and their interaction. Instead of focusing on inferences about these two predictor variables, focus on the inferred variation across tanks. Explain why it changes as it does across models.
 
-### 12M2. Compare the models you fi t just above, using WAIC. Can you reconcile the differences in WAIC with the posterior distributions of the models?
+```{r}
 
-### 12H1. In 1980, a typical Bengali woman could have 5 or more children in her lifetime. By the year 200, a typical Bengali woman had only 2 or 3. You’re going to look at a historical set of data, when contraception was widely available but many families chose not to use it. Th ese data reside in data(bangladesh) and come from the 1988 Bangladesh Fertility Survey. Each row is one of 1934 women. Th ere are six variables, but you can focus on three of them for this practice problem:
+```
+
+
+### 12M2. Compare the models you fit just above, using WAIC. Can you reconcile the differences in WAIC with the posterior distributions of the models?
+
+```{r}
+
+```
+
+
+### 12H1. In 1980, a typical Bengali woman could have 5 or more children in her lifetime. By the year 200, a typical Bengali woman had only 2 or 3. You’re going to look at a historical set of data, when contraception was widely available but many families chose not to use it. These data reside in data(bangladesh) and come from the 1988 Bangladesh Fertility Survey. Each row is one of 1934 women. There are six variables, but you can focus on three of them for this practice problem:
 
 (1) district: ID number of administrative district each woman resided in
 (2) use.contraception: An indicator (0/1) of whether the woman was using contraception
@@ -225,8 +262,8 @@ District 54 is absent. So district isn’t yet a good index variable, because it
 easy to fi x. Just make a new variable that is contiguous. Th is is enough to do it:
 ```{r}
 ## R code 13.41
-d$district_id <- as.integer(as.factor(d$district))
-sort(unique(d$district_id))
+#d$district_id <- as.integer(as.factor(d$district))
+#sort(unique(d$district_id))
 ```
 
 Now there are 60 values, contiguous integers 1 to 60.
