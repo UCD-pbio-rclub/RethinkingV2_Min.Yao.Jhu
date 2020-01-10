@@ -2,7 +2,9 @@
 title: "chpater 13-1HW"
 author: "Min-Yao"
 date: "2020/1/10"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ## 13.7. Practice
@@ -193,21 +195,61 @@ The first thing to do is ensure that the cluster variable, district, is a contig
 sort(unique(d$district))
 ```
 
-District 54 is absent. So district isn’t yet a good index variable, because it’s not contiguous. Th is is
-easy to fi x. Just make a new variable that is contiguous. Th is is enough to do it:
+District 54 is absent. So district isn’t yet a good index variable, because it’s not contiguous. This is
+easy to fix. Just make a new variable that is contiguous. This is enough to do it:
 ```{r}
 ## R code 13.41
-#d$district_id <- as.integer(as.factor(d$district))
-#sort(unique(d$district_id))
+d$district_id <- as.integer(as.factor(d$district))
+sort(unique(d$district_id))
 ```
 
 Now there are 60 values, contiguous integers 1 to 60.
 Now, focus on predicting use.contraception, clustered by district_id. Do not include
-urban just yet. Fit both (1) a traditional fi xed-eff ects model that uses dummy variables for district and
+urban just yet. Fit both (1) a traditional fixed-effects model that uses dummy variables for district and
 (2) a multilevel model with varying intercepts for district. Plot the predicted proportions of women
-in each district using contraception, for both the fi xed-eff ects model and the varying-eff ects model.
-Th at is, make a plot in which district ID is on the horizontal axis and expected proportion using con-
-traception is on the vertical. Make one plot for each model, or layer them on the same plot, as you
+in each district using contraception, for both the fixed-effects model and the varying-effects model.
+
+That is, make a plot in which district ID is on the horizontal axis and expected proportion using contraception is on the vertical. Make one plot for each model, or layer them on the same plot, as you
 prefer. How do the models disagree? Can you explain the pattern of disagreement? In particular, can
 you explain the most extreme cases of disagreement, both why they happen where they do and why
-the models reach diff erent inferences?
+the models reach different inferences?
+
+```{r}
+dat <- list(
+    ID = d$district_id,
+    U = d$use.contraception )
+
+str(dat)
+```
+
+```{r}
+# fixed effects model
+m12H1.fixed <- ulam(
+    alist(
+        U ~ dbinom( 1 , p ) ,
+        logit(p) <- a[ID] ,
+        a[ID] ~ dnorm( 0 , 1.5 )
+    ), data=dat , chains=4 , log_lik=TRUE )
+
+precis(m12H1.fixed)
+
+# multilevel model
+m12H1.multilevel <- ulam(
+    alist(
+        U ~ dbinom( 1 , p ) ,
+        logit(p) <- a[ID] ,
+        a[ID] ~ dnorm( a_bar , sigma ) ,
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 )
+    ), data=dat , chains=4 , log_lik=TRUE )
+
+precis(m12H1.multilevel)
+
+```
+```{r}
+compare(m12H1.fixed, m12H1.multilevel)
+plot(compare(m12H1.fixed, m12H1.multilevel))
+postcheck(m12H1.fixed, window=300)
+postcheck(m12H1.multilevel, window=300)
+```
+
