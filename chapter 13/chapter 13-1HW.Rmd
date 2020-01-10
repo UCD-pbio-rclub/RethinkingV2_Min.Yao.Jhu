@@ -226,10 +226,10 @@ str(dat)
 # fixed effects model
 m12H1.fixed <- ulam(
     alist(
-        U ~ dbinom( 1 , p ) ,
+        U ~ dbinom( 1 , p ) ,# each row one woman
         logit(p) <- a[ID] ,
         a[ID] ~ dnorm( 0 , 1.5 )
-    ), data=dat , chains=4 , log_lik=TRUE )
+    ), data=dat , chains=4 , log_lik=TRUE, cores = 4 )
 
 precis(m12H1.fixed)
 
@@ -241,7 +241,7 @@ m12H1.multilevel <- ulam(
         a[ID] ~ dnorm( a_bar , sigma ) ,
         a_bar ~ dnorm( 0 , 1.5 ) ,
         sigma ~ dexp( 1 )
-    ), data=dat , chains=4 , log_lik=TRUE )
+    ), data=dat , chains=4 , log_lik=TRUE, cores = 4 )
 
 precis(m12H1.multilevel)
 
