@@ -2,9 +2,7 @@
 title: "chpater 13-1HW"
 author: "Min-Yao"
 date: "2020/1/10"
-output: 
-  html_document: 
-    keep_md: yes
+output: html_document
 ---
 
 ## 13.7. Practice
@@ -195,17 +193,17 @@ The first thing to do is ensure that the cluster variable, district, is a contig
 sort(unique(d$district))
 ```
 
-District 54 is absent. So district isn’t yet a good index variable, because it’s not contiguous. This is
-easy to fix. Just make a new variable that is contiguous. This is enough to do it:
+District 54 is absent. So district isn’t yet a good index variable, because it’s not contiguous. Th is is
+easy to fi x. Just make a new variable that is contiguous. Th is is enough to do it:
 ```{r}
 ## R code 13.41
-d$district_id <- as.integer(as.factor(d$district))
-sort(unique(d$district_id))
+#d$district_id <- as.integer(as.factor(d$district))
+#sort(unique(d$district_id))
 ```
 
 Now there are 60 values, contiguous integers 1 to 60.
 Now, focus on predicting use.contraception, clustered by district_id. Do not include
-urban just yet. Fit both (1) a traditional fixed-effects model that uses dummy variables for district and
+urban just yet. Fit both (1) a traditional fi xed-eff ects model that uses dummy variables for district and
 (2) a multilevel model with varying intercepts for district. Plot the predicted proportions of women
 in each district using contraception, for both the fi xed-eff ects model and the varying-eff ects model.
 Th at is, make a plot in which district ID is on the horizontal axis and expected proportion using con-
@@ -213,4 +211,3 @@ traception is on the vertical. Make one plot for each model, or layer them on th
 prefer. How do the models disagree? Can you explain the pattern of disagreement? In particular, can
 you explain the most extreme cases of disagreement, both why they happen where they do and why
 the models reach diff erent inferences?
-
