@@ -1,0 +1,168 @@
+---
+title: "chapter 13-1HW part2"
+author: "Min-Yao"
+date: "2020/1/16"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+#### 12M3. Re-estimate the basic Reed frog varying intercept model, but now using a Cauchy distribution in place of the Gaussian distribution for the varying intercepts. That is, fit this model:
+
+s i ∼ Binomial(n i, p i)
+logit(p i) = α
+tank[i]
+αtank ∼ Cauchy(α, σ)
+α ∼ Normal(0, 1)
+σ ∼ HalfCauchy(0, 1)
+
+Compare the posterior means of the intercepts, αtank , to the posterior means produced in the chapter, using the customary Gaussian prior. Can you explain the pattern of diff erences?
+
+```{r}
+## R code 13.1
+library(rethinking)
+data(reedfrogs)
+d <- reedfrogs
+str(d)
+head(d)
+```
+
+```{r}
+# make the tank cluster variable
+d$tank <- 1:nrow(d)
+d$has_pred<- ifelse(test = d$pred == "pred", yes = 1, no = 0)
+d$is_big<- ifelse(test = d$size == "big", yes = 1, no = 0)
+str(d)
+
+dat <- list(
+    S = d$surv,
+    N = d$density,
+    P = d$has_pred,
+    B = d$is_big,
+    tank = d$tank )
+
+str(dat)
+```
+
+```{r}
+## original model from R code 13.3
+m13.2 <- ulam(
+    alist(
+        S ~ dbinom( N , p ) ,
+        logit(p) <- a[tank] ,
+        a[tank] ~ dnorm( a_bar , sigma ) ,
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 )
+    ), data=dat , chains=4, cores=4, log_lik=TRUE )
+
+precis(m13.2)
+```
+
+```{r}
+## Cauchy distribution model
+m12M3 <- ulam(
+    alist(
+        S ~ dbinom( N , p ) ,
+        logit(p) <- a[tank] ,
+        a[tank] ~ dcauchy( a_bar , sigma ) ,
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 )
+    ), data=dat , chains=4, cores=4, log_lik=TRUE )
+
+precis(m12M3)
+```
+
+```{r}
+compare(m13.2, m12M3)
+plot(compare(m13.2, m12M3))
+plot(coeftab(m13.2, m12M3))
+```
+
+```{r}
+# plot a distributions
+s1 <- extract.samples(m13.2)
+s2 <- extract.samples(m12M3)
+
+a_tank_normal <- apply(s1$a, 2, mean)
+a_tank_cauchy <- apply(s2$a, 2, mean)
+
+plot(a_tank_normal, a_tank_cauchy, xlab="Gaussian prior" , ylab="Cauchy prior", xlim=c(-2,10), ylim=c(-2,10) )
+abline(a=0, b=1, lty=2)
+```
+
+#### 12H2. Return to the Trolley data, data(Trolley), from Chapter 12. Define and fit a varying intercepts model for these data. Cluster intercepts on individual participants, as indicated by the unique values in the id variable. Include action, intention, and contact as ordinary terms. Compare the varying intercepts model and a model that ignores individuals, using both WAIC and posterior predictions. What is the impact of individual variation in these data?
+
+```{r}
+data("Trolley")
+d <- Trolley
+str(d)
+summary(d)
+head(d)
+
+d$person_id <- as.integer(d$id)
+str(d)
+summary(d)
+head(d)
+```
+
+```{r}
+dat <- list(
+    R = d$response,
+    A = d$action,
+    I = d$intention,
+    C = d$contact,
+    id = d$person_id)
+str(dat)
+```
+
+```{r}
+## basic model from R code 12.24
+m12H2.base <- ulam(
+    alist(
+        R ~ dordlogit( phi , cutpoints ),
+        phi <- bA*A + bC*C + BI*I ,
+        BI <- bI + bIA*A + bIC*C ,
+        c(bA,bI,bC,bIA,bIC) ~ dnorm( 0 , 0.5 ),
+        cutpoints ~ dnorm( 0 , 1.5 )
+    ) , data=dat , chains=4 , cores=4 , log_lik=TRUE)
+precis( m12H2.base , depth=2)
+```
+
+```{r}
+## fixed effect model
+m12H2.fixed <- ulam(
+    alist(
+        R ~ dordlogit( phi , cutpoints ),
+        phi <- a_person[id] + bA*A + bC*C + BI*I ,
+        BI <- bI + bIA*A + bIC*C ,
+        c(bA,bI,bC,bIA,bIC) ~ dnorm( 0 , 0.5 ),
+        cutpoints ~ dnorm( 0 , 1.5 ),
+        a_person[id] ~ dnorm(0, 1.5)
+    ) , data=dat , chains=4 , cores=4 , log_lik=TRUE)
+
+precis( m12H2.fixed , depth=2)
+```
+
+
+```{r}
+# multilevel model
+m12H2.multilevel <- ulam(
+    alist(
+        R ~ dordlogit( phi , cutpoints ),
+        phi <- a_person[id] + bA*A + bC*C + BI*I ,
+        BI <- bI + bIA*A + bIC*C ,
+        c(bA,bI,bC,bIA,bIC) ~ dnorm( 0 , 0.5 ),
+        cutpoints ~ dnorm( 0 , 1.5 ),
+        a_person[id] ~ dnorm(a_bar, sigma),
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dat , chains=4 , cores=4 , log_lik=TRUE)
+precis( m12H2.multilevel , depth=2)
+
+```
+
+```{r}
+compare(m12H2.base, m12H2.fixed, m12H2.multilevel)
+plot(compare(m12H2.base, m12H2.fixed, m12H2.multilevel))
+plot(coeftab(m12H2.base, m12H2.fixed, m12H2.multilevel))
+```
