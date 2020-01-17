@@ -85,6 +85,7 @@ s2 <- extract.samples(m12M3)
 
 a_tank_normal <- apply(s1$a, 2, mean)
 a_tank_cauchy <- apply(s2$a, 2, mean)
+# take the mean for each column
 
 plot(a_tank_normal, a_tank_cauchy, xlab="Gaussian prior" , ylab="Cauchy prior", xlim=c(-2,10), ylim=c(-2,10) )
 abline(a=0, b=1, lty=2)
@@ -130,6 +131,10 @@ precis( m12H2.base )
 
 ```{r}
 ## fixed effect model
+#try to find out the problem, 1. pair plot
+#2. add more sampling
+#3. different prior
+#4. prior prediction
 m12H2.fixed <- ulam(
     alist(
         R ~ dordlogit( phi , cutpoints ),

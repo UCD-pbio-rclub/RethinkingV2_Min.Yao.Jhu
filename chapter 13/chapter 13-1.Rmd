@@ -167,7 +167,7 @@ nopool_avg <- aggregate(nopool_error,list(dsim$Ni),mean)
 partpool_avg <- aggregate(partpool_error,list(dsim$Ni),mean)
 
 ## R code 13.20
-a <- 1.5
+a <- 1.5 #mean
 sigma <- 1.5
 nponds <- 60
 Ni <- as.integer( rep( c(5,10,25,35) , each=15 ) )
@@ -177,6 +177,8 @@ dsim$Si <- rbinom( nponds,prob=inv_logit( dsim$true_a ),size=dsim$Ni )
 dsim$p_nopool <- dsim$Si / dsim$Ni
 newdat <- list(Si=dsim$Si,Ni=dsim$Ni,pond=1:nponds)
 m13.3new <- stan( fit=m13.3@stanfit , data=newdat , chains=4 )
+# call stan again and use the same model, take the fit, and then use a new dataset
+# need the same variable 
 
 post <- extract.samples( m13.3new )
 dsim$p_partpool <- apply( inv_logit(post$a_pond) , 2 , mean )
