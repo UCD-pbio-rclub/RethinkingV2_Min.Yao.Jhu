@@ -8,6 +8,7 @@ output:
 ---
 
 ## 13.3. More than one type of cluster
+### 13.3.1. Multilevel chimpanzees.
 
 ```{r}
 ## R code 13.21
@@ -55,7 +56,11 @@ m13.5 <- ulam(
 
 ## R code 13.24
 compare( m13.4 , m13.5 )
+```
 
+### 13.3.2. Even more clusters.
+
+```{r}
 ## R code 13.25
 set.seed(15)
 m13.6 <- ulam(
@@ -71,7 +76,11 @@ m13.6 <- ulam(
         sigma_b ~ dexp(1)
     ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
 coeftab(m13.4,m13.6)
+```
 
+## 13.4. Divergent transitions and non-centered priors
+### 13.4.1. Th e Devil’s Funnel.
+```{r}
 ## R code 13.26
 m13x <- ulam(
     alist(
@@ -88,7 +97,11 @@ m13y <- ulam(
         gq> real[1]:x <<- z*exp(v)
     ), data=list(N=1) , chains=4 )
 precis(m13y)
+```
 
+### 13.4.2. Non-centered chimpanzees.
+
+```{r}
 ## R code 13.28
 set.seed(13)
 m13.4b <- ulam( m13.4 , chains=4 , cores=4 , control=list(adapt_delta=0.99) )
@@ -117,7 +130,12 @@ par_names <- rownames( precis( m13.4 , depth=2 ) )
 neff_table <- cbind( neff_c , neff_nc )
 rownames(neff_table) <- par_names
 round(t(neff_table))
+```
 
+## 13.5. Multilevel posterior predictions
+### 13.5.1. Posterior prediction for same clusters.
+
+```{r}
 ## R code 13.31
 chimp <- 2
 d_pred <- list(
@@ -148,6 +166,11 @@ p_raw <- sapply( 1:4 , function(i) p_link( i , actor=2 , block_id=1 ) )
 p_mu <- apply( p_raw , 2 , mean )
 p_ci <- apply( p_raw , 2 , PI )
 
+```
+
+### 13.5.2. Posterior prediction for new clusters.
+
+```{r}
 ## R code 13.36
 p_link_abar <- function( treatment ) {
     logodds <- with( post , a_bar + b[,treatment] )
@@ -182,3 +205,4 @@ for ( i in 1:100 ) lines( 1:4 , p_raw_asim[i,] , col=col.alpha("black",0.25) , l
 
 ```
 
+## 13.6. Summary

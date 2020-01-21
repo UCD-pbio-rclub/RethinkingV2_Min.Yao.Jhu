@@ -83,9 +83,15 @@ plot( NULL , xlim=c(-3,4) , ylim=c(0,0.35) ,
 for ( i in 1:100 )
     curve( dnorm(x,post$a_bar[i],post$sigma[i]) , add=TRUE ,
     col=col.alpha("black",0.2) )
+# put dnorm inside the cureve it generate x for you
+# estimated posiable dist. for a tank
 
 # sample 8000 imaginary tanks from the posterior distribution
 sim_tanks <- rnorm( 8000 , post$a_bar , post$sigma )
+#pick 8000 number fomr mean (a_bar), varienance ()
+length(5,c(5,10,50,100,500))
+
+# 
 
 # transform to probability and visualize
 dens( inv_logit(sim_tanks) , lwd=2 , adj=0.1 )
