@@ -1,0 +1,232 @@
+---
+title: "chapter 13-2HW"
+author: "Min-Yao"
+date: "2020/1/20"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+#### 12M4. Fit the following cross-classified multilevel model to the chimpanzees data:
+
+L i ∼ Binomial(1, p i)
+logit(p i) = α
+actor[i] + α
+block[i] + (βP + βPC C i)P i
+αactor ∼ Normal(α, σactor)
+αblock ∼ Normal(γ, σblock)
+α, γ, βP, βPC ∼ Normal(0, 10)
+σactor, σblock ∼ HalfCauchy(0, 1)
+
+#### Each of the parameters in those comma-separated lists gets the same independent prior. Compare the posterior distribution to that produced by the similar cross-classified model from the chapter. Also compare the number of effective samples. Can you explain the differences?
+
+```{r}
+library(rethinking)
+data(chimpanzees)
+d <- chimpanzees
+d$treatment <- 1 + d$prosoc_left + 2*d$condition
+str(d)
+head(d)
+```
+
+```{r}
+## R code 13.21
+dat_list <- list(
+    pulled_left = d$pulled_left,
+    actor = d$actor,
+    block_id = d$block,
+    treatment = as.integer(d$treatment) )
+
+set.seed(13)
+m13.4 <- ulam(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) <- a[actor] + g[block_id] + b[treatment] ,
+        b[treatment] ~ dnorm( 0 , 0.5 ),
+        # adaptive priors
+        a[actor] ~ dnorm( a_bar , sigma_a ),
+        g[block_id] ~ dnorm( 0 , sigma_g ),
+        # hyper-priors
+        a_bar ~ dnorm( 0 , 1.5 ),
+        sigma_a ~ dexp(1),
+        sigma_g ~ dexp(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+
+precis(m13.4)
+plot(m13.4)
+```
+
+```{r}
+## R code 13.25
+set.seed(15)
+m13.6 <- ulam(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) <- a[actor] + g[block_id] + b[treatment] ,
+        b[treatment] ~ dnorm( 0 , sigma_b ),
+        a[actor] ~ dnorm( a_bar , sigma_a ),
+        g[block_id] ~ dnorm( 0 , sigma_g ),
+        a_bar ~ dnorm( 0 , 1.5 ),
+        sigma_a ~ dexp(1),
+        sigma_g ~ dexp(1),
+        sigma_b ~ dexp(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+precis(m13.6)
+plot(m13.6)
+```
+
+```{r}
+set.seed(15)
+m12m4.t <- ulam(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) <- a[actor] + g[block_id] + b[treatment] ,
+        b[treatment] ~ dnorm( a_bar_t , sigma_b ),
+        a[actor] ~ dnorm( a_bar_a , sigma_a ),
+        g[block_id] ~ dnorm( 0 , sigma_g ),
+        a_bar_a ~ dnorm( 0 , 1.5 ),
+        a_bar_t ~ dnorm( 0 , 1.5 ),
+        sigma_a ~ dexp(1),
+        sigma_g ~ dexp(1),
+        sigma_b ~ dexp(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+precis(m12m4.t)
+plot(m12m4.t)
+
+```
+
+
+```{r}
+set.seed(15)
+m12m4.t.b <- ulam(
+    alist(
+        pulled_left ~ dbinom( 1 , p ) ,
+        logit(p) <- a[actor] + g[block_id] + b[treatment] ,
+        b[treatment] ~ dnorm( a_bar_t , sigma_b ),
+        a[actor] ~ dnorm( a_bar_a , sigma_a ),
+        g[block_id] ~ dnorm( a_bar_b , sigma_g ),
+        a_bar_a ~ dnorm( 0 , 1.5 ),
+        a_bar_t ~ dnorm( 0 , 1.5 ),
+        a_bar_b ~ dnorm( 0 , 1.5 ),
+        sigma_a ~ dexp(1),
+        sigma_g ~ dexp(1),
+        sigma_b ~ dexp(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+precis(m12m4.t.b)
+plot(m12m4.t.b)
+
+```
+
+```{r}
+compare(m13.4, m13.6, m12m4.t, m12m4.t.b)
+plot(compare(m13.4, m13.6, m12m4.t, m12m4.t.b))
+```
+
+
+#### 12H3. The Trolley data are also clustered by story, which indicates a unique narrative for each vignette. Define and fit a cross-classified varying intercepts model with both id and story. Use the same ordinary terms as in the previous problem. Compare this model to the previous models. What do you infer about the impact of diff erent stories on responses?
+
+```{r}
+data("Trolley")
+d <- Trolley
+str(d)
+summary(d)
+head(d)
+
+d$person_id <- as.integer(d$id)
+str(d)
+summary(d)
+head(d)
+```
+
+```{r}
+dat <- list(
+    R = d$response,
+    A = d$action,
+    I = d$intention,
+    C = d$contact,
+    id = d$person_id)
+str(dat)
+```
+
+```{r}
+## basic model from R code 12.24
+m12H2.base <- ulam(
+    alist(
+        R ~ dordlogit( phi , cutpoints ),
+        phi <- bA*A + bC*C + BI*I ,
+        BI <- bI + bIA*A + bIC*C ,
+        c(bA,bI,bC,bIA,bIC) ~ dnorm( 0 , 0.5 ),
+        cutpoints ~ dnorm( 0 , 1.5 )
+    ) , data=dat , chains=4 , cores=4 , log_lik=TRUE)
+precis( m12H2.base )
+```
+
+```{r}
+## fixed effect model
+#try to find out the problem, 1. pair plot
+#2. add more sampling
+#3. different prior
+#4. prior prediction
+m12H2.fixed <- ulam(
+    alist(
+        R ~ dordlogit( phi , cutpoints ),
+        phi <- a_person[id] + bA*A + bC*C + BI*I ,
+        BI <- bI + bIA*A + bIC*C ,
+        c(bA,bI,bC,bIA,bIC) ~ dnorm( 0 , 0.5 ),
+        cutpoints ~ dnorm( 0 , 1.5 ),
+        a_person[id] ~ dnorm(0, 1.5)
+    ) , data=dat , chains=4 , cores=4 , log_lik=TRUE)
+
+precis( m12H2.fixed )
+```
+
+```{r}
+# multilevel model
+m12H2.multilevel <- ulam(
+    alist(
+        R ~ dordlogit( phi , cutpoints ),
+        phi <- a_person[id] + bA*A + bC*C + BI*I ,
+        BI <- bI + bIA*A + bIC*C ,
+        c(bA,bI,bC,bIA,bIC) ~ dnorm( 0 , 0.5 ),
+        cutpoints ~ dnorm( 0 , 1.5 ),
+        a_person[id] ~ dnorm(0, sigma),
+        sigma ~ dexp( 1 )
+    ) , data=dat , chains=4 , cores=4 , log_lik=TRUE)
+precis( m12H2.multilevel )
+
+```
+
+```{r}
+# multilevel model+story
+d$story_id <- as.integer(d$story)
+
+dat <- list(
+    R = d$response,
+    A = d$action,
+    I = d$intention,
+    C = d$contact,
+    id = d$person_id,
+    story_id = d$story_id)
+str(dat)
+
+m12H2.multilevel_story <- ulam(
+    alist(
+        R ~ dordlogit( phi , cutpoints ),
+        phi <- a_story[story_id] + a_person[id] + bA*A + bC*C + BI*I ,
+        BI <- bI + bIA*A + bIC*C ,
+        c(bA,bI,bC,bIA,bIC) ~ dnorm( 0 , 0.5 ),
+        cutpoints ~ dnorm( 0 , 1.5 ),
+        a_person[id] ~ dnorm(0, sigma_p),
+        a_story[story_id] ~ dnorm(0, sigma_s),
+        sigma_p ~ dexp( 1 ),
+        sigma_s ~ dexp( 1 )
+    ) , data=dat , chains=4 , cores=4 , log_lik=TRUE)
+precis( m12H2.multilevel_story )
+
+```
+
+```{r}
+compare(m12H2.base, m12H2.fixed, m12H2.multilevel, m12H2.multilevel_story)
+plot(compare(m12H2.base, m12H2.fixed, m12H2.multilevel, m12H2.multilevel_story))
+```
+
