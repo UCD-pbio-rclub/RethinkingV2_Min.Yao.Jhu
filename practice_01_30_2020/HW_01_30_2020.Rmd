@@ -2,7 +2,9 @@
 title: "HW_01_30_2020"
 author: "Min-Yao"
 date: "2020/1/30"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 This csv has measurements of tomato internodes and petioles from wildtype (Moneymaker) and various phytochrome mutant lines.  Measurements were made at 3 time points, 21, 28, and 35 days after germination under two treatments, simulated sun and simulated shade.
@@ -57,9 +59,9 @@ str(newphyE_S_flat2)
 library(rethinking)
 
 newphyE_list <- list(
-  genotype = newphyE_S_flat2$genotype,
-  treatment = newphyE_S_flat2$treatment,
-  flat_factor = as.factor(newphyE_S_flat2$flat2),
+  genotype = as.integer(newphyE_S_flat2$genotype),
+  treatment_s = as.integer(newphyE_S_flat2$treatment=="shade"),
+  flat_factor = as.integer(as.factor(newphyE_S_flat2$flat2)),
   stem_length = newphyE_S_flat2$stem_length
 )
 
@@ -70,28 +72,327 @@ str(newphyE_list)
 
 
 ### Q2) Fit 3 models, all of which include genotype and treatment
-#### a) do not include flat
+#### a) don't include flat.  Determine whether genotype, treatment, and their interaction are important predictors of stem_length
+
+```{r}
+modle_base <- ulam(
+  alist(
+    stem_length ~ dnorm(mu, sigma),
+    mu <- a[genotype] + bT*treatment_s + bI[genotype]*treatment_s,
+    a[genotype] ~ dnorm(140, 30),
+    bT ~ dnorm(0, 30),
+    bI[genotype] ~ dnorm(0, 20),
+    sigma ~ dexp(1)
+  ), data=newphyE_list , chains=4 , cores=4 , log_lik=TRUE)
+
+precis( modle_base, depth=2 )
+plot( precis(modle_base,depth=2) )
+```
+
 
 #### b) include flat without pooling
 
+```{r}
+modle_fixed <- ulam(
+  alist(
+    stem_length ~ dnorm(mu, sigma),
+    mu <- a[genotype] + bT*treatment_s + bI[genotype]*treatment_s + bF[flat_factor],
+    a[genotype] ~ dnorm(140, 30),
+    bT ~ dnorm(0, 30),
+    bI[genotype] ~ dnorm(0, 20),
+    bF[flat_factor] ~ dnorm(0, 1),
+    sigma ~ dexp(1)
+  ), data=newphyE_list , chains=4 , cores=4 , log_lik=TRUE)
+
+precis( modle_fixed, depth=2 )
+```
+
+
 #### c) use a hierarchical model that allows partial pooling across flats
 
+```{r}
+modle_multilevel <- ulam(
+  alist(
+    stem_length ~ dnorm(mu, sigma),
+    mu <- a[genotype] + bT*treatment_s + bI[genotype]*treatment_s + bF[flat_factor],
+    a[genotype] ~ dnorm(140, 30),
+    bT ~ dnorm(0, 30),
+    bI[genotype] ~ dnorm(0, 20),
+    bF[flat_factor] ~ dnorm(f_bar, sigma_f),
+    f_bar ~ dnorm(0, 1),
+    sigma_f ~ dexp(1),
+    sigma ~ dexp(1)
+  ), data=newphyE_list , chains=4 , cores=4 , log_lik=TRUE)
+
+precis( modle_multilevel, depth=2 )
+```
+
+
 ### Q3) Compare the models, which is preferred?
+
+```{r}
+compare(modle_base, modle_fixed, modle_multilevel)
+plot(compare(modle_base, modle_fixed, modle_multilevel))
+```
+
 
 ### Q4) Using the hierarchical model, make posterior predictions
 #### a) for average cluster
 
+```{r}
+## R code 13.32
+post <- extract.samples(modle_multilevel)
+str(post)
+
+as.factor(newphyE_S_flat2$genotype)
+
+#Shade condiction
+## R code 13.36
+p_link_abar_shade <- function( genotype , treatment_s=1) {
+    stem_length_shade <- with( post, a[,genotype] + bT*treatment_s + bI[,genotype]*treatment_s )
+    return( stem_length_shade )
+}
+
+## R code 13.37
+p_raw_shade <- sapply( 1:6 , function(i) p_link_abar_shade( i ) )
+p_mu_shade <- apply( p_raw_shade , 2 , mean )
+p_ci_shade <- apply( p_raw_shade , 2 , PI )
+
+plot( NULL , xlab="genotype" , ylab="stem_length_shade" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_shade )
+shade( p_ci_shade , 1:6 )
+
+
+
+#light condiction
+## R code 13.36
+p_link_abar_light <- function( genotype , treatment_s=0) {
+    stem_length_light <- with( post, a[,genotype] + bT*treatment_s + bI[,genotype]*treatment_s )
+    return( stem_length_light )
+}
+
+## R code 13.37
+p_raw_light <- sapply( 1:6 , function(i) p_link_abar_light( i ) )
+p_mu_light <- apply( p_raw_light , 2 , mean )
+p_ci_light <- apply( p_raw_light , 2 , PI )
+
+plot( NULL , xlab="genotype" , ylab="stem_length_light" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_light )
+shade( p_ci_light , 1:6 )
+```
+
+
 #### b) for same clusters
+```{r}
+
+as.factor(newphyE_S_flat2$flat2)
+
+#Shade condiction
+## R code 13.36
+p_link_abar_shade <- function( genotype , treatment_s=1, flat_factor=1) {
+    stem_length_shade <- with( post, a[,genotype] + bT*treatment_s + bI[,genotype]*treatment_s + bF[,flat_factor] )
+    return( stem_length_shade )
+}
+
+## R code 13.37
+p_raw_shade <- sapply( 1:6 , function(i) p_link_abar_shade( i ) )
+p_mu_shade <- apply( p_raw_shade , 2 , mean )
+p_ci_shade <- apply( p_raw_shade , 2 , PI )
+
+plot( NULL , main= "shade_1", xlab="genotype" , ylab="stem_length_shade" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_shade )
+shade( p_ci_shade , 1:6 )
+
+
+
+#light condiction
+## R code 13.36
+p_link_abar_light <- function( genotype , treatment_s=0, flat_factor=7) {
+    stem_length_light <- with( post, a[,genotype] + bT*treatment_s + bI[,genotype]*treatment_s + bF[,flat_factor])
+    return( stem_length_light )
+}
+
+## R code 13.37
+p_raw_light <- sapply( 1:6 , function(i) p_link_abar_light( i ) )
+p_mu_light <- apply( p_raw_light , 2 , mean )
+p_ci_light <- apply( p_raw_light , 2 , PI )
+
+plot( NULL , main= "sun_1", xlab="genotype" , ylab="stem_length_light" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_light )
+shade( p_ci_light , 1:6 )
+
+######2
+
+#Shade condiction
+## R code 13.36
+p_link_abar_shade <- function( genotype , treatment_s=1, flat_factor=2) {
+    stem_length_shade <- with( post, a[,genotype] + bT*treatment_s + bI[,genotype]*treatment_s + bF[,flat_factor] )
+    return( stem_length_shade )
+}
+
+## R code 13.37
+p_raw_shade <- sapply( 1:6 , function(i) p_link_abar_shade( i ) )
+p_mu_shade <- apply( p_raw_shade , 2 , mean )
+p_ci_shade <- apply( p_raw_shade , 2 , PI )
+
+plot( NULL , main= "shade_2", xlab="genotype" , ylab="stem_length_shade" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_shade )
+shade( p_ci_shade , 1:6 )
+
+
+
+#light condiction
+## R code 13.36
+p_link_abar_light <- function( genotype , treatment_s=0, flat_factor=8) {
+    stem_length_light <- with( post, a[,genotype] + bT*treatment_s + bI[,genotype]*treatment_s + bF[,flat_factor])
+    return( stem_length_light )
+}
+
+## R code 13.37
+p_raw_light <- sapply( 1:6 , function(i) p_link_abar_light( i ) )
+p_mu_light <- apply( p_raw_light , 2 , mean )
+p_ci_light <- apply( p_raw_light , 2 , PI )
+
+plot( NULL , main= "sun_2", xlab="genotype" , ylab="stem_length_light" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_light )
+shade( p_ci_light , 1:6 )
+
+######3
+
+#Shade condiction
+## R code 13.36
+p_link_abar_shade <- function( genotype , treatment_s=1, flat_factor=3) {
+    stem_length_shade <- with( post, a[,genotype] + bT*treatment_s + bI[,genotype]*treatment_s + bF[,flat_factor] )
+    return( stem_length_shade )
+}
+
+## R code 13.37
+p_raw_shade <- sapply( 1:6 , function(i) p_link_abar_shade( i ) )
+p_mu_shade <- apply( p_raw_shade , 2 , mean )
+p_ci_shade <- apply( p_raw_shade , 2 , PI )
+
+plot( NULL , main= "shade_3", xlab="genotype" , ylab="stem_length_shade" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_shade )
+shade( p_ci_shade , 1:6 )
+
+
+
+#light condiction
+## R code 13.36
+p_link_abar_light <- function( genotype , treatment_s=0, flat_factor=9) {
+    stem_length_light <- with( post, a[,genotype] + bT*treatment_s + bI[,genotype]*treatment_s + bF[,flat_factor])
+    return( stem_length_light )
+}
+
+## R code 13.37
+p_raw_light <- sapply( 1:6 , function(i) p_link_abar_light( i ) )
+p_mu_light <- apply( p_raw_light , 2 , mean )
+p_ci_light <- apply( p_raw_light , 2 , PI )
+
+plot( NULL , main= "sun_3", xlab="genotype" , ylab="stem_length_light" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_light )
+shade( p_ci_light , 1:6 )
+```
 
 #### c) showing the "marginal" from cluster
+```{r}
+## R code 13.38
+###shade
+f_sim <- with( post , rnorm( length(post$f_bar) , f_bar , sigma_f ) )
+p_link_fsim_shade <- function( genotype , treatment_s=1) {
+    stem_length_shade <- with( post , f_sim + a[,genotype] + bT*treatment_s + bI[,genotype]*treatment_s )
+    return( stem_length_shade )
+}
+p_raw_asim_shade <- sapply( 1:6 , function(i) p_link_fsim_shade( i ) )
+p_mu_asim_shade <- apply( p_raw_asim_shade , 2 , mean )
+p_ci_asim_shade <- apply( p_raw_asim_shade , 2 , PI )
+
+plot( NULL , main= "shade_marginal", xlab="genotype" , ylab="stem_length_shade" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_asim_shade )
+shade( p_ci_asim_shade , 1:6 )
+
+###light
+p_link_fsim_light <- function( genotype , treatment_s=0) {
+    stem_length_light <- with( post , f_sim + a[,genotype] + bT*treatment_s + bI[,genotype]*treatment_s )
+    return( stem_length_light )
+}
+p_raw_asim_light <- sapply( 1:6 , function(i) p_link_fsim_light( i ) )
+p_mu_asim_light <- apply( p_raw_asim_light , 2 , mean )
+p_ci_asim_light <- apply( p_raw_asim_light , 2 , PI )
+
+plot( NULL , main= "sun_marginal", xlab="genotype" , ylab="stem_length_light" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_asim_light )
+shade( p_ci_asim_light , 1:6 )
+```
+
 
 #### d) showing new clusters.
+```{r}
+## R code 13.39
+###shade
+plot( NULL , main= "new_clusters_shade", xlab="treatment" , ylab="stem_length_shade" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+for ( i in 1:100 ) lines( 1:6 , p_raw_asim_shade[i,] , col=col.alpha("black",0.25) , lwd=2 )
+
+###sun
+plot( NULL , main= "new_clusters_sun", xlab="treatment" , ylab="stem_length_light" ,
+    ylim=c(0,260) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+for ( i in 1:100 ) lines( 1:6 , p_raw_asim_light[i,] , col=col.alpha("black",0.25) , lwd=2 )
+```
 
 ### Q5) Reparameterize the model to help with divergent transitions (even if there aren't any)
+```{r}
+modle_multilevel <- ulam(
+  alist(
+    stem_length ~ dnorm(mu, sigma),
+    mu <- a[genotype] + bT*treatment_s + bI[genotype]*treatment_s + bF[flat_factor],
+    a[genotype] ~ dnorm(140, 30),
+    bT ~ dnorm(0, 30),
+    bI[genotype] ~ dnorm(0, 20),
+    bF[flat_factor] ~ dnorm(f_bar, sigma_f),
+    f_bar ~ dnorm(0, 1),
+    sigma_f ~ dexp(1),
+    sigma ~ dexp(1)
+  ), data=newphyE_list , chains=4 , cores=4 , log_lik=TRUE)
+
+precis( modle_multilevel, depth=2 )
+```
 
 ### Q6--optional)
 #### a) Which genotypes differ from MoneyMaker in Sun conditions?
+```{r}
+
+```
 
 #### b) Which genotypes differ from MoneyMaker in Shade conditions?
+```{r}
+
+```
 
 #### c) Which genotypes differ from MoneyMaker in their response to shade (difference in sun vs shade)?
+```{r}
+
+```
+
