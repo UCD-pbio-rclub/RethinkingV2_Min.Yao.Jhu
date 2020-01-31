@@ -1,0 +1,97 @@
+---
+title: "HW_01_30_2020"
+author: "Min-Yao"
+date: "2020/1/30"
+output: html_document
+---
+
+This csv has measurements of tomato internodes and petioles from wildtype (Moneymaker) and various phytochrome mutant lines.  Measurements were made at 3 time points, 21, 28, and 35 days after germination under two treatments, simulated sun and simulated shade.
+
+for today let's focus on day 35.  Also let's focus on total stem length.  So: first
+
+
+```{r}
+phyE <- read.csv("figure4phyE.csv")
+head(phyE)
+summary(phyE)
+str(phyE)
+```
+
+### Q1)
+
+#### a) subset the data for day 35
+
+```{r}
+newphyE <- subset(phyE, day == 35)
+head(newphyE)
+summary(newphyE)
+str(newphyE)
+```
+
+#### b) create a new column "stem_length" that is the sum of epi, int1, int2, and int3
+
+```{r}
+library(tidyverse)
+newphyE_S <- newphyE %>% mutate(stem_length = rowSums(.[5:8]))
+head(newphyE_S)
+summary(newphyE_S)
+str(newphyE_S)
+
+```
+
+
+
+#### c) although flats are listed as 1-6, flats in sun and shade are separate. Create a new column "flat2" that corrects for this.
+
+```{r}
+newphyE_S_flat2 <- newphyE_S %>% unite("flat2", c("treatment", "flat"), remove = FALSE)
+head(newphyE_S_flat2)
+summary(newphyE_S_flat2)
+str(newphyE_S_flat2)
+```
+
+
+#### Ultimately you want to know if any of the mutants have a different length from Moneymaker, in sun or in shade, or if the response to shade differs.
+
+```{r}
+library(rethinking)
+
+newphyE_list <- list(
+  genotype = newphyE_S_flat2$genotype,
+  treatment = newphyE_S_flat2$treatment,
+  flat_factor = as.factor(newphyE_S_flat2$flat2),
+  stem_length = newphyE_S_flat2$stem_length
+)
+
+head(newphyE_list)
+summary(newphyE_list)
+str(newphyE_list)
+```
+
+
+### Q2) Fit 3 models, all of which include genotype and treatment
+#### a) do not include flat
+
+#### b) include flat without pooling
+
+#### c) use a hierarchical model that allows partial pooling across flats
+
+### Q3) Compare the models, which is preferred?
+
+### Q4) Using the hierarchical model, make posterior predictions
+#### a) for average cluster
+
+#### b) for same clusters
+
+#### c) showing the "marginal" from cluster
+
+#### d) showing new clusters.
+
+### Q5) Reparameterize the model to help with divergent transitions (even if there aren't any)
+
+### Q6--optional)
+#### a) Which genotypes differ from MoneyMaker in Sun conditions?
+
+#### b) Which genotypes differ from MoneyMaker in Shade conditions?
+
+#### c) Which genotypes differ from MoneyMaker in their response to shade (difference in sun vs shade)?
