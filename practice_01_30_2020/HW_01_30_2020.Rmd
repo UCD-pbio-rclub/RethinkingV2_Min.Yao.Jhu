@@ -78,9 +78,8 @@ str(newphyE_list)
 modle_base <- ulam(
   alist(
     stem_length ~ dnorm(mu, sigma),
-    mu <- a[genotype] + bT*treatment_s + bI[genotype]*treatment_s,
+    mu <- a[genotype] + bI[genotype]*treatment_s,
     a[genotype] ~ dnorm(140, 10),
-    bT ~ dnorm(0, 10),
     bI[genotype] ~ dnorm(0, 10),
     sigma ~ dexp(1)
   ), data=newphyE_list , chains=4 , cores=4 , log_lik=TRUE)
@@ -96,7 +95,7 @@ plot( precis(modle_base,depth=2) )
 modle_fixed <- ulam(
   alist(
     stem_length ~ dnorm(mu, sigma),
-    mu <- a[genotype] + bT*treatment_s + bI[genotype]*treatment_s + bF[flat_factor],
+    mu <- a[genotype] + bI[genotype]*treatment_s + bF[flat_factor],
     a[genotype] ~ dnorm(140, 10),
     bT ~ dnorm(0, 10),
     bI[genotype] ~ dnorm(0, 10),
@@ -115,7 +114,7 @@ plot( precis(modle_fixed,depth=2) )
 modle_multilevel <- ulam(
   alist(
     stem_length ~ dnorm(mu, sigma),
-    mu <- a[genotype] + bT*treatment_s + bI[genotype]*treatment_s + bF[flat_factor],
+    mu <- a[genotype] + bI[genotype]*treatment_s + bF[flat_factor],
     a[genotype] ~ dnorm(a_bar, sigma_a),
     bT ~ dnorm(0, 10),
     bI[genotype] ~ dnorm(0, 10),
@@ -143,7 +142,7 @@ plot(compare(modle_base, modle_fixed, modle_multilevel))
 modle_multilevel_reparameterize <- ulam(
   alist(
     stem_length ~ dnorm(mu, sigma),
-    mu <- a_bar + z[genotype]*sigma_a + bT*treatment_s + bI[genotype]*treatment_s + x[flat_factor]*sigma_f,
+    mu <- a_bar + z[genotype]*sigma_a + bI[genotype]*treatment_s + x[flat_factor]*sigma_f,
     z[genotype] ~ dnorm(0, 10),
     bT ~ dnorm(0, 10),
     bI[genotype] ~ dnorm(0, 10),
