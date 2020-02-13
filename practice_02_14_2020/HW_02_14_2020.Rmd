@@ -1,0 +1,153 @@
+---
+title: "HW_02_14_2020"
+author: "Min-Yao"
+date: "2020/2/12"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r}
+library(rethinking)
+```
+
+
+### 1. Fit a simple model with effects of temperature difference (temperature_diff_fall) on November germination (nov_germ). Temperature difference is already centered and scaled (i.e., negative values are the smallest temperature differences). Make sure to use the appropriate likelihood for the germination data (0 = no germ, 1  = germ).
+
+```{r}
+clarkia <- read.csv("clarkia_transplant_data.csv")
+head(clarkia)
+summary(clarkia)
+str(clarkia)
+```
+
+```{r}
+dat_list <- list(
+    temperature_diff_fall = clarkia$temperature_diff_fall,
+    nov_germ = clarkia$nov_germ)
+
+summary(dat_list)
+str(dat_list)
+```
+
+```{r}
+set.seed(1)
+modle_base <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a + bT*temperature_diff_fall,
+        a ~ dnorm( 0 , 0.5 ),
+        bT ~ dnorm( 0 , 1.5 )
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+
+precis( modle_base, depth=2 )
+plot( precis(modle_base,depth=2) )
+```
+
+
+### 2. Simulate from your priors to see if you've chosen reasonable priors, adjust them if necessary.
+
+#### These blocks were set up in the field, and had differences in soil depth, slope, and competitive environment. So maybe a model that includes block will describe the data better.
+
+```{r}
+#from R code 5.4
+set.seed(1)
+prior <- extract.prior( modle_base )
+str(prior)
+
+mu <- link( modle_base , post=prior , data=list( temperature_diff_fall=c(-2,2) ) )
+
+plot( NULL , xlim=c(-2,2) , ylim=c(0,1) )
+for ( i in 1:100 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+```
+
+#### Try a smaller prior
+
+```{r}
+set.seed(1)
+modle_base_s <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a + bT*temperature_diff_fall,
+        a ~ dnorm( 0 , 0.2 ),
+        bT ~ dnorm( 0 , 0.5 )
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+
+precis( modle_base_s, depth=2 )
+plot( precis(modle_base_s,depth=2) )
+```
+
+```{r}
+#from R code 5.4
+set.seed(1)
+prior <- extract.prior( modle_base_s )
+str(prior)
+
+mu <- link( modle_base_s , post=prior , data=list( temperature_diff_fall=c(-2,2) ) )
+
+plot( NULL , xlim=c(-2,2) , ylim=c(0,1) )
+for ( i in 1:100 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+```
+
+#### Try a larger prior
+
+```{r}
+set.seed(1)
+modle_base_l <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a + bT*temperature_diff_fall,
+        a ~ dnorm( 0 , 10 ),
+        bT ~ dnorm( 0 , 20 )
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+
+precis( modle_base_l, depth=2 )
+plot( precis(modle_base_l,depth=2) )
+```
+
+```{r}
+#from R code 5.4
+set.seed(1)
+prior <- extract.prior( modle_base_l )
+str(prior)
+
+mu <- link( modle_base_l , post=prior , data=list( temperature_diff_fall=c(-2,2) ) )
+
+plot( NULL , xlim=c(-2,2) , ylim=c(0,1) )
+for ( i in 1:100 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+```
+
+### 3. Fit a model that includes an effect of block (blk), with no pooling.
+
+```{r}
+
+```
+
+
+### 4. Fit a model that includes block, and allows partial pooling.
+
+#### The experiment included many individuals from each of the 15 populations. So, each individual is not an independent representative of a given temperature, but might be similar to other plants from that population for reasons besides temperature.
+
+```{r}
+
+```
+
+
+### 5. Build a model that accounts for this by including population (pop) and allowing partial pooling between populations A) without block, and B) with block included as in the model above. How does including population affect the temperature estimate?
+
+```{r}
+
+```
+
+### 6. Compare the five models you built using WAIC. Which fits best?
+
+```{r}
+
+```
+
+### 7. Plot effects of temperature difference for the average block, and also make a plot that includes the variability across blocks.
+
+```{r}
+
+```
+
