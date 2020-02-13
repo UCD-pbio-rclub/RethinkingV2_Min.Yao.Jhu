@@ -171,7 +171,7 @@ as.factor(newphyE_S_flat2$genotype)
 #Shade condiction
 ## R code 13.36
 p_link_abar_shade <- function( genotype , treatment_s=1) {
-    stem_length_shade <- with( post, a_bar + z[,genotype]*sigma_a + bT*treatment_s + bI[,genotype]*treatment_s )
+    stem_length_shade <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s )
     return( stem_length_shade )
 }
 
@@ -191,7 +191,7 @@ shade( p_ci_shade , 1:6 )
 #light condiction
 ## R code 13.36
 p_link_abar_light <- function( genotype , treatment_s=0) {
-    stem_length_light <- with( post, a_bar + z[,genotype]*sigma_a + bT*treatment_s + bI[,genotype]*treatment_s )
+    stem_length_light <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s )
     return( stem_length_light )
 }
 
@@ -215,7 +215,7 @@ as.factor(newphyE_S_flat2$flat2)
 #Shade condiction
 ## R code 13.36
 p_link_abar_shade <- function( genotype , treatment_s=1, flat_factor=1) {
-    stem_length_shade <- with( post, a_bar + z[,genotype]*sigma_a + bT*treatment_s + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f )
+    stem_length_shade <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f )
     return( stem_length_shade )
 }
 
@@ -235,7 +235,7 @@ shade( p_ci_shade , 1:6 )
 #light condiction
 ## R code 13.36
 p_link_abar_light <- function( genotype , treatment_s=0, flat_factor=7) {
-    stem_length_light <- with( post, a_bar + z[,genotype]*sigma_a + bT*treatment_s + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f )
+    stem_length_light <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f )
     return( stem_length_light )
 }
 
@@ -255,7 +255,7 @@ shade( p_ci_light , 1:6 )
 #Shade condiction
 ## R code 13.36
 p_link_abar_shade <- function( genotype , treatment_s=1, flat_factor=2) {
-    stem_length_shade <- with( post, a_bar + z[,genotype]*sigma_a + bT*treatment_s + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f )
+    stem_length_shade <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f )
     return( stem_length_shade )
 }
 
@@ -275,7 +275,7 @@ shade( p_ci_shade , 1:6 )
 #light condiction
 ## R code 13.36
 p_link_abar_light <- function( genotype , treatment_s=0, flat_factor=8) {
-    stem_length_light <- with( post, a_bar + z[,genotype]*sigma_a + bT*treatment_s + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f)
+    stem_length_light <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f)
     return( stem_length_light )
 }
 
@@ -298,7 +298,7 @@ shade( p_ci_light , 1:6 )
 ###shade
 a_sim <- with( post , rnorm( length(post$a_bar) , a_bar , 10*sigma_a ) )
 p_link_asim_shade <- function( genotype , treatment_s=1) {
-    stem_length_shade <- with( post , a_sim + z[,genotype]*sigma_a + bT*treatment_s + bI[,genotype]*treatment_s )
+    stem_length_shade <- with( post , a_sim + z[,genotype]*sigma_a + bI[,genotype]*treatment_s )
     return( stem_length_shade )
 }
 p_raw_asim_shade <- sapply( 1:6 , function(i) p_link_asim_shade( i ) )
@@ -313,7 +313,7 @@ shade( p_ci_asim_shade , 1:6 )
 
 ###light
 p_link_asim_light <- function( genotype , treatment_s=0) {
-    stem_length_light <- with( post , a_sim + z[,genotype]*sigma_a + bT*treatment_s + bI[,genotype]*treatment_s )
+    stem_length_light <- with( post , a_sim + z[,genotype]*sigma_a + bI[,genotype]*treatment_s )
     return( stem_length_light )
 }
 p_raw_asim_light <- sapply( 1:6 , function(i) p_link_asim_light( i ) )
