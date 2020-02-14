@@ -224,9 +224,99 @@ plot( precis(modle_multilevel_pop_blk,depth=2) )
 compare(modle_base, modle_fixed, modle_multilevel_blk, modle_multilevel_pop, modle_multilevel_pop_blk)
 ```
 
+> modle_multilevel_pop_blk fits best.
+
 ### 7. Plot effects of temperature difference for the average block, and also make a plot that includes the variability across blocks.
 
 ```{r}
-
+post <- extract.samples(modle_multilevel_pop_blk)
+str(post)
 ```
+
+#### Posterior prediction for average cluster.
+
+```{r}
+## change from R code 13.36, temperature_diff_fall=1 
+p_link_1 <- function( blk , temperature_diff_fall=1 ) {
+    logodds <- with( post ,
+        a_bar + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+
+## change from R code 13.37
+p_raw_1 <- sapply( 1:4 , function(i) p_link_1( i ) )
+p_mu_1 <- apply( p_raw_1 , 2 , mean )
+p_ci_1 <- apply( p_raw_1 , 2 , PI )
+
+
+## change from R code 13.36, temperature_diff_fall=0 
+p_link_0 <- function( blk , temperature_diff_fall=0 ) {
+    logodds <- with( post ,
+        a_bar + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+
+## change from R code 13.37
+p_raw_0 <- sapply( 1:4 , function(i) p_link_0( i ) )
+p_mu_0 <- apply( p_raw_0 , 2 , mean )
+p_ci_0 <- apply( p_raw_0 , 2 , PI )
+
+
+## change from R code 13.36, temperature_diff_fall=-1 
+p_link_n1 <- function( blk , temperature_diff_fall=-1 ) {
+    logodds <- with( post ,
+        a_bar + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+
+## change from R code 13.37
+p_raw_n1 <- sapply( 1:4 , function(i) p_link_n1( i ) )
+p_mu_n1 <- apply( p_raw_n1 , 2 , mean )
+p_ci_n1 <- apply( p_raw_n1 , 2 , PI )
+
+plot( NULL , xlab="block" , ylab="November germination" ,
+    ylim=c(0,1) , xaxt="n" , xlim=c(1,4) )
+axis( 1 , at=1:4 , labels=c("B1","B2","B3","B4") )
+lines( 1:4 , p_mu_1 ,col=col.alpha("black",1))
+shade( p_ci_1 , 1:4 )
+lines( 1:4 , p_mu_0 ,col=col.alpha("red",1))
+shade( p_ci_0 , 1:4 )
+lines( 1:4 , p_mu_n1 ,col=col.alpha("blue",1))
+shade( p_ci_n1 , 1:4 )
+```
+
+#### Posterior prediction for new clusters.
+
+```{r}
+## change from R code 13.38, temperature_diff_fall=1
+a_sim <- with( post , rnorm( length(post$a_bar) , a_bar , sigma ) )
+p_link_asim_1 <- function( blk , temperature_diff_fall=1) {
+    logodds <- with( post , a_sim + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+p_raw_asim_1 <- sapply( 1:4 , function(i) p_link_asim_1( i ) )
+
+p_link_asim_0 <- function( blk , temperature_diff_fall=0) {
+    logodds <- with( post , a_sim + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+p_raw_asim_0 <- sapply( 1:4 , function(i) p_link_asim_0( i ) )
+
+p_link_asim_n1 <- function( blk , temperature_diff_fall=-1) {
+    logodds <- with( post , a_sim + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+p_raw_asim_n1 <- sapply( 1:4 , function(i) p_link_asim_n1( i ) )
+
+## R code 13.39
+plot( NULL , xlab="block" , ylab="November germination" ,
+    ylim=c(0,1) , xaxt="n" , xlim=c(1,4) )
+axis( 1 , at=1:4 , labels=c("B1","B2","B3","B4") )
+for ( i in 1:100 ) lines( 1:4 , p_raw_asim_1[i,] , col=col.alpha("black",0.3) , lwd=2 )
+for ( i in 1:100 ) lines( 1:4 , p_raw_asim_0[i,] , col=col.alpha("red",0.3) , lwd=2 )
+for ( i in 1:100 ) lines( 1:4 , p_raw_asim_n1[i,] , col=col.alpha("blue",0.3) , lwd=2 )
+```
+
+
+
 

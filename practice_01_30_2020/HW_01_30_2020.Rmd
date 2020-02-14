@@ -181,7 +181,7 @@ p_mu_shade <- apply( p_raw_shade , 2 , mean )
 p_ci_shade <- apply( p_raw_shade , 2 , PI )
 
 plot( NULL , xlab="genotype" , ylab="stem_length_shade" ,
-    ylim=c(0,300) , xaxt="n" , xlim=c(1,6) )
+    ylim=c(50,250) , xaxt="n" , xlim=c(1,6) )
 axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
 lines( 1:6 , p_mu_shade )
 shade( p_ci_shade , 1:6 )
@@ -201,10 +201,18 @@ p_mu_light <- apply( p_raw_light , 2 , mean )
 p_ci_light <- apply( p_raw_light , 2 , PI )
 
 plot( NULL , xlab="genotype" , ylab="stem_length_light" ,
-    ylim=c(0,300) , xaxt="n" , xlim=c(1,6) )
+    ylim=c(50,250) , xaxt="n" , xlim=c(1,6) )
 axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
 lines( 1:6 , p_mu_light )
 shade( p_ci_light , 1:6 )
+
+plot( NULL , xlab="genotype" , ylab="stem_length" ,
+    ylim=c(50,250) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_light ,col=col.alpha("red",1))
+shade( p_ci_light , 1:6 )
+lines( 1:6 , p_mu_shade ,col=col.alpha("blue",1))
+shade( p_ci_shade , 1:6 )
 ```
 
 
@@ -212,83 +220,72 @@ shade( p_ci_light , 1:6 )
 ```{r}
 as.factor(newphyE_S_flat2$flat2)
 
+######1
 #Shade condiction
 ## R code 13.36
-p_link_abar_shade <- function( genotype , treatment_s=1, flat_factor=1) {
+p_link_abar_shade1 <- function( genotype , treatment_s=1, flat_factor=1) {
     stem_length_shade <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f )
     return( stem_length_shade )
 }
 
 ## R code 13.37
-p_raw_shade <- sapply( 1:6 , function(i) p_link_abar_shade( i ) )
-p_mu_shade <- apply( p_raw_shade , 2 , mean )
-p_ci_shade <- apply( p_raw_shade , 2 , PI )
-
-plot( NULL , main= "shade_1", xlab="genotype" , ylab="stem_length_shade" ,
-    ylim=c(0,300) , xaxt="n" , xlim=c(1,6) )
-axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
-lines( 1:6 , p_mu_shade )
-shade( p_ci_shade , 1:6 )
-
+p_raw_shade1 <- sapply( 1:6 , function(i) p_link_abar_shade1( i ) )
+p_mu_shade1 <- apply( p_raw_shade1 , 2 , mean )
+p_ci_shade1 <- apply( p_raw_shade1 , 2 , PI )
 
 
 #light condiction
 ## R code 13.36
-p_link_abar_light <- function( genotype , treatment_s=0, flat_factor=7) {
+p_link_abar_light7 <- function( genotype , treatment_s=0, flat_factor=7) {
     stem_length_light <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f )
     return( stem_length_light )
 }
 
 ## R code 13.37
-p_raw_light <- sapply( 1:6 , function(i) p_link_abar_light( i ) )
-p_mu_light <- apply( p_raw_light , 2 , mean )
-p_ci_light <- apply( p_raw_light , 2 , PI )
+p_raw_light7 <- sapply( 1:6 , function(i) p_link_abar_light7( i ) )
+p_mu_light7 <- apply( p_raw_light7 , 2 , mean )
+p_ci_light7 <- apply( p_raw_light7 , 2 , PI )
 
-plot( NULL , main= "sun_1", xlab="genotype" , ylab="stem_length_light" ,
-    ylim=c(0,300) , xaxt="n" , xlim=c(1,6) )
-axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
-lines( 1:6 , p_mu_light )
-shade( p_ci_light , 1:6 )
 
 ######2
 
 #Shade condiction
 ## R code 13.36
-p_link_abar_shade <- function( genotype , treatment_s=1, flat_factor=2) {
+p_link_abar_shade2 <- function( genotype , treatment_s=1, flat_factor=2) {
     stem_length_shade <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f )
     return( stem_length_shade )
 }
 
 ## R code 13.37
-p_raw_shade <- sapply( 1:6 , function(i) p_link_abar_shade( i ) )
-p_mu_shade <- apply( p_raw_shade , 2 , mean )
-p_ci_shade <- apply( p_raw_shade , 2 , PI )
-
-plot( NULL , main= "shade_2", xlab="genotype" , ylab="stem_length_shade" ,
-    ylim=c(0,300) , xaxt="n" , xlim=c(1,6) )
-axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
-lines( 1:6 , p_mu_shade )
-shade( p_ci_shade , 1:6 )
-
+p_raw_shade2 <- sapply( 1:6 , function(i) p_link_abar_shade2( i ) )
+p_mu_shade2 <- apply( p_raw_shade2 , 2 , mean )
+p_ci_shade2 <- apply( p_raw_shade2 , 2 , PI )
 
 
 #light condiction
 ## R code 13.36
-p_link_abar_light <- function( genotype , treatment_s=0, flat_factor=8) {
+p_link_abar_light8 <- function( genotype , treatment_s=0, flat_factor=8) {
     stem_length_light <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s + x[flat_factor]*sigma_f)
     return( stem_length_light )
 }
 
 ## R code 13.37
-p_raw_light <- sapply( 1:6 , function(i) p_link_abar_light( i ) )
-p_mu_light <- apply( p_raw_light , 2 , mean )
-p_ci_light <- apply( p_raw_light , 2 , PI )
+p_raw_light8 <- sapply( 1:6 , function(i) p_link_abar_light8( i ) )
+p_mu_light8 <- apply( p_raw_light8 , 2 , mean )
+p_ci_light8 <- apply( p_raw_light8 , 2 , PI )
 
 plot( NULL , main= "sun_2", xlab="genotype" , ylab="stem_length_light" ,
-    ylim=c(0,300) , xaxt="n" , xlim=c(1,6) )
+    ylim=c(50,250) , xaxt="n" , xlim=c(1,6) )
 axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
-lines( 1:6 , p_mu_light )
-shade( p_ci_light , 1:6 )
+
+lines( 1:6 , p_mu_shade1 ,col=col.alpha("black",1))
+shade( p_ci_shade1 , 1:6 )
+lines( 1:6 , p_mu_light7 ,col=col.alpha("red",1))
+shade( p_ci_light7 , 1:6 )
+lines( 1:6 , p_mu_shade2 ,col=col.alpha("blue",1))
+shade( p_ci_shade2 , 1:6 )
+lines( 1:6 , p_mu_light8 ,col=col.alpha("orange",1))
+shade( p_ci_light8 , 1:6 )
 
 ```
 
@@ -305,11 +302,6 @@ p_raw_asim_shade <- sapply( 1:6 , function(i) p_link_asim_shade( i ) )
 p_mu_asim_shade <- apply( p_raw_asim_shade , 2 , mean )
 p_ci_asim_shade <- apply( p_raw_asim_shade , 2 , PI )
 
-plot( NULL , main= "shade_marginal", xlab="genotype" , ylab="stem_length_shade" ,
-    ylim=c(0,300) , xaxt="n" , xlim=c(1,6) )
-axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
-lines( 1:6 , p_mu_asim_shade )
-shade( p_ci_asim_shade , 1:6 )
 
 ###light
 p_link_asim_light <- function( genotype , treatment_s=0) {
@@ -320,10 +312,14 @@ p_raw_asim_light <- sapply( 1:6 , function(i) p_link_asim_light( i ) )
 p_mu_asim_light <- apply( p_raw_asim_light , 2 , mean )
 p_ci_asim_light <- apply( p_raw_asim_light , 2 , PI )
 
-plot( NULL , main= "sun_marginal", xlab="genotype" , ylab="stem_length_light" ,
-    ylim=c(0,300) , xaxt="n" , xlim=c(1,6) )
+
+plot( NULL , main= "shade_marginal", xlab="genotype" , ylab="stem_length_shade" ,
+    ylim=c(50,250) , xaxt="n" , xlim=c(1,6) )
 axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
-lines( 1:6 , p_mu_asim_light )
+lines( 1:6 , p_mu_asim_shade , col=col.alpha("blue",0.3) , lwd=2)
+shade( p_ci_asim_shade , 1:6 )
+
+lines( 1:6 , p_mu_asim_light , col=col.alpha("red",0.3) , lwd=2)
 shade( p_ci_asim_light , 1:6 )
 ```
 
@@ -335,13 +331,9 @@ shade( p_ci_asim_light , 1:6 )
 plot( NULL , main= "new_clusters_shade", xlab="treatment" , ylab="stem_length_shade" ,
     ylim=c(0,300) , xaxt="n" , xlim=c(1,6) )
 axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
-for ( i in 1:100 ) lines( 1:6 , p_raw_asim_shade[i,] , col=col.alpha("black",0.25) , lwd=2 )
-
+for ( i in 1:100 ) lines( 1:6 , p_raw_asim_shade[i,] , col=col.alpha("blue",0.25) , lwd=2 )
 ###sun
-plot( NULL , main= "new_clusters_sun", xlab="treatment" , ylab="stem_length_light" ,
-    ylim=c(0,300) , xaxt="n" , xlim=c(1,6) )
-axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
-for ( i in 1:100 ) lines( 1:6 , p_raw_asim_light[i,] , col=col.alpha("black",0.25) , lwd=2 )
+for ( i in 1:100 ) lines( 1:6 , p_raw_asim_light[i,] , col=col.alpha("red",0.25) , lwd=2 )
 ```
 
 
@@ -352,16 +344,54 @@ for ( i in 1:100 ) lines( 1:6 , p_raw_asim_light[i,] , col=col.alpha("black",0.2
 ### Q6--optional)
 #### a) Which genotypes differ from MoneyMaker in Sun conditions?
 ```{r}
+#light condiction
+## R code 13.36
+p_link_abar_light <- function( genotype , treatment_s=0) {
+    stem_length_light <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s )
+    return( stem_length_light )
+}
 
+## R code 13.37
+p_raw_light <- sapply( 1:6 , function(i) p_link_abar_light( i ) )
+p_mu_light <- apply( p_raw_light , 2 , mean )
+p_ci_light <- apply( p_raw_light , 2 , PI )
+
+plot( NULL , xlab="genotype" , ylab="stem_length_light" ,
+    ylim=c(50,250) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_light )
+shade( p_ci_light , 1:6 )
 ```
 
 #### b) Which genotypes differ from MoneyMaker in Shade conditions?
 ```{r}
+#Shade condiction
+## R code 13.36
+p_link_abar_shade <- function( genotype , treatment_s=1) {
+    stem_length_shade <- with( post, a_bar + z[,genotype]*sigma_a + bI[,genotype]*treatment_s )
+    return( stem_length_shade )
+}
 
+## R code 13.37
+p_raw_shade <- sapply( 1:6 , function(i) p_link_abar_shade( i ) )
+p_mu_shade <- apply( p_raw_shade , 2 , mean )
+p_ci_shade <- apply( p_raw_shade , 2 , PI )
+
+plot( NULL , xlab="genotype" , ylab="stem_length_shade" ,
+    ylim=c(50,250) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_shade )
+shade( p_ci_shade , 1:6 )
 ```
 
 #### c) Which genotypes differ from MoneyMaker in their response to shade (difference in sun vs shade)?
 ```{r}
-
+plot( NULL , xlab="genotype" , ylab="stem_length" ,
+    ylim=c(50,250) , xaxt="n" , xlim=c(1,6) )
+axis( 1 , at=1:6 , labels=c("Moneymaker", "phyB1", "phyB1/B2", "phyB2", "phyEami3", "phyEami7") )
+lines( 1:6 , p_mu_light ,col=col.alpha("red",1))
+shade( p_ci_light , 1:6 )
+lines( 1:6 , p_mu_shade ,col=col.alpha("blue",1))
+shade( p_ci_shade , 1:6 )
 ```
 
