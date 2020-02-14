@@ -37,7 +37,7 @@ modle_base <- ulam(
         nov_germ ~ dbinom( 1 , p ) ,
         logit(p) <- a + bT*temperature_diff_fall,
         a ~ dnorm( 0 , 0.5 ),
-        bT ~ dnorm( 0 , 1.5 )
+        bT ~ dnorm( 0 , 1 )
     ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
 
 precis( modle_base, depth=2 )
@@ -58,7 +58,7 @@ str(prior)
 mu <- link( modle_base , post=prior , data=list( temperature_diff_fall=c(-2,2) ) )
 
 plot( NULL , xlim=c(-2,2) , ylim=c(0,1) )
-for ( i in 1:100 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+for ( i in 1:500 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
 ```
 
 #### Try a smaller prior
@@ -86,7 +86,7 @@ str(prior)
 mu <- link( modle_base_s , post=prior , data=list( temperature_diff_fall=c(-2,2) ) )
 
 plot( NULL , xlim=c(-2,2) , ylim=c(0,1) )
-for ( i in 1:100 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+for ( i in 1:500 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
 ```
 
 #### Try a larger prior
@@ -114,13 +114,38 @@ str(prior)
 mu <- link( modle_base_l , post=prior , data=list( temperature_diff_fall=c(-2,2) ) )
 
 plot( NULL , xlim=c(-2,2) , ylim=c(0,1) )
-for ( i in 1:100 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+for ( i in 1:500 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
 ```
+
+```{r}
+compare(modle_base,modle_base_s,modle_base_l)
+```
+
 
 ### 3. Fit a model that includes an effect of block (blk), with no pooling.
 
 ```{r}
+dat_list_b <- list(
+    temperature_diff_fall = clarkia$temperature_diff_fall,
+    nov_germ = clarkia$nov_germ,
+    blk = clarkia$blk)
 
+summary(dat_list_b)
+str(dat_list_b)
+```
+
+```{r}
+set.seed(1)
+modle_fixed <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a[blk] + bT*temperature_diff_fall,
+        a[blk] ~ dnorm( 0 , 0.5 ),
+        bT ~ dnorm( 0 , 1 )
+    ) , data=dat_list_b , chains=4 , cores=4 , log_lik=TRUE )
+
+precis( modle_fixed, depth=2 )
+plot( precis(modle_fixed,depth=2) )
 ```
 
 
@@ -129,20 +154,74 @@ for ( i in 1:100 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
 #### The experiment included many individuals from each of the 15 populations. So, each individual is not an independent representative of a given temperature, but might be similar to other plants from that population for reasons besides temperature.
 
 ```{r}
+set.seed(1)
+modle_multilevel_blk <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a[blk] + bT*temperature_diff_fall,
+        a[blk] ~ dnorm( a_bar , sigma ),
+        bT ~ dnorm( 0 , 1 ),
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dat_list_b , chains=4 , cores=4 , log_lik=TRUE )
 
+precis( modle_multilevel_blk, depth=2 )
+plot( precis(modle_multilevel_blk,depth=2) )
 ```
 
 
 ### 5. Build a model that accounts for this by including population (pop) and allowing partial pooling between populations A) without block, and B) with block included as in the model above. How does including population affect the temperature estimate?
 
 ```{r}
+dat_list_b_p <- list(
+    temperature_diff_fall = clarkia$temperature_diff_fall,
+    nov_germ = clarkia$nov_germ,
+    blk = clarkia$blk,
+    pop = as.integer(clarkia$pop))
 
+summary(dat_list_b_p)
+str(dat_list_b_p)
 ```
+
+```{r}
+set.seed(1)
+modle_multilevel_pop <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a[pop] + bT*temperature_diff_fall,
+        a[pop] ~ dnorm( a_bar , sigma ),
+        bT ~ dnorm( 0 , 1 ),
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dat_list_b_p , chains=4 , cores=4 , log_lik=TRUE )
+
+precis( modle_multilevel_pop, depth=2 )
+plot( precis(modle_multilevel_pop,depth=2) )
+```
+
+```{r}
+set.seed(1)
+modle_multilevel_pop_blk <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a[pop] + bT*temperature_diff_fall + bB[blk],
+        a[pop] ~ dnorm( a_bar , sigma ),
+        bT ~ dnorm( 0 , 1 ),
+        bB[blk] ~ dnorm( 0 , sigma_B ),
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 ),
+        sigma_B ~ dexp( 1 )
+    ) , data=dat_list_b_p , chains=4 , cores=4 , log_lik=TRUE )
+
+precis( modle_multilevel_pop_blk, depth=2 )
+plot( precis(modle_multilevel_pop_blk,depth=2) )
+```
+
 
 ### 6. Compare the five models you built using WAIC. Which fits best?
 
 ```{r}
-
+compare(modle_base, modle_fixed, modle_multilevel_blk, modle_multilevel_pop, modle_multilevel_pop_blk)
 ```
 
 ### 7. Plot effects of temperature difference for the average block, and also make a plot that includes the variability across blocks.
