@@ -182,10 +182,9 @@ group[i] + βx i
 #### 14E3. When is it possible for a varying slopes model to have fewer eff ective parameters (as estimated by WAIC or DIC) than the corresponding model with fi xed (unpooled) slopes? Explain.
 
 ### Medium.
-14M1. Repeat the café robot simulation from the beginning of the chapter. Th is time, set rho to zero,
-so that there is no correlation between intercepts and slopes. How does the posterior distribution of
-the correlation refl ect this change in the underlying simulation?
-14M2. Fit this multilevel model to the simulated café data:
+#### 14M1. Repeat the café robot simulation from the beginning of the chapter. Th is time, set rho to zero, so that there is no correlation between intercepts and slopes. How does the posterior distribution of the correlation refl ect this change in the underlying simulation?
+
+#### 14M2. Fit this multilevel model to the simulated café data:
 W i ∼ Normal(µi, σ)
 µi = α
 café[i] + β
@@ -199,7 +198,6 @@ café[i] A i
 σ β ∼ HalfCauchy(0, 1)
 Use WAIC to compare this model to the model from the chapter, the one that uses a multi-variate
 Gaussian prior. Explain the result.
-14M3. Re-estimate the varying slopes model for the UCBadmit data, now using a non-centered pa-
-rameterization. Compare the effi ciency of the forms of the model, using n_eff. Which is better?
-Which chain sampled faster?
+
+#### 14M3. Re-estimate the varying slopes model for the UCBadmit data, now using a non-centered parameterization. Compare the effi ciency of the forms of the model, using n_eff. Which is better? Which chain sampled faster?
 
