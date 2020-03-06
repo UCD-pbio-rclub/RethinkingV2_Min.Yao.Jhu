@@ -13,9 +13,64 @@ output:
 
 ### 14.1.1. Simulate the population.
 
-```{r}
-library(rethinking)
 
+```r
+library(rethinking)
+```
+
+```
+## Loading required package: rstan
+```
+
+```
+## Loading required package: StanHeaders
+```
+
+```
+## Loading required package: ggplot2
+```
+
+```
+## rstan (Version 2.19.2, GitRev: 2e1f913d3ca3)
+```
+
+```
+## For execution on a local, multicore CPU with excess RAM we recommend calling
+## options(mc.cores = parallel::detectCores()).
+## To avoid recompilation of unchanged Stan programs, we recommend calling
+## rstan_options(auto_write = TRUE)
+```
+
+```
+## For improved execution time, we recommend calling
+## Sys.setenv(LOCAL_CPPFLAGS = '-march=native')
+## although this causes Stan to throw an error on a few processors.
+```
+
+```
+## Loading required package: parallel
+```
+
+```
+## Loading required package: dagitty
+```
+
+```
+## rethinking (Version 1.93)
+```
+
+```
+## 
+## Attaching package: 'rethinking'
+```
+
+```
+## The following object is masked from 'package:stats':
+## 
+##     rstudent
+```
+
+```r
 ## R code 14.1
 a <- 3.5            # average morning wait time
 b <- (-1)           # average difference afternoon wait time
@@ -32,7 +87,15 @@ Sigma <- matrix( c(sigma_a^2,cov_ab,cov_ab,sigma_b^2) , ncol=2 )
 
 ## R code 14.4
 matrix( c(1,2,3,4) , nrow=2 , ncol=2 )
+```
 
+```
+##      [,1] [,2]
+## [1,]    1    3
+## [2,]    2    4
+```
+
+```r
 ## R code 14.5
 sigmas <- c(sigma_a,sigma_b) # standard deviations
 Rho <- matrix( c(1,rho,rho,1) , nrow=2 ) # correlation matrix
@@ -58,13 +121,40 @@ plot( a_cafe , b_cafe , col=rangi2,
 
 # overlay population distribution
 library(ellipse)
+```
+
+```
+## Warning: package 'ellipse' was built under R version 3.6.3
+```
+
+```
+## 
+## Attaching package: 'ellipse'
+```
+
+```
+## The following object is masked from 'package:rethinking':
+## 
+##     pairs
+```
+
+```
+## The following object is masked from 'package:graphics':
+## 
+##     pairs
+```
+
+```r
 for ( l in c(0.1,0.3,0.5,0.8,0.99) )
     lines(ellipse(Sigma,centre=Mu,level=l),col=col.alpha("black",0.2))
 ```
 
+![](chapter14-1_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
+
 ### 14.1.2. Simulate observations.
 
-```{r}
+
+```r
 ## R code 14.10
 set.seed(22)
 N_visits <- 10
@@ -78,11 +168,16 @@ d <- data.frame( cafe=cafe_id , afternoon=afternoon , wait=wait )
 
 ### 14.1.3. Th e varying slopes model.
 
-```{r}
+
+```r
 ## R code 14.11
 R <- rlkjcorr( 1e4 , K=2 , eta=2 )
 dens( R[,1,2] , xlab="correlation" )
+```
 
+![](chapter14-1_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
 ## R code 14.12
 m14.1 <- ulam(
     alist(
@@ -99,7 +194,11 @@ m14.1 <- ulam(
 ## R code 14.13
 post <- extract.samples(m14.1)
 dens( post$Rho[,1,2] )
+```
 
+![](chapter14-1_files/figure-html/unnamed-chunk-3-2.png)<!-- -->
+
+```r
 ## R code 14.14
 # compute unpooled estimates directly from data
 a1 <- sapply( 1:N_cafes ,
@@ -133,7 +232,11 @@ library(ellipse)
 for ( l in c(0.1,0.3,0.5,0.8,0.99) )
     lines(ellipse(Sigma_est,centre=Mu_est,level=l),
         col=col.alpha("black",0.2))
+```
 
+![](chapter14-1_files/figure-html/unnamed-chunk-3-3.png)<!-- -->
+
+```r
 ## R code 14.16
 # convert varying effects to waiting times
 wait_morning_1 <- (a1)
@@ -166,6 +269,8 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
     lines(ellipse(Sigma_est2,centre=Mu_est2,level=l),
         col=col.alpha("black",0.5))
 ```
+
+![](chapter14-1_files/figure-html/unnamed-chunk-3-4.png)<!-- -->
 
 ## 14.7. Practice
 
