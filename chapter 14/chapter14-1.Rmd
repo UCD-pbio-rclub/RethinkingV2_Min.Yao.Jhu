@@ -76,13 +76,16 @@ wait <- rnorm( N_visits*N_cafes , mu , sigma )
 d <- data.frame( cafe=cafe_id , afternoon=afternoon , wait=wait )
 ```
 
-### 14.1.3. Th e varying slopes model.
+### 14.1.3. The varying slopes model.
 
 ```{r}
 ## R code 14.11
 R <- rlkjcorr( 1e4 , K=2 , eta=2 )
 dens( R[,1,2] , xlab="correlation" )
+```
 
+```{r}
+### Rho ~ lkj_corr(2)
 ## R code 14.12
 m14.1 <- ulam(
     alist(
@@ -99,7 +102,49 @@ m14.1 <- ulam(
 ## R code 14.13
 post <- extract.samples(m14.1)
 dens( post$Rho[,1,2] )
+```
 
+```{r}
+### Rho ~ lkj_corr(1)
+## R code 14.12
+m14.1 <- ulam(
+    alist(
+        wait ~ normal( mu , sigma ),
+        mu <- a_cafe[cafe] + b_cafe[cafe]*afternoon,
+        c(a_cafe,b_cafe)[cafe] ~ multi_normal( c(a,b) , Rho , sigma_cafe ),
+        a ~ normal(5,2),
+        b ~ normal(-1,0.5),
+        sigma_cafe ~ exponential(1),
+        sigma ~ exponential(1),
+        Rho ~ lkj_corr(1)
+    ) , data=d , chains=4 , cores=4 )
+
+## R code 14.13
+post <- extract.samples(m14.1)
+dens( post$Rho[,1,2] )
+```
+
+```{r}
+### Rho ~ lkj_corr(5)
+## R code 14.12
+m14.1 <- ulam(
+    alist(
+        wait ~ normal( mu , sigma ),
+        mu <- a_cafe[cafe] + b_cafe[cafe]*afternoon,
+        c(a_cafe,b_cafe)[cafe] ~ multi_normal( c(a,b) , Rho , sigma_cafe ),
+        a ~ normal(5,2),
+        b ~ normal(-1,0.5),
+        sigma_cafe ~ exponential(1),
+        sigma ~ exponential(1),
+        Rho ~ lkj_corr(5)
+    ) , data=d , chains=4 , cores=4 )
+
+## R code 14.13
+post <- extract.samples(m14.1)
+dens( post$Rho[,1,2] )
+```
+
+```{r}
 ## R code 14.14
 # compute unpooled estimates directly from data
 a1 <- sapply( 1:N_cafes ,
@@ -133,7 +178,9 @@ library(ellipse)
 for ( l in c(0.1,0.3,0.5,0.8,0.99) )
     lines(ellipse(Sigma_est,centre=Mu_est,level=l),
         col=col.alpha("black",0.2))
+```
 
+```{r}
 ## R code 14.16
 # convert varying effects to waiting times
 wait_morning_1 <- (a1)
@@ -172,25 +219,130 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
 ### Easy.
 #### 14E1. Add to the following model varying slopes on the predictor x.
 y i ∼ Normal(µi, σ)
-µi = α
-group[i] + βx i
+µi = α group[i] + βxi
 αgroup ∼ Normal(α, σ α )
 α ∼ Normal(0, 10)
 β ∼ Normal(0, 1)
 σ ∼ HalfCauchy(0, 2)
 σ α ∼ HalfCauchy(0, 2)
-#### 14E2. Th ink up a context in which varying intercepts will be positively correlated with varying slopes. Provide a mechanistic explanation for the correlation.
 
-#### 14E3. When is it possible for a varying slopes model to have fewer eff ective parameters (as estimated by WAIC or DIC) than the corresponding model with fi xed (unpooled) slopes? Explain.
+#### model with varying slopes
+y i ∼ Normal(µi, σ)
+µi = α group[i] + β group[i]*xi
+c(α,β) group[i] ~ MVNormal( c(α,β) , S )
+S = diagonal_sigma_matrix * R * diagonal_sigma_matrix
+α ∼ Normal(0, 10)
+β ∼ Normal(0, 1)
+σ ∼ HalfCauchy(0, 2)
+σ α ∼ HalfCauchy(0, 2)
+σ β ∼ HalfCauchy(0, 2)
+R ~ LKJcorr(2) *note:(LKJcorr produces priors matrix of the size N_groups x N_groups)
+
+#### 14E2. Think up a context in which varying intercepts will be positively correlated with varying slopes. Provide a mechanistic explanation for the correlation.
+
+> resistance_to_Cuscuta ~ a[cultivar] + b[cultivar]*developmental_stage
+
+#### 14E3. When is it possible for a varying slopes model to have fewer effective parameters (as estimated by WAIC or DIC) than the corresponding model with fixed (unpooled) slopes? Explain.
+
+> It might happen when intercepts & slopes are highly correlated across groups. Because we treats correlation between intercepts & slopes independently for each group in the unpooled model; on the other hand, the pooled model relies on common distribution that can reduce the number of parameters.
 
 ### Medium.
-#### 14M1. Repeat the café robot simulation from the beginning of the chapter. Th is time, set rho to zero, so that there is no correlation between intercepts and slopes. How does the posterior distribution of the correlation refl ect this change in the underlying simulation?
+#### 14M1. Repeat the café robot simulation from the beginning of the chapter. This time, set rho to zero, so that there is no correlation between intercepts and slopes. How does the posterior distribution of the correlation reflect this change in the underlying simulation?
+
+```{r}
+library(rethinking)
+
+## R code 14.1
+a <- 3.5            # average morning wait time
+b <- (-1)           # average difference afternoon wait time
+sigma_a <- 1        # std dev in intercepts
+sigma_b <- 0.5      # std dev in slopes
+rho <- 0       # correlation between intercepts and slopes
+
+## R code 14.2
+Mu <- c( a , b )
+
+## R code 14.3
+cov_ab <- sigma_a*sigma_b*rho
+Sigma <- matrix( c(sigma_a^2,cov_ab,cov_ab,sigma_b^2) , ncol=2 )
+
+## R code 14.4
+matrix( c(1,2,3,4) , nrow=2 , ncol=2 )
+
+## R code 14.5
+sigmas <- c(sigma_a,sigma_b) # standard deviations
+Rho <- matrix( c(1,rho,rho,1) , nrow=2 ) # correlation matrix
+
+# now matrix multiply to get covariance matrix
+Sigma <- diag(sigmas) %*% Rho %*% diag(sigmas)
+
+## R code 14.6
+N_cafes <- 20
+
+## R code 14.7
+library(MASS)
+set.seed(5) # used to replicate example
+vary_effects <- mvrnorm( N_cafes , Mu , Sigma )
+
+## R code 14.8
+a_cafe <- vary_effects[,1]
+b_cafe <- vary_effects[,2]
+
+## R code 14.9
+plot( a_cafe , b_cafe , col=rangi2,
+    xlab="intercepts (a_cafe)" , ylab="slopes (b_cafe)" )
+
+# overlay population distribution
+library(ellipse)
+for ( l in c(0.1,0.3,0.5,0.8,0.99) )
+    lines(ellipse(Sigma,centre=Mu,level=l),col=col.alpha("black",0.2))
+```
+
+> Simulate observations.
+
+```{r}
+## R code 14.10
+set.seed(22)
+N_visits <- 10
+afternoon <- rep(0:1,N_visits*N_cafes/2)
+cafe_id <- rep( 1:N_cafes , each=N_visits )
+mu <- a_cafe[cafe_id] + b_cafe[cafe_id]*afternoon
+sigma <- 0.5  # std dev within cafes
+wait <- rnorm( N_visits*N_cafes , mu , sigma )
+d <- data.frame( cafe=cafe_id , afternoon=afternoon , wait=wait )
+```
+
+```{r}
+## R code 14.11
+R <- rlkjcorr( 1e4 , K=2 , eta=2 )
+dens( R[,1,2] , xlab="correlation" )
+```
+
+```{r}
+### Rho ~ lkj_corr(2)
+## R code 14.12
+m14.1 <- ulam(
+    alist(
+        wait ~ normal( mu , sigma ),
+        mu <- a_cafe[cafe] + b_cafe[cafe]*afternoon,
+        c(a_cafe,b_cafe)[cafe] ~ multi_normal( c(a,b) , Rho , sigma_cafe ),
+        a ~ normal(5,2),
+        b ~ normal(-1,0.5),
+        sigma_cafe ~ exponential(1),
+        sigma ~ exponential(1),
+        Rho ~ lkj_corr(2)
+    ) , data=d , chains=4 , cores=4 )
+
+## R code 14.13
+post <- extract.samples(m14.1)
+dens( post$Rho[,1,2] )
+```
+
+> there is no correlation between intercepts and slopes.
 
 #### 14M2. Fit this multilevel model to the simulated café data:
 W i ∼ Normal(µi, σ)
-µi = α
-café[i] + β
-café[i] A i
+µi = α café[i] + β café[i] A i
 αcafé ∼ Normal(α, σ α )
 βcafé ∼ Normal(β, σ β )
 α ∼ Normal(0, 10)
@@ -198,8 +350,10 @@ café[i] A i
 σ ∼ HalfCauchy(0, 1)
 σ α ∼ HalfCauchy(0, 1)
 σ β ∼ HalfCauchy(0, 1)
-Use WAIC to compare this model to the model from the chapter, the one that uses a multi-variate
-Gaussian prior. Explain the result.
 
-#### 14M3. Re-estimate the varying slopes model for the UCBadmit data, now using a non-centered parameterization. Compare the effi ciency of the forms of the model, using n_eff. Which is better? Which chain sampled faster?
+#### Use WAIC to compare this model to the model from the chapter, the one that uses a multi-variate Gaussian prior. Explain the result.
+
+> I think this is the model that we have in the text book.
+
+#### 14M3. Re-estimate the varying slopes model for the UCBadmit data, now using a non-centered parameterization. Compare the efficiency of the forms of the model, using n_eff. Which is better? Which chain sampled faster?
 
