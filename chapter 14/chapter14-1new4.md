@@ -1,21 +1,55 @@
 ---
-title: "chapter 14-1"
-author: "Min-Yao"
-date: "2020/3/5"
-output: 
-  html_document: 
+author: 'Min-Yao'
+date: 2020/3/5
+output:
+  html_document:
     keep_md: yes
+title: 'chapter 14-1'
 ---
 
-# 14 Adventures in Covariance
+14 Adventures in Covariance
+===========================
 
-## 14.1. Varying slopes by construction
+14.1. Varying slopes by construction
+------------------------------------
 
 ### 14.1.1. Simulate the population.
 
-```{r}
+``` {.r}
 library(rethinking)
+```
 
+    ## Loading required package: rstan
+
+    ## Loading required package: StanHeaders
+
+    ## Loading required package: ggplot2
+
+    ## rstan (Version 2.19.2, GitRev: 2e1f913d3ca3)
+
+    ## For execution on a local, multicore CPU with excess RAM we recommend calling
+    ## options(mc.cores = parallel::detectCores()).
+    ## To avoid recompilation of unchanged Stan programs, we recommend calling
+    ## rstan_options(auto_write = TRUE)
+
+    ## For improved execution time, we recommend calling
+    ## Sys.setenv(LOCAL_CPPFLAGS = '-march=native')
+    ## although this causes Stan to throw an error on a few processors.
+
+    ## Loading required package: parallel
+
+    ## Loading required package: dagitty
+
+    ## rethinking (Version 1.93)
+
+    ## 
+    ## Attaching package: 'rethinking'
+
+    ## The following object is masked from 'package:stats':
+    ## 
+    ##     rstudent
+
+``` {.r}
 ## R code 14.1
 a <- 3.5            # average morning wait time
 b <- (-1)           # average difference afternoon wait time
@@ -32,7 +66,13 @@ Sigma <- matrix( c(sigma_a^2,cov_ab,cov_ab,sigma_b^2) , ncol=2 )
 
 ## R code 14.4
 matrix( c(1,2,3,4) , nrow=2 , ncol=2 )
+```
 
+    ##      [,1] [,2]
+    ## [1,]    1    3
+    ## [2,]    2    4
+
+``` {.r}
 ## R code 14.5
 sigmas <- c(sigma_a,sigma_b) # standard deviations
 Rho <- matrix( c(1,rho,rho,1) , nrow=2 ) # correlation matrix
@@ -58,13 +98,31 @@ plot( a_cafe , b_cafe , col=rangi2,
 
 # overlay population distribution
 library(ellipse)
+```
+
+    ## Warning: package 'ellipse' was built under R version 3.6.3
+
+    ## 
+    ## Attaching package: 'ellipse'
+
+    ## The following object is masked from 'package:rethinking':
+    ## 
+    ##     pairs
+
+    ## The following object is masked from 'package:graphics':
+    ## 
+    ##     pairs
+
+``` {.r}
 for ( l in c(0.1,0.3,0.5,0.8,0.99) )
     lines(ellipse(Sigma,centre=Mu,level=l),col=col.alpha("black",0.2))
 ```
 
+![](chapter14-1_files/figure-html/unnamed-chunk-1-1.png)`<!-- -->`{=html}
+
 ### 14.1.2. Simulate observations.
 
-```{r}
+``` {.r}
 ## R code 14.10
 set.seed(22)
 N_visits <- 10
@@ -78,13 +136,15 @@ d <- data.frame( cafe=cafe_id , afternoon=afternoon , wait=wait )
 
 ### 14.1.3. The varying slopes model.
 
-```{r}
+``` {.r}
 ## R code 14.11
 R <- rlkjcorr( 1e4 , K=2 , eta=2 )
 dens( R[,1,2] , xlab="correlation" )
 ```
 
-```{r}
+![](chapter14-1_files/figure-html/unnamed-chunk-3-1.png)`<!-- -->`{=html}
+
+``` {.r}
 ### Rho ~ lkj_corr(2)
 ## R code 14.12
 m14.1 <- ulam(
@@ -102,11 +162,22 @@ m14.1 <- ulam(
 ## R code 14.13
 post <- extract.samples(m14.1)
 dens( post$Rho[,1,2] )
+```
 
+![](chapter14-1_files/figure-html/unnamed-chunk-4-1.png)`<!-- -->`{=html}
+
+``` {.r}
 precis(m14.1)
 ```
 
-```{r}
+    ## 46 vector or matrix parameters hidden. Use depth=2 to show them.
+
+    ##             mean         sd      5.5%      94.5%    n_eff      Rhat
+    ## a      3.6468261 0.21821411  3.297086  3.9969304 2564.340 0.9987379
+    ## b     -1.1319608 0.14579208 -1.367303 -0.8979367 2314.553 0.9992617
+    ## sigma  0.4739048 0.02684926  0.433027  0.5189561 1702.855 1.0022265
+
+``` {.r}
 ### Rho ~ lkj_corr(1)
 ## R code 14.12
 m14.1_c1 <- ulam(
@@ -124,11 +195,22 @@ m14.1_c1 <- ulam(
 ## R code 14.13
 post <- extract.samples(m14.1_c1)
 dens( post$Rho[,1,2] )
+```
 
+![](chapter14-1_files/figure-html/unnamed-chunk-5-1.png)`<!-- -->`{=html}
+
+``` {.r}
 precis(m14.1_c1)
 ```
 
-```{r}
+    ## 46 vector or matrix parameters hidden. Use depth=2 to show them.
+
+    ##             mean         sd       5.5%      94.5%    n_eff      Rhat
+    ## a      3.6553533 0.22125231  3.3140332  4.0099782 2417.997 0.9992763
+    ## b     -1.1399351 0.14128148 -1.3586341 -0.9118614 2883.671 0.9988086
+    ## sigma  0.4740647 0.02678603  0.4330486  0.5171705 2562.127 1.0011158
+
+``` {.r}
 ### Rho ~ lkj_corr(5)
 ## R code 14.12
 m14.1_c5 <- ulam(
@@ -146,16 +228,31 @@ m14.1_c5 <- ulam(
 ## R code 14.13
 post <- extract.samples(m14.1_c5)
 dens( post$Rho[,1,2] )
+```
 
+![](chapter14-1_files/figure-html/unnamed-chunk-6-1.png)`<!-- -->`{=html}
+
+``` {.r}
 precis(m14.1_c5)
 ```
 
-```{r}
+    ## 46 vector or matrix parameters hidden. Use depth=2 to show them.
+
+    ##            mean         sd       5.5%      94.5%    n_eff      Rhat
+    ## a      3.648945 0.21893177  3.3165434  3.9908264 2398.846 0.9982984
+    ## b     -1.133753 0.14544576 -1.3706509 -0.9004367 2282.692 0.9986514
+    ## sigma  0.473849 0.02658737  0.4339964  0.5177448 1967.775 1.0010761
+
+``` {.r}
 compare(m14.1, m14.1_c1, m14.1_c5)
 ```
 
+    ##              WAIC       SE     dWAIC       dSE    pWAIC    weight
+    ## m14.1    304.4816 17.66702 0.0000000        NA 32.65088 0.4385114
+    ## m14.1_c1 305.1842 17.65367 0.7026295 0.6356839 32.71520 0.3086078
+    ## m14.1_c5 305.5825 17.80683 1.1009348 0.7992392 33.02008 0.2528808
 
-```{r}
+``` {.r}
 ## R code 14.14
 # compute unpooled estimates directly from data
 a1 <- sapply( 1:N_cafes ,
@@ -191,7 +288,9 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
         col=col.alpha("black",0.2))
 ```
 
-```{r}
+![](chapter14-1_files/figure-html/unnamed-chunk-8-1.png)`<!-- -->`{=html}
+
+``` {.r}
 ## R code 14.16
 # convert varying effects to waiting times
 wait_morning_1 <- (a1)
@@ -225,12 +324,24 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
         col=col.alpha("black",0.5))
 ```
 
-## 14.7. Practice
+![](chapter14-1_files/figure-html/unnamed-chunk-9-1.png)`<!-- -->`{=html}
+
+14.7. Practice
+--------------
 
 ### Easy.
+
 #### 14E1. Add to the following model varying slopes on the predictor x.
 
-$$
+![
+y \_i \\sim Normal(\\mu\_i, \\sigma) \\\\
+\\mu\_i = \\alpha \_{group\[i\]} + \\beta x\_i \\\\
+\\alpha\_{group} \\sim Normal(\\alpha, \\sigma \_\\alpha ) \\\\
+\\alpha \\sim Normal(0, 10) \\\\
+\\beta \\sim Normal(0, 1) \\\\
+\\sigma \\sim HalfCauchy(0, 2) \\\\
+\\sigma \_\\alpha \\sim HalfCauchy(0, 2) \\\\
+](https://latex.codecogs.com/png.latex?%0Ay%20_i%20%5Csim%20Normal%28%5Cmu_i%2C%20%5Csigma%29%20%5C%5C%0A%5Cmu_i%20%3D%20%5Calpha%20_%7Bgroup%5Bi%5D%7D%20%2B%20%5Cbeta%20x_i%20%5C%5C%0A%5Calpha_%7Bgroup%7D%20%5Csim%20Normal%28%5Calpha%2C%20%5Csigma%20_%5Calpha%20%29%20%5C%5C%0A%5Calpha%20%5Csim%20Normal%280%2C%2010%29%20%5C%5C%0A%5Cbeta%20%5Csim%20Normal%280%2C%201%29%20%5C%5C%0A%5Csigma%20%5Csim%20HalfCauchy%280%2C%202%29%20%5C%5C%0A%5Csigma%20_%5Calpha%20%5Csim%20HalfCauchy%280%2C%202%29%20%5C%5C%0A "
 y _i \sim Normal(\mu_i, \sigma) \\
 \mu_i = \alpha _{group[i]} + \beta x_i \\
 \alpha_{group} \sim Normal(\alpha, \sigma _\alpha ) \\
@@ -238,11 +349,30 @@ y _i \sim Normal(\mu_i, \sigma) \\
 \beta \sim Normal(0, 1) \\
 \sigma \sim HalfCauchy(0, 2) \\
 \sigma _\alpha \sim HalfCauchy(0, 2) \\
-$$
+")
 
 #### model with varying slopes
 
-$$
+![
+y \_i \\sim Normal(\\mu\_i, \\sigma) \\\\
+\\mu\_i = \\alpha \_{group\[i\]} + \\beta \_{group\[i\]}\*x\_i \\\\
+\\begin{bmatrix}\\alpha \_{group}\\\\
+\\beta \_{group}
+\\end{bmatrix} \\sim MVNormal( \\begin{bmatrix}\\alpha\\\\
+\\beta
+\\end{bmatrix} , S ) \\\\
+S = \\begin{pmatrix}\\sigma \_\\alpha & 0\\\\
+0 & \\sigma \_\\alpha
+\\end{pmatrix} \* R \* \\begin{pmatrix}\\sigma \_\\alpha & 0\\\\
+0 & \\sigma \_\\alpha
+\\end{pmatrix} \\\\
+\\alpha \\sim Normal(0, 10) \\\\
+\\beta \\sim Normal(0, 1) \\\\
+\\sigma \\sim HalfCauchy(0, 2) \\\\
+\\sigma \_\\alpha \\sim HalfCauchy(0, 2) \\\\
+\\sigma \_\\beta \\sim HalfCauchy(0, 2) \\\\
+R \\sim LKJcorr(2) \\\\
+](https://latex.codecogs.com/png.latex?%0Ay%20_i%20%5Csim%20Normal%28%5Cmu_i%2C%20%5Csigma%29%20%5C%5C%0A%5Cmu_i%20%3D%20%5Calpha%20_%7Bgroup%5Bi%5D%7D%20%2B%20%5Cbeta%20_%7Bgroup%5Bi%5D%7D%2Ax_i%20%5C%5C%0A%5Cbegin%7Bbmatrix%7D%5Calpha%20_%7Bgroup%7D%5C%5C%0A%5Cbeta%20_%7Bgroup%7D%0A%5Cend%7Bbmatrix%7D%20%5Csim%20MVNormal%28%20%5Cbegin%7Bbmatrix%7D%5Calpha%5C%5C%0A%5Cbeta%0A%5Cend%7Bbmatrix%7D%20%2C%20S%20%29%20%5C%5C%0AS%20%3D%20%5Cbegin%7Bpmatrix%7D%5Csigma%20_%5Calpha%20%26%200%5C%5C%0A0%20%26%20%5Csigma%20_%5Calpha%0A%5Cend%7Bpmatrix%7D%20%2A%20R%20%2A%20%5Cbegin%7Bpmatrix%7D%5Csigma%20_%5Calpha%20%26%200%5C%5C%0A0%20%26%20%5Csigma%20_%5Calpha%0A%5Cend%7Bpmatrix%7D%20%5C%5C%0A%5Calpha%20%5Csim%20Normal%280%2C%2010%29%20%5C%5C%0A%5Cbeta%20%5Csim%20Normal%280%2C%201%29%20%5C%5C%0A%5Csigma%20%5Csim%20HalfCauchy%280%2C%202%29%20%5C%5C%0A%5Csigma%20_%5Calpha%20%5Csim%20HalfCauchy%280%2C%202%29%20%5C%5C%0A%5Csigma%20_%5Cbeta%20%5Csim%20HalfCauchy%280%2C%202%29%20%5C%5C%0AR%20%5Csim%20LKJcorr%282%29%20%5C%5C%0A "
 y _i \sim Normal(\mu_i, \sigma) \\
 \mu_i = \alpha _{group[i]} + \beta _{group[i]}*x_i \\
 \begin{bmatrix}\alpha _{group}\\
@@ -261,22 +391,32 @@ S = \begin{pmatrix}\sigma _\alpha & 0\\
 \sigma _\alpha \sim HalfCauchy(0, 2) \\
 \sigma _\beta \sim HalfCauchy(0, 2) \\
 R \sim LKJcorr(2) \\
-$$
+")
 
 #### 14E2. Think up a context in which varying intercepts will be positively correlated with varying slopes. Provide a mechanistic explanation for the correlation.
 
-> Lignin_amount_in_cortex ~ a[cultivar] + b[cultivar]*developmental_stage
+> Lignin\_amount\_in\_cortex \~ a\[cultivar\] +
+> b\[cultivar\]\*developmental\_stage
 
-> Different tomato cultivars accumulate different amount of lignin in their cortex region in response to Cuscuta. Resistant cultivars accumulate more lignin than susceptible cultivars. And, their developmental stages also influence the amount of lignin accumulation. Usually older plants accumulate more lignin in stem.
+> Different tomato cultivars accumulate different amount of lignin in
+> their cortex region in response to Cuscuta. Resistant cultivars
+> accumulate more lignin than susceptible cultivars. And, their
+> developmental stages also influence the amount of lignin accumulation.
+> Usually older plants accumulate more lignin in stem.
 
 #### 14E3. When is it possible for a varying slopes model to have fewer effective parameters (as estimated by WAIC or DIC) than the corresponding model with fixed (unpooled) slopes? Explain.
 
-> It might happen when intercepts & slopes are highly correlated across groups. Because we treats correlation between intercepts & slopes independently for each group in the unpooled model; on the other hand, the pooled model relies on common distribution that can reduce the number of parameters.
+> It might happen when intercepts & slopes are highly correlated across
+> groups. Because we treats correlation between intercepts & slopes
+> independently for each group in the unpooled model; on the other hand,
+> the pooled model relies on common distribution that can reduce the
+> number of parameters.
 
 ### Medium.
+
 #### 14M1. Repeat the café robot simulation from the beginning of the chapter. This time, set rho to zero, so that there is no correlation between intercepts and slopes. How does the posterior distribution of the correlation reflect this change in the underlying simulation?
 
-```{r}
+``` {.r}
 library(rethinking)
 
 ## R code 14.1
@@ -295,7 +435,13 @@ Sigma <- matrix( c(sigma_a^2,cov_ab,cov_ab,sigma_b^2) , ncol=2 )
 
 ## R code 14.4
 matrix( c(1,2,3,4) , nrow=2 , ncol=2 )
+```
 
+    ##      [,1] [,2]
+    ## [1,]    1    3
+    ## [2,]    2    4
+
+``` {.r}
 ## R code 14.5
 sigmas <- c(sigma_a,sigma_b) # standard deviations
 Rho <- matrix( c(1,rho,rho,1) , nrow=2 ) # correlation matrix
@@ -325,9 +471,11 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
     lines(ellipse(Sigma,centre=Mu,level=l),col=col.alpha("black",0.2))
 ```
 
+![](chapter14-1_files/figure-html/unnamed-chunk-10-1.png)`<!-- -->`{=html}
+
 > Simulate observations.
 
-```{r}
+``` {.r}
 ## R code 14.10
 set.seed(22)
 N_visits <- 10
@@ -339,13 +487,15 @@ wait <- rnorm( N_visits*N_cafes , mu , sigma )
 d <- data.frame( cafe=cafe_id , afternoon=afternoon , wait=wait )
 ```
 
-```{r}
+``` {.r}
 ## R code 14.11
 R <- rlkjcorr( 1e4 , K=2 , eta=2 )
 dens( R[,1,2] , xlab="correlation" )
 ```
 
-```{r}
+![](chapter14-1_files/figure-html/unnamed-chunk-12-1.png)`<!-- -->`{=html}
+
+``` {.r}
 ### Rho ~ lkj_corr(2)
 ## R code 14.12
 m14M1 <- ulam(
@@ -359,19 +509,55 @@ m14M1 <- ulam(
         sigma ~ exponential(1),
         Rho ~ lkj_corr(2)
     ) , data=d , chains=4 , cores=4, log_lik = TRUE )
+```
 
+    ## recompiling to avoid crashing R session
+
+``` {.r}
 ## R code 14.13
 post <- extract.samples(m14.1)
 dens( post$Rho[,1,2] )
+```
+
+![](chapter14-1_files/figure-html/unnamed-chunk-13-1.png)`<!-- -->`{=html}
+
+``` {.r}
 precis(m14.1)
+```
+
+    ## 46 vector or matrix parameters hidden. Use depth=2 to show them.
+
+    ##             mean         sd      5.5%      94.5%    n_eff      Rhat
+    ## a      3.6468261 0.21821411  3.297086  3.9969304 2564.340 0.9987379
+    ## b     -1.1319608 0.14579208 -1.367303 -0.8979367 2314.553 0.9992617
+    ## sigma  0.4739048 0.02684926  0.433027  0.5189561 1702.855 1.0022265
+
+``` {.r}
 precis(m14M1)
 ```
+
+    ## 46 vector or matrix parameters hidden. Use depth=2 to show them.
+
+    ##             mean         sd       5.5%      94.5%    n_eff      Rhat
+    ## a      3.7073856 0.22512288  3.3305259  4.0732699 2246.713 0.9996966
+    ## b     -1.1050016 0.15444627 -1.3423515 -0.8650223 2228.737 0.9983529
+    ## sigma  0.4726195 0.02624027  0.4327794  0.5157430 1911.457 0.9987458
 
 > there is no correlation between intercepts and slopes.
 
 #### 14M2. Fit this multilevel model to the simulated café data:
 
-$$
+![
+W \_i \\sim Normal(\\mu\_i, \\sigma) \\\\
+\\mu\_i = \\alpha \_{café\[i\]} + \\beta \_{café\[i\]} A \_i \\\\
+\\alpha\_{café} \\sim Normal(\\alpha, \\sigma \_\\alpha ) \\\\
+\\beta\_{café} \\sim Normal(\\beta, \\sigma \_\\beta ) \\\\
+\\alpha \\sim Normal(0, 10) \\\\
+\\beta \\sim Normal(0, 10) \\\\
+\\sigma \\sim HalfCauchy(0, 1) \\\\
+\\sigma \_\\alpha \\sim HalfCauchy(0, 1) \\\\
+\\sigma \_\\beta \\sim HalfCauchy(0, 1) \\\\
+](https://latex.codecogs.com/png.latex?%0AW%20_i%20%5Csim%20Normal%28%5Cmu_i%2C%20%5Csigma%29%20%5C%5C%0A%5Cmu_i%20%3D%20%5Calpha%20_%7Bcaf%C3%A9%5Bi%5D%7D%20%2B%20%5Cbeta%20_%7Bcaf%C3%A9%5Bi%5D%7D%20A%20_i%20%5C%5C%0A%5Calpha_%7Bcaf%C3%A9%7D%20%5Csim%20Normal%28%5Calpha%2C%20%5Csigma%20_%5Calpha%20%29%20%5C%5C%0A%5Cbeta_%7Bcaf%C3%A9%7D%20%5Csim%20Normal%28%5Cbeta%2C%20%5Csigma%20_%5Cbeta%20%29%20%5C%5C%0A%5Calpha%20%5Csim%20Normal%280%2C%2010%29%20%5C%5C%0A%5Cbeta%20%5Csim%20Normal%280%2C%2010%29%20%5C%5C%0A%5Csigma%20%5Csim%20HalfCauchy%280%2C%201%29%20%5C%5C%0A%5Csigma%20_%5Calpha%20%5Csim%20HalfCauchy%280%2C%201%29%20%5C%5C%0A%5Csigma%20_%5Cbeta%20%5Csim%20HalfCauchy%280%2C%201%29%20%5C%5C%0A "
 W _i \sim Normal(\mu_i, \sigma) \\
 \mu_i = \alpha _{café[i]} + \beta _{café[i]} A _i \\
 \alpha_{café} \sim Normal(\alpha, \sigma _\alpha ) \\
@@ -381,11 +567,11 @@ W _i \sim Normal(\mu_i, \sigma) \\
 \sigma \sim HalfCauchy(0, 1) \\
 \sigma _\alpha \sim HalfCauchy(0, 1) \\
 \sigma _\beta \sim HalfCauchy(0, 1) \\
-$$
+")
 
 #### Use WAIC to compare this model to the model from the chapter, the one that uses a multi-variate Gaussian prior. Explain the result.
 
-```{r}
+``` {.r}
 ## R code 14.12
 m14M2.1 <- ulam(
     alist(
@@ -401,10 +587,18 @@ m14M2.1 <- ulam(
     ) , data=d , chains=4 , cores=4, log_lik = TRUE)
 
 precis(m14M2.1)
-
 ```
 
-```{r}
+    ## 40 vector or matrix parameters hidden. Use depth=2 to show them.
+
+    ##               mean         sd       5.5%      94.5%    n_eff      Rhat
+    ## a        3.7198147 0.22698133  3.3581999  4.0827189 2513.451 0.9986344
+    ## b       -1.1037335 0.14361469 -1.3318676 -0.8721835 2458.293 0.9999257
+    ## sigma    0.4730062 0.02657617  0.4332071  0.5179588 1886.547 0.9989486
+    ## a_sigma  0.9648344 0.17413889  0.7247180  1.2704698 2236.877 0.9991617
+    ## b_sigma  0.6203021 0.13202147  0.4410577  0.8535043 1863.086 1.0005627
+
+``` {.r}
 ## R code 14.12
 m14M2.2 <- ulam(
     alist(
@@ -422,12 +616,22 @@ m14M2.2 <- ulam(
 precis(m14M2.2)
 ```
 
-```{r}
+    ## 40 vector or matrix parameters hidden. Use depth=2 to show them.
+
+    ##               mean         sd       5.5%      94.5%    n_eff      Rhat
+    ## a        3.6939161 0.22966499  3.3282750  4.0630345 2346.922 0.9994352
+    ## b       -1.1039129 0.15688277 -1.3549144 -0.8640025 2274.832 0.9989832
+    ## sigma    0.4738339 0.02755822  0.4320311  0.5198623 1682.950 1.0017309
+    ## a_sigma  0.9659869 0.16899186  0.7300187  1.2693349 2332.391 0.9988711
+    ## b_sigma  0.6272784 0.13309830  0.4408241  0.8604863 2066.724 0.9990433
+
+``` {.r}
 compare(m14.1, m14M2.1, m14M2.2)
 ```
 
+    ##             WAIC       SE    dWAIC      dSE    pWAIC    weight
+    ## m14.1   304.4816 17.66702 0.000000       NA 32.65088 0.5872245
+    ## m14M2.1 306.4812 17.88011 1.999628 1.772266 33.67501 0.2160680
+    ## m14M2.2 306.6690 17.81148 2.187378 1.759974 33.79364 0.1967076
 
-
-
-#### 14M3. Re-estimate the varying slopes model for the UCBadmit data, now using a non-centered parameterization. Compare the efficiency of the forms of the model, using n_eff. Which is better? Which chain sampled faster?
-
+#### 14M3. Re-estimate the varying slopes model for the UCBadmit data, now using a non-centered parameterization. Compare the efficiency of the forms of the model, using n\_eff. Which is better? Which chain sampled faster?

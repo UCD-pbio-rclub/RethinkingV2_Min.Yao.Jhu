@@ -386,35 +386,35 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
 #### 14E1. Add to the following model varying slopes on the predictor x.
 
 $$
-y _i ∼ Normal(µ_i, σ) \\
-µi = α _{group[i]} + βx_i \\
-α_{group} ∼ Normal(α, σ _α ) \\
-α ∼ Normal(0, 10) \\
-β ∼ Normal(0, 1) \\
-σ ∼ HalfCauchy(0, 2) \\
-σ _α ∼ HalfCauchy(0, 2) \\
+y _i \sim Normal(\mu_i, \sigma) \\
+\mu_i = \alpha _{group[i]} + \beta x_i \\
+\alpha_{group} \sim Normal(\alpha, \sigma _\alpha ) \\
+\alpha \sim Normal(0, 10) \\
+\beta \sim Normal(0, 1) \\
+\sigma \sim HalfCauchy(0, 2) \\
+\sigma _\alpha \sim HalfCauchy(0, 2) \\
 $$
 
 #### model with varying slopes
 
 $$
-y _i ∼ Normal(µ_i, σ) \\
-µi = α _{group[i]} + β _{group[i]}*x_i \\
-\begin{bmatrix}α _{group}\\
-β _{group}
-\end{bmatrix} \sim MVNormal( \begin{bmatrix}α\\
-β
+y _i \sim Normal(\mu_i, \sigma) \\
+\mu_i = \alpha _{group[i]} + \beta _{group[i]}*x_i \\
+\begin{bmatrix}\alpha _{group}\\
+\beta _{group}
+\end{bmatrix} \sim MVNormal( \begin{bmatrix}\alpha\\
+\beta
 \end{bmatrix} , S ) \\
-S = \begin{pmatrix}σ _α & 0\\
-0 & σ _α
-\end{pmatrix} * R * \begin{pmatrix}σ _α & 0\\
-0 & σ _α
+S = \begin{pmatrix}\sigma _\alpha & 0\\
+0 & \sigma _\alpha
+\end{pmatrix} * R * \begin{pmatrix}\sigma _\alpha & 0\\
+0 & \sigma _\alpha
 \end{pmatrix} \\
-α ∼ Normal(0, 10) \\
-β ∼ Normal(0, 1) \\
-σ ∼ HalfCauchy(0, 2) \\
-σ _α ∼ HalfCauchy(0, 2) \\
-σ _β ∼ HalfCauchy(0, 2) \\
+\alpha \sim Normal(0, 10) \\
+\beta \sim Normal(0, 1) \\
+\sigma \sim HalfCauchy(0, 2) \\
+\sigma _\alpha \sim HalfCauchy(0, 2) \\
+\sigma _\beta \sim HalfCauchy(0, 2) \\
 R \sim LKJcorr(2) \\
 $$
 
@@ -577,15 +577,18 @@ precis(m14M1)
 > there is no correlation between intercepts and slopes.
 
 #### 14M2. Fit this multilevel model to the simulated café data:
-W i ∼ Normal(µi, σ)
-µi = α café[i] + β café[i] A i
-αcafé ∼ Normal(α, σ α )
-βcafé ∼ Normal(β, σ β )
-α ∼ Normal(0, 10)
-β ∼ Normal(0, 10)
-σ ∼ HalfCauchy(0, 1)
-σ α ∼ HalfCauchy(0, 1)
-σ β ∼ HalfCauchy(0, 1)
+
+$$
+W _i \sim Normal(\mu_i, \sigma) \\
+\mu_i = \alpha _{café[i]} + \beta _{café[i]} A _i \\
+\alpha_{café} \sim Normal(\alpha, \sigma _\alpha ) \\
+\beta_{café} \sim Normal(\beta, \sigma _\beta ) \\
+\alpha \sim Normal(0, 10) \\
+\beta \sim Normal(0, 10) \\
+\sigma \sim HalfCauchy(0, 1) \\
+\sigma _\alpha \sim HalfCauchy(0, 1) \\
+\sigma _\beta \sim HalfCauchy(0, 1) \\
+$$
 
 #### Use WAIC to compare this model to the model from the chapter, the one that uses a multi-variate Gaussian prior. Explain the result.
 
