@@ -621,11 +621,38 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
 <h3>Easy.</h3>
 <div id="e1.-add-to-the-following-model-varying-slopes-on-the-predictor-x." class="section level4">
 <h4>14E1. Add to the following model varying slopes on the predictor x.</h4>
-<p>y i ∼ Normal(µi, σ) µi = α group[i] + βxi αgroup ∼ Normal(α, σ α ) α ∼ Normal(0, 10) β ∼ Normal(0, 1) σ ∼ HalfCauchy(0, 2) σ α ∼ HalfCauchy(0, 2)</p>
+<p><span class="math display">\[
+y _i ∼ Normal(µ_i, σ) \\
+µi = α _{group[i]} + βx_i \\
+α_{group} ∼ Normal(α, σ _α ) \\
+α ∼ Normal(0, 10) \\
+β ∼ Normal(0, 1) \\
+σ ∼ HalfCauchy(0, 2) \\
+σ _α ∼ HalfCauchy(0, 2) \\
+\]</span></p>
 </div>
 <div id="model-with-varying-slopes" class="section level4">
 <h4>model with varying slopes</h4>
-<p>y i ∼ Normal(µi, σ) µi = α group[i] + β group[i]<em>xi c(α,β) group[i] ~ MVNormal( c(α,β) , S ) S = diagonal_sigma_matrix </em> R * diagonal_sigma_matrix α ∼ Normal(0, 10) β ∼ Normal(0, 1) σ ∼ HalfCauchy(0, 2) σ α ∼ HalfCauchy(0, 2) σ β ∼ HalfCauchy(0, 2) R ~ LKJcorr(2) *note:(LKJcorr produces priors matrix of the size N_groups x N_groups)</p>
+<p><span class="math display">\[
+y _i ∼ Normal(µ_i, σ) \\
+µi = α _{group[i]} + β _{group[i]}*x_i \\
+\begin{bmatrix}α _{group}\\
+β _{group}
+\end{bmatrix} \sim MVNormal( \begin{bmatrix}α\\
+β
+\end{bmatrix} , S ) \\
+S = \begin{pmatrix}σ _α &amp; 0\\
+0 &amp; σ _α
+\end{pmatrix} * R * \begin{pmatrix}σ _α &amp; 0\\
+0 &amp; σ _α
+\end{pmatrix} \\
+α ∼ Normal(0, 10) \\
+β ∼ Normal(0, 1) \\
+σ ∼ HalfCauchy(0, 2) \\
+σ _α ∼ HalfCauchy(0, 2) \\
+σ _β ∼ HalfCauchy(0, 2) \\
+R \sim LKJcorr(2) \\
+\]</span></p>
 </div>
 <div id="e2.-think-up-a-context-in-which-varying-intercepts-will-be-positively-correlated-with-varying-slopes.-provide-a-mechanistic-explanation-for-the-correlation." class="section level4">
 <h4>14E2. Think up a context in which varying intercepts will be positively correlated with varying slopes. Provide a mechanistic explanation for the correlation.</h4>
