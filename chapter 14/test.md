@@ -7,6 +7,12 @@ output:
     keep_md: yes
 ---
 
+
+```r
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, autodep = TRUE)
+```
+
+
 $$
 y _i ∼ Normal(µ_i, σ) \\
 µi = α _{group[i]} + βx_i \\
