@@ -18,6 +18,16 @@ y _i ∼ Normal(µ_i, σ) \\
 $$
 
 $$
+y_i \sim Normal(\mu_i, \alpha) \\
+\mu_i = \alpha_{group[i]} + \beta X_i \\
+\alpha_{Group} \sim Normal(\alpha, \sigma_{\alpha}) \\
+\alpha \sim Normal(0, 10) \\
+\beta \sim Normal(0,1) \\
+\sigma \sim HalfCauchy(0, 2) \\
+\sigma_\alpha \sim HalfCauchy(0,2) \\
+$$
+
+$$
 y _i ∼ Normal(µ_i, σ) \\
 µi = α _{group[i]} + β _{group[i]}*x_i \\
 \begin{bmatrix}α _{group}\\
@@ -36,4 +46,16 @@ S = \begin{pmatrix}σ _α & 0\\
 σ _α ∼ HalfCauchy(0, 2) \\
 σ _β ∼ HalfCauchy(0, 2) \\
 R \sim LKJcorr(2) \\
+$$
+
+$$
+W _i ∼ Normal(µ_i, σ) \\
+µi = α _{café[i]} + β _{café[i]} A _i \\
+α_{café} ∼ Normal(α, σ _α ) \\
+β_{café} ∼ Normal(β, σ _β ) \\
+α ∼ Normal(0, 10) \\
+β ∼ Normal(0, 10) \\
+σ ∼ HalfCauchy(0, 1) \\
+σ _α ∼ HalfCauchy(0, 1) \\
+σ _β ∼ HalfCauchy(0, 1) \\
 $$
