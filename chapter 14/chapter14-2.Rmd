@@ -250,27 +250,143 @@ library(rethinking)
 data(UCBadmit)
 d <- UCBadmit
 d$gid <- ifelse( d$applicant.gender=="male" , 1L , 2L )
-dat <- list( A=d$admit , N=d$applications , gid=d$gid )
-m12.1 <- ulam(
+d$dept_id <- coerce_index( d$dept )
+
+dat <- list( A=d$admit , App=d$applications, gid=d$gid , did=d$dept_id )
+head(dat)
+
+m14M3 <- ulam(
     alist(
-        A ~ dbetabinom( N , pbar , theta ),
-        logit(pbar) <- a[gid],
+        A ~ dbinom( App, p ),
+        logit(p) <- a[gid]+a_dept[did],
         a[gid] ~ dnorm( 0 , 1.5 ),
-        theta ~ dexp(1)
-    ), data=dat , chains=4 )
+        a_dept[did] ~ dnorm( 0 , 1.5 )
+    ), data=dat , chains=4 , cores=4 , log_lik = TRUE)
+
+precis(m14M3, depth=2)
+```
+```{r}
+m14M3_noncentered <- ulam(
+    alist(
+        A ~ dbinom( App, p ),
+        logit(p) <- a_bar + a[gid]*sigma_a + a_dept[did]*sigma_d,
+        a_bar ~ dnorm( 0 , 1.5 ),
+        a[gid] ~ dnorm( 0 , 1.5 ),
+        a_dept[did] ~ dnorm( 0 , 1.5 ),
+        sigma_a ~ dexp(1),
+        sigma_d ~ dexp(1)
+    ), data=dat , chains=4 , cores=4 , log_lik = TRUE)
+
+precis(m14M3_noncentered, depth=2)
 ```
 
-
-#### 1. Revisit the Bangladesh fertility data, data(bangladesh). Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying eff ect estimates for both the intercepts and slopes, by district. Th en you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.
-
 ```{r}
-
+compare(m14M3,m14M3_noncentered)
+plot(compare(m14M3,m14M3_noncentered))
+plot(coeftab(m14M3,m14M3_noncentered))
 ```
 
+> Models look very similar between these two. The non-centered model samples much more efficiently, evidenced by the `n_eff` counts.
 
-#### 2. Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age infl uences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly infl uence contraceptive use. Draw a DAG that refl ects these hypothetical relationships. Th en build models needed to evaluate the DAG. You will need at least two models. Retain district and urban, as in Problem 1. What do you conclude about the causal infl uence of age and children?
+#### 1. Revisit the Bangladesh fertility data, data(bangladesh). Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.
 
 ```{r}
+data(bangladesh)
+d <- bangladesh
+head(d)
+summary(d)
+```
+```{r}
+d$did <- as.integer( as.factor(d$district) )
 
+dat_list <- list(
+C = d$use.contraception,
+D = d$did,
+U = d$urban)
+summary(dat_list)
+str(dat_list)
+```
+```{r}
+m14_1 <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U,
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik = TRUE)
+precis(m14_1, depth=3 , pars=c("Rho","Sigma"))
+```
+
+```{r}
+## modify from R code 14.14
+
+# extract posterior means of partially pooled estimates
+post <- extract.samples(m14_1)
+summary(post)
+
+a2 <- apply( post$a , 2 , mean )
+b2 <- apply( post$b , 2 , mean )
+
+# plot both and connect with lines
+plot( a2 , b2 , xlab="intercept" , ylab="slope" ,
+    pch=16 , col=rangi2 )
+
+## R code 14.15
+# compute posterior mean bivariate Gaussian
+Mu <- c( mean(post$a_bar) , mean(post$b_bar) )
+rho <- apply( post$Rho , 2:3 , mean )
+s <- apply( post$Sigma , 2 , mean )
+S <- diag(s) %*% rho %*% diag(s)
+
+# draw contours
+library(ellipse)
+for ( l in c(0.1,0.3,0.5,0.8,0.99) )
+    lines(ellipse(S,centre=Mu,level=l),
+        col=col.alpha("black",0.5))
+```
+
+> negative correlation
+
+```{r}
+u0 <- inv_logit( a2 )
+u1 <- inv_logit( a2 + b2 )
+## change from R code 14.9
+plot( u0 , u1 , xlim=c(0,1) , pch=16 , col=rangi2 , ylim=c(0,1) , xlab="urban: 0" , ylab="urban: 1" )
+```
+
+> Urban areas centered at 0.5, rural areas are mostly below 0.5
+
+#### 2. Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age influences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly influence contraceptive use. Draw a DAG that reflects these hypothetical relationships. Then build models needed to evaluate the DAG. You will need at least two models. Retain district and urban, as in Problem 1. What do you conclude about the causal infl uence of age and children?
+
+```{r}
+library(dagitty)
+library(ggdag)
+
+# age = A, number of children = N, contraceptive use = C
+dag <- dagitty("dag{A -> N -> C <- A}")
+
+ggdag(dag, layout = "circle")
+```
+
+```{r}
+dat_list$children <- standardize( d$living.children )
+dat_list$age <- standardize( d$age.centered )
+```
+
+```{r}
+m2.1 <- ulam(
+alist(
+C ~ bernoulli( p ),
+logit(p) <- a[did] + b[did]*urban + bA*age,
+c(a,b)[did] ~ multi_normal( c(abar,bbar) , Rho , Sigma ),
+abar ~ normal(0,1),
+c(bbar,bA) ~ normal(0,0.5),
+Rho ~ lkj_corr(2),
+Sigma ~ exponential(1)
+) , data=dat_list , chains=4 , cores=4 )
+precis(m2.1)
 ```
 
