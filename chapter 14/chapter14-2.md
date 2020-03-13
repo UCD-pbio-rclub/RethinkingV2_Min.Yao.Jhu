@@ -101,12 +101,23 @@ m14.2 <- ulam(
 ```
 
 ```
-## Warning: There were 21 divergent transitions after warmup. Increasing adapt_delta above 0.95 may help. See
+## Warning: There were 18 divergent transitions after warmup. Increasing adapt_delta above 0.95 may help. See
 ## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
 ```
 
 ```
+## Warning: There were 4 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
+## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
+```
+
+```
 ## Warning: Examine the pairs() plot to diagnose sampling problems
+```
+
+```
+## Warning: The largest R-hat is 1.05, indicating chains have not mixed.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#r-hat
 ```
 
 ```
@@ -171,15 +182,15 @@ precis( m14.2 , depth=2 , pars=c("sigma_actor","sigma_block") )
 ```
 
 ```
-##                     mean        sd       5.5%    94.5%    n_eff     Rhat
-## sigma_actor[1] 1.4130699 0.5070820 0.79378483 2.287950 873.8630 1.002899
-## sigma_actor[2] 0.9071626 0.4073926 0.39303427 1.641304 658.3038 1.003607
-## sigma_actor[3] 1.8502142 0.5722425 1.10494639 2.841244 782.0665 1.011019
-## sigma_actor[4] 1.5984014 0.6084718 0.83224354 2.625827 730.3286 1.003706
-## sigma_block[1] 0.4484111 0.3186458 0.06365281 1.003705 366.6279 1.012968
-## sigma_block[2] 0.4587676 0.3841681 0.05535773 1.071415 134.6001 1.030067
-## sigma_block[3] 0.3080470 0.2723701 0.02746726 0.800175 237.6404 1.003646
-## sigma_block[4] 0.5076786 0.3703358 0.06624749 1.157953 323.7654 1.009450
+##                     mean        sd       5.5%     94.5%     n_eff     Rhat
+## sigma_actor[1] 1.3841987 0.5113749 0.80779532 2.2807450  664.4278 1.006191
+## sigma_actor[2] 0.9114280 0.4245672 0.39238580 1.6637022  623.0577 1.009010
+## sigma_actor[3] 1.8511300 0.5775114 1.12221315 2.8491017 1101.8327 1.001155
+## sigma_actor[4] 1.5957079 0.6507045 0.86741875 2.7807044  575.9586 1.001588
+## sigma_block[1] 0.4321708 0.3100782 0.06401890 0.9897692  407.3245 1.003161
+## sigma_block[2] 0.4159335 0.3155206 0.04786570 0.9881891  278.3955 1.006305
+## sigma_block[3] 0.2943339 0.2682470 0.02410769 0.7685520  281.4468 1.016096
+## sigma_block[4] 0.5072097 0.3896404 0.06257776 1.1796562  199.4472 1.019242
 ```
 
 ```r
@@ -188,14 +199,14 @@ precis( m14.3 , depth=2 , pars=c("sigma_actor","sigma_block") )
 
 ```
 ##                     mean        sd       5.5%     94.5%     n_eff      Rhat
-## sigma_actor[1] 1.3652226 0.4833670 0.76576220 2.2433966  847.0636 1.0021813
-## sigma_actor[2] 0.9092769 0.4027059 0.40940633 1.6392240  897.8854 1.0020970
-## sigma_actor[3] 1.8355830 0.5839931 1.11166414 2.8705234 1328.7774 0.9992336
-## sigma_actor[4] 1.5527642 0.6082554 0.81787373 2.6108107 1237.8075 1.0013100
-## sigma_block[1] 0.4148750 0.3436741 0.03244216 1.0355886  917.7320 1.0010286
-## sigma_block[2] 0.4488272 0.3462758 0.04893881 1.0554674  994.4951 1.0011377
-## sigma_block[3] 0.2988193 0.2707048 0.02123616 0.8072268 1599.2003 1.0012349
-## sigma_block[4] 0.4811025 0.3812228 0.04046248 1.1802591  970.5590 1.0030107
+## sigma_actor[1] 1.4030374 0.4703800 0.80920340 2.2292551  959.1682 0.9994056
+## sigma_actor[2] 0.9141453 0.4036680 0.40268194 1.6548898 1406.2909 1.0007352
+## sigma_actor[3] 1.8623147 0.5837334 1.11978135 2.8475209 1271.2526 1.0015408
+## sigma_actor[4] 1.5816136 0.6261912 0.83713204 2.7226177 1144.9613 0.9986853
+## sigma_block[1] 0.4105534 0.3218220 0.03926324 1.0160577  934.2576 0.9997610
+## sigma_block[2] 0.4438367 0.3565338 0.03695063 1.0760632  800.8017 1.0041905
+## sigma_block[3] 0.2937417 0.2602322 0.02224211 0.7750928 1490.4543 0.9990829
+## sigma_block[4] 0.4573700 0.3647852 0.03589410 1.1118910 1023.5617 1.0047709
 ```
 
 ```r
@@ -204,7 +215,7 @@ WAIC(m14.3)
 
 ```
 ##       WAIC      lppd  penalty  std_err
-## 1 544.9845 -245.5176 26.97462 19.71861
+## 1 545.2385 -245.5763 27.04299 19.73106
 ```
 
 
@@ -439,126 +450,529 @@ library(rethinking)
 data(UCBadmit)
 d <- UCBadmit
 d$gid <- ifelse( d$applicant.gender=="male" , 1L , 2L )
-dat <- list( A=d$admit , N=d$applications , gid=d$gid )
-m12.1 <- ulam(
+d$dept_id <- coerce_index( d$dept )
+
+dat <- list( A=d$admit , App=d$applications, gid=d$gid , did=d$dept_id )
+head(dat)
+```
+
+```
+## $A
+##  [1] 512  89 353  17 120 202 138 131  53  94  22  24
+## 
+## $App
+##  [1] 825 108 560  25 325 593 417 375 191 393 373 341
+## 
+## $gid
+##  [1] 1 2 1 2 1 2 1 2 1 2 1 2
+## 
+## $did
+##  [1] 1 1 2 2 3 3 4 4 5 5 6 6
+```
+
+```r
+m14M3 <- ulam(
     alist(
-        A ~ dbetabinom( N , pbar , theta ),
-        logit(pbar) <- a[gid],
+        A ~ dbinom( App, p ),
+        logit(p) <- a[gid]+a_dept[did],
         a[gid] ~ dnorm( 0 , 1.5 ),
-        theta ~ dexp(1)
-    ), data=dat , chains=4 )
+        a_dept[did] ~ dnorm( 0 , 1.5 )
+    ), data=dat , chains=4 , cores=4 , log_lik = TRUE)
+```
+
+```
+## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess
+```
+
+```
+## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#tail-ess
+```
+
+```r
+precis(m14M3, depth=2)
+```
+
+```
+##                 mean        sd       5.5%      94.5%    n_eff     Rhat
+## a[1]      -0.5064077 0.5231652 -1.3193195  0.4317579 113.8004 1.038284
+## a[2]      -0.4105844 0.5219980 -1.2148134  0.5062906 111.7309 1.038882
+## a_dept[1]  1.0880336 0.5245530  0.1609037  1.9034814 113.5110 1.038709
+## a_dept[2]  1.0432687 0.5268083  0.1190381  1.8683348 113.1264 1.039081
+## a_dept[3] -0.1717109 0.5231228 -1.1253761  0.6364937 116.1088 1.036874
+## a_dept[4] -0.2065568 0.5284228 -1.1511796  0.6327985 113.6295 1.038662
+## a_dept[5] -0.6448683 0.5266484 -1.5646862  0.1759418 113.7115 1.038536
+## a_dept[6] -2.2054594 0.5320180 -3.1369072 -1.3926510 119.8059 1.038085
+```
+
+```r
+m14M3_noncentered <- ulam(
+    alist(
+        A ~ dbinom( App, p ),
+        logit(p) <- a_bar + a[gid]*sigma_a + a_dept[did]*sigma_d,
+        a_bar ~ dnorm( 0 , 1.5 ),
+        a[gid] ~ dnorm( 0 , 1.5 ),
+        a_dept[did] ~ dnorm( 0 , 1.5 ),
+        sigma_a ~ dexp(1),
+        sigma_d ~ dexp(1)
+    ), data=dat , chains=4 , cores=4 , log_lik = TRUE)
+```
+
+```
+## Warning: There were 6 divergent transitions after warmup. Increasing adapt_delta above 0.95 may help. See
+## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+```
+
+```
+## Warning: Examine the pairs() plot to diagnose sampling problems
+```
+
+```
+## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess
+```
+
+```r
+precis(m14M3_noncentered, depth=2)
+```
+
+```
+##                  mean        sd        5.5%      94.5%     n_eff      Rhat
+## a_bar     -0.50906245 0.6314060 -1.51748480  0.4704567  371.5326 1.0043960
+## a[1]      -0.41210670 1.1440757 -2.27340587  1.3585117 1057.6661 1.0012691
+## a[2]       0.21209378 1.0794520 -1.44466023  1.9226006  959.8455 0.9999065
+## a_dept[1]  1.37575940 0.7355592  0.24581919  2.5814415  359.5858 1.0134822
+## a_dept[2]  1.32324110 0.7274844  0.21441305  2.4916422  354.0231 1.0132348
+## a_dept[3] -0.09937764 0.5660124 -0.98579987  0.7954230  363.1063 1.0036413
+## a_dept[4] -0.13783920 0.5689404 -1.04697091  0.7691425  383.6665 1.0034284
+## a_dept[5] -0.65763529 0.5935557 -1.64628183  0.2754358  399.7298 1.0027363
+## a_dept[6] -2.48774648 0.9149094 -4.02167917 -1.0838275  443.9321 1.0109449
+## sigma_a    0.27250973 0.3534447  0.01191694  0.9801347  642.4252 1.0010184
+## sigma_d    0.94132295 0.3449272  0.54805740  1.5787329  406.2374 1.0197050
+```
+
+
+```r
+compare(m14M3,m14M3_noncentered)
+```
+
+```
+##                       WAIC       SE    dWAIC       dSE    pWAIC    weight
+## m14M3_noncentered 107.7078 16.13788 0.000000        NA 8.879626 0.6807714
+## m14M3             109.2224 15.94570 1.514638 0.8457569 9.801726 0.3192286
+```
+
+```r
+plot(compare(m14M3,m14M3_noncentered))
+```
+
+![](chapter14-2_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+
+```r
+plot(coeftab(m14M3,m14M3_noncentered))
+```
+
+![](chapter14-2_files/figure-html/unnamed-chunk-16-2.png)<!-- -->
+
+> Models look very similar between these two. The non-centered model samples much more efficiently, evidenced by the `n_eff` counts.
+
+#### 1. Revisit the Bangladesh fertility data, data(bangladesh). Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.
+
+> (1) district: ID number of administrative district each woman resided in
+
+> (2) use.contraception: An indicator (0/1) of whether the woman was using contraception
+
+> (3) urban: An indicator (0/1) of whether the woman lived in a city, as opposed to living in a
+rural area
+
+
+```r
+data(bangladesh)
+d <- bangladesh
+head(d)
+```
+
+```
+##   woman district use.contraception living.children age.centered urban
+## 1     1        1                 0               4      18.4400     1
+## 2     2        1                 0               1      -5.5599     1
+## 3     3        1                 0               3       1.4400     1
+## 4     4        1                 0               4       8.4400     1
+## 5     5        1                 0               1     -13.5590     1
+## 6     6        1                 0               1     -11.5600     1
+```
+
+```r
+summary(d)
+```
+
+```
+##      woman           district     use.contraception living.children
+##  Min.   :   1.0   Min.   : 1.00   Min.   :0.0000    Min.   :1.000  
+##  1st Qu.: 484.2   1st Qu.:14.00   1st Qu.:0.0000    1st Qu.:1.000  
+##  Median : 967.5   Median :29.00   Median :0.0000    Median :3.000  
+##  Mean   : 967.5   Mean   :29.35   Mean   :0.3925    Mean   :2.652  
+##  3rd Qu.:1450.8   3rd Qu.:45.00   3rd Qu.:1.0000    3rd Qu.:4.000  
+##  Max.   :1934.0   Max.   :61.00   Max.   :1.0000    Max.   :4.000  
+##   age.centered            urban       
+##  Min.   :-13.560000   Min.   :0.0000  
+##  1st Qu.: -7.559900   1st Qu.:0.0000  
+##  Median : -1.559900   Median :0.0000  
+##  Mean   :  0.002198   Mean   :0.2906  
+##  3rd Qu.:  6.440000   3rd Qu.:1.0000  
+##  Max.   : 19.440000   Max.   :1.0000
+```
+
+```r
+d$did <- as.integer( as.factor(d$district) )
+
+dat_list <- list(
+C = d$use.contraception,
+D = d$did,
+U = d$urban)
+summary(dat_list)
+```
+
+```
+##   Length Class  Mode   
+## C 1934   -none- numeric
+## D 1934   -none- numeric
+## U 1934   -none- numeric
+```
+
+```r
+str(dat_list)
+```
+
+```
+## List of 3
+##  $ C: int [1:1934] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ D: int [1:1934] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ U: int [1:1934] 1 1 1 1 1 1 1 1 1 1 ...
+```
+
+```r
+m14_1 <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U,
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik = TRUE)
+```
+
+```
+## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess
+```
+
+```
+## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#tail-ess
+```
+
+```r
+precis(m14_1, depth=3 , pars=c("Rho","Sigma"))
+```
+
+```
+##                mean           sd       5.5%      94.5%     n_eff      Rhat
+## Rho[1,1]  1.0000000 0.000000e+00  1.0000000  1.0000000       NaN       NaN
+## Rho[1,2] -0.6554806 1.551907e-01 -0.8648101 -0.3750117  499.1297 1.0058996
+## Rho[2,1] -0.6554806 1.551907e-01 -0.8648101 -0.3750117  499.1297 1.0058996
+## Rho[2,2]  1.0000000 5.716652e-17  1.0000000  1.0000000 1859.7799 0.9979980
+## Sigma[1]  0.5812115 9.626065e-02  0.4398744  0.7447574  592.7369 0.9999326
+## Sigma[2]  0.7900806 1.994913e-01  0.4860201  1.1241375  242.7275 1.0129656
+```
+
+
+```r
+## modify from R code 14.14
+
+# extract posterior means of partially pooled estimates
+post <- extract.samples(m14_1)
+summary(post)
+```
+
+```
+##       Length Class  Mode   
+## b     120000 -none- numeric
+## a     120000 -none- numeric
+## a_bar   2000 -none- numeric
+## b_bar   2000 -none- numeric
+## Rho     8000 -none- numeric
+## Sigma   4000 -none- numeric
+```
+
+```r
+a2 <- apply( post$a , 2 , mean )
+b2 <- apply( post$b , 2 , mean )
+
+# plot both and connect with lines
+plot( a2 , b2 , xlab="intercept" , ylab="slope" ,
+    pch=16 , col=rangi2 )
+
+## R code 14.15
+# compute posterior mean bivariate Gaussian
+Mu <- c( mean(post$a_bar) , mean(post$b_bar) )
+rho <- apply( post$Rho , 2:3 , mean )
+s <- apply( post$Sigma , 2 , mean )
+S <- diag(s) %*% rho %*% diag(s)
+
+# draw contours
+library(ellipse)
+```
+
+```
+## Warning: package 'ellipse' was built under R version 3.6.3
 ```
 
 ```
 ## 
-## SAMPLING FOR MODEL '379c3c9629d2ce418bfe29904221f6bc' NOW (CHAIN 1).
-## Chain 1: 
-## Chain 1: Gradient evaluation took 0 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
-## Chain 1: Adjust your expectations accordingly!
-## Chain 1: 
-## Chain 1: 
-## Chain 1: Iteration:   1 / 1000 [  0%]  (Warmup)
-## Chain 1: Iteration: 100 / 1000 [ 10%]  (Warmup)
-## Chain 1: Iteration: 200 / 1000 [ 20%]  (Warmup)
-## Chain 1: Iteration: 300 / 1000 [ 30%]  (Warmup)
-## Chain 1: Iteration: 400 / 1000 [ 40%]  (Warmup)
-## Chain 1: Iteration: 500 / 1000 [ 50%]  (Warmup)
-## Chain 1: Iteration: 501 / 1000 [ 50%]  (Sampling)
-## Chain 1: Iteration: 600 / 1000 [ 60%]  (Sampling)
-## Chain 1: Iteration: 700 / 1000 [ 70%]  (Sampling)
-## Chain 1: Iteration: 800 / 1000 [ 80%]  (Sampling)
-## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
-## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
-## Chain 1: 
-## Chain 1:  Elapsed Time: 0.076 seconds (Warm-up)
-## Chain 1:                0.06 seconds (Sampling)
-## Chain 1:                0.136 seconds (Total)
-## Chain 1: 
+## Attaching package: 'ellipse'
+```
+
+```
+## The following object is masked from 'package:rethinking':
 ## 
-## SAMPLING FOR MODEL '379c3c9629d2ce418bfe29904221f6bc' NOW (CHAIN 2).
-## Chain 2: 
-## Chain 2: Gradient evaluation took 0 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
-## Chain 2: Adjust your expectations accordingly!
-## Chain 2: 
-## Chain 2: 
-## Chain 2: Iteration:   1 / 1000 [  0%]  (Warmup)
-## Chain 2: Iteration: 100 / 1000 [ 10%]  (Warmup)
-## Chain 2: Iteration: 200 / 1000 [ 20%]  (Warmup)
-## Chain 2: Iteration: 300 / 1000 [ 30%]  (Warmup)
-## Chain 2: Iteration: 400 / 1000 [ 40%]  (Warmup)
-## Chain 2: Iteration: 500 / 1000 [ 50%]  (Warmup)
-## Chain 2: Iteration: 501 / 1000 [ 50%]  (Sampling)
-## Chain 2: Iteration: 600 / 1000 [ 60%]  (Sampling)
-## Chain 2: Iteration: 700 / 1000 [ 70%]  (Sampling)
-## Chain 2: Iteration: 800 / 1000 [ 80%]  (Sampling)
-## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
-## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
-## Chain 2: 
-## Chain 2:  Elapsed Time: 0.079 seconds (Warm-up)
-## Chain 2:                0.059 seconds (Sampling)
-## Chain 2:                0.138 seconds (Total)
-## Chain 2: 
+##     pairs
+```
+
+```
+## The following object is masked from 'package:graphics':
 ## 
-## SAMPLING FOR MODEL '379c3c9629d2ce418bfe29904221f6bc' NOW (CHAIN 3).
-## Chain 3: 
-## Chain 3: Gradient evaluation took 0 seconds
-## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
-## Chain 3: Adjust your expectations accordingly!
-## Chain 3: 
-## Chain 3: 
-## Chain 3: Iteration:   1 / 1000 [  0%]  (Warmup)
-## Chain 3: Iteration: 100 / 1000 [ 10%]  (Warmup)
-## Chain 3: Iteration: 200 / 1000 [ 20%]  (Warmup)
-## Chain 3: Iteration: 300 / 1000 [ 30%]  (Warmup)
-## Chain 3: Iteration: 400 / 1000 [ 40%]  (Warmup)
-## Chain 3: Iteration: 500 / 1000 [ 50%]  (Warmup)
-## Chain 3: Iteration: 501 / 1000 [ 50%]  (Sampling)
-## Chain 3: Iteration: 600 / 1000 [ 60%]  (Sampling)
-## Chain 3: Iteration: 700 / 1000 [ 70%]  (Sampling)
-## Chain 3: Iteration: 800 / 1000 [ 80%]  (Sampling)
-## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
-## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
-## Chain 3: 
-## Chain 3:  Elapsed Time: 0.073 seconds (Warm-up)
-## Chain 3:                0.065 seconds (Sampling)
-## Chain 3:                0.138 seconds (Total)
-## Chain 3: 
+##     pairs
+```
+
+```r
+for ( l in c(0.1,0.3,0.5,0.8,0.99) )
+    lines(ellipse(S,centre=Mu,level=l),
+        col=col.alpha("black",0.5))
+```
+
+![](chapter14-2_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+
+> negative correlation
+
+
+```r
+u0 <- inv_logit( a2 )
+u1 <- inv_logit( a2 + b2 )
+## change from R code 14.9
+plot( u0 , u1 , xlim=c(0,1) , pch=16 , col=rangi2 , ylim=c(0,1) , xlab="urban: 0" , ylab="urban: 1" )
+```
+
+![](chapter14-2_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+
+> Urban areas centered at 0.5, rural areas are mostly below 0.5
+
+#### 2. Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age influences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly influence contraceptive use. Draw a DAG that reflects these hypothetical relationships. Then build models needed to evaluate the DAG. You will need at least two models. Retain district and urban, as in Problem 1. What do you conclude about the causal influence of age and children?
+
+
+```r
+library(rethinking)
+library(dagitty)
+library(ggdag)
+```
+
+```
 ## 
-## SAMPLING FOR MODEL '379c3c9629d2ce418bfe29904221f6bc' NOW (CHAIN 4).
-## Chain 4: 
-## Chain 4: Gradient evaluation took 0 seconds
-## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
-## Chain 4: Adjust your expectations accordingly!
-## Chain 4: 
-## Chain 4: 
-## Chain 4: Iteration:   1 / 1000 [  0%]  (Warmup)
-## Chain 4: Iteration: 100 / 1000 [ 10%]  (Warmup)
-## Chain 4: Iteration: 200 / 1000 [ 20%]  (Warmup)
-## Chain 4: Iteration: 300 / 1000 [ 30%]  (Warmup)
-## Chain 4: Iteration: 400 / 1000 [ 40%]  (Warmup)
-## Chain 4: Iteration: 500 / 1000 [ 50%]  (Warmup)
-## Chain 4: Iteration: 501 / 1000 [ 50%]  (Sampling)
-## Chain 4: Iteration: 600 / 1000 [ 60%]  (Sampling)
-## Chain 4: Iteration: 700 / 1000 [ 70%]  (Sampling)
-## Chain 4: Iteration: 800 / 1000 [ 80%]  (Sampling)
-## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
-## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
-## Chain 4: 
-## Chain 4:  Elapsed Time: 0.081 seconds (Warm-up)
-## Chain 4:                0.065 seconds (Sampling)
-## Chain 4:                0.146 seconds (Total)
-## Chain 4:
+## Attaching package: 'ggdag'
+```
+
+```
+## The following object is masked from 'package:ggplot2':
+## 
+##     expand_scale
+```
+
+```
+## The following object is masked from 'package:stats':
+## 
+##     filter
+```
+
+```r
+# age = A, number of children = N, contraceptive use = C
+dag <- dagitty("dag{A -> N -> C <- A}")
+
+ggdag(dag, layout = "circle")
+```
+
+![](chapter14-2_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+
+
+```r
+dat_list$children <- scale( d$living.children )
+dat_list$age <- scale( d$age.centered )
+str(dat_list)
+```
+
+```
+## List of 5
+##  $ C       : int [1:1934] 0 0 0 0 0 0 0 0 0 0 ...
+##  $ D       : int [1:1934] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ U       : int [1:1934] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ children: num [1:1934, 1] 1.08 -1.33 0.28 1.08 -1.33 ...
+##   ..- attr(*, "scaled:center")= num 2.65
+##   ..- attr(*, "scaled:scale")= num 1.24
+##  $ age     : num [1:1934, 1] 2.046 -0.617 0.16 0.936 -1.505 ...
+##   ..- attr(*, "scaled:center")= num 0.0022
+##   ..- attr(*, "scaled:scale")= num 9.01
 ```
 
 
-#### 1. Revisit the Bangladesh fertility data, data(bangladesh). Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying eff ect estimates for both the intercepts and slopes, by district. Th en you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.
+```r
+m14_2_A <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U + bA*age,
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    bA ~ normal(0,1),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik = TRUE)
+```
+
+```
+## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess
+```
+
+```
+## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#tail-ess
+```
+
+```r
+precis(m14_2_A)
+```
+
+```
+## 126 vector or matrix parameters hidden. Use depth=2 to show them.
+```
+
+```
+##              mean         sd         5.5%      94.5%     n_eff      Rhat
+## a_bar -0.70706097 0.10115705 -0.869891748 -0.5453902 1600.0940 0.9991011
+## b_bar  0.69346026 0.16944793  0.423520461  0.9643340  941.4413 1.0028867
+## bA     0.08577172 0.04906308  0.006448286  0.1636043 3479.7745 0.9998846
+```
 
 
+```r
+m14_2_N <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U + bN*children,
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    bN ~ normal(0,1),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik = TRUE)
+```
+
+```
+## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess
+```
+
+```
+## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#tail-ess
+```
+
+```r
+precis(m14_2_N)
+```
+
+```
+## 126 vector or matrix parameters hidden. Use depth=2 to show them.
+```
+
+```
+##             mean        sd       5.5%      94.5%    n_eff      Rhat
+## a_bar -0.7329938 0.1046680 -0.9052016 -0.5717538 1485.275 0.9992384
+## b_bar  0.7307053 0.1712786  0.4585480  1.0013288 1059.176 0.9988646
+## bN     0.3318769 0.0528917  0.2465572  0.4173497 3125.838 0.9990371
+```
 
 
-#### 2. Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age infl uences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly infl uence contraceptive use. Draw a DAG that refl ects these hypothetical relationships. Th en build models needed to evaluate the DAG. You will need at least two models. Retain district and urban, as in Problem 1. What do you conclude about the causal infl uence of age and children?
+```r
+m14_2_AN <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U + bA*age + bN*children,
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    bA ~ normal(0,1),
+    bN ~ normal(0,1),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik = TRUE)
+```
+
+```
+## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess
+```
+
+```
+## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#tail-ess
+```
+
+```r
+precis(m14_2_AN)
+```
+
+```
+## 126 vector or matrix parameters hidden. Use depth=2 to show them.
+```
+
+```
+##             mean         sd       5.5%      94.5%     n_eff      Rhat
+## a_bar -0.7384125 0.10773434 -0.9109091 -0.5718907  992.2761 1.0010241
+## b_bar  0.7549581 0.16636825  0.4929528  1.0287640  683.9958 1.0065616
+## bA    -0.2765666 0.07102950 -0.3910823 -0.1613399 1873.4339 1.0008842
+## bN     0.5276055 0.07322961  0.4109051  0.6487713 1946.8364 0.9988404
+```
 
 
+```r
+compare(m14_2_A,m14_2_N,m14_2_AN)
+```
+
+```
+##              WAIC       SE    dWAIC       dSE    pWAIC       weight
+## m14_2_AN 2412.492 30.69770  0.00000        NA 54.93706 9.993846e-01
+## m14_2_N  2427.277 29.96797 14.78520  7.589644 54.25824 6.154123e-04
+## m14_2_A  2467.395 28.12411 54.90305 14.596464 53.13880 1.195876e-12
+```
+
+```r
+plot(compare(m14_2_A,m14_2_N,m14_2_AN))
+```
+
+![](chapter14-2_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
 
