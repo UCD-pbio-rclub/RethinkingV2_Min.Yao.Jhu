@@ -290,6 +290,13 @@ plot(coeftab(m14M3,m14M3_noncentered))
 
 #### 1. Revisit the Bangladesh fertility data, data(bangladesh). Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.
 
+> (1) district: ID number of administrative district each woman resided in
+
+> (2) use.contraception: An indicator (0/1) of whether the woman was using contraception
+
+> (3) urban: An indicator (0/1) of whether the woman lived in a city, as opposed to living in a
+rural area
+
 ```{r}
 data(bangladesh)
 d <- bangladesh
@@ -359,9 +366,10 @@ plot( u0 , u1 , xlim=c(0,1) , pch=16 , col=rangi2 , ylim=c(0,1) , xlab="urban: 0
 
 > Urban areas centered at 0.5, rural areas are mostly below 0.5
 
-#### 2. Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age influences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly influence contraceptive use. Draw a DAG that reflects these hypothetical relationships. Then build models needed to evaluate the DAG. You will need at least two models. Retain district and urban, as in Problem 1. What do you conclude about the causal infl uence of age and children?
+#### 2. Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age influences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly influence contraceptive use. Draw a DAG that reflects these hypothetical relationships. Then build models needed to evaluate the DAG. You will need at least two models. Retain district and urban, as in Problem 1. What do you conclude about the causal influence of age and children?
 
 ```{r}
+library(rethinking)
 library(dagitty)
 library(ggdag)
 
@@ -372,21 +380,59 @@ ggdag(dag, layout = "circle")
 ```
 
 ```{r}
-dat_list$children <- standardize( d$living.children )
-dat_list$age <- standardize( d$age.centered )
+dat_list$children <- scale( d$living.children )
+dat_list$age <- scale( d$age.centered )
+str(dat_list)
 ```
 
 ```{r}
-m2.1 <- ulam(
-alist(
-C ~ bernoulli( p ),
-logit(p) <- a[did] + b[did]*urban + bA*age,
-c(a,b)[did] ~ multi_normal( c(abar,bbar) , Rho , Sigma ),
-abar ~ normal(0,1),
-c(bbar,bA) ~ normal(0,0.5),
-Rho ~ lkj_corr(2),
-Sigma ~ exponential(1)
-) , data=dat_list , chains=4 , cores=4 )
-precis(m2.1)
+m14_2_A <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U + bA*age,
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    bA ~ normal(0,1),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik = TRUE)
+precis(m14_2_A)
+```
+
+```{r}
+m14_2_N <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U + bN*children,
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    bN ~ normal(0,1),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik = TRUE)
+precis(m14_2_N)
+```
+
+```{r}
+m14_2_AN <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U + bA*age + bN*children,
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    bA ~ normal(0,1),
+    bN ~ normal(0,1),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik = TRUE)
+precis(m14_2_AN)
+```
+
+```{r}
+compare(m14_2_A,m14_2_N,m14_2_AN)
+plot(compare(m14_2_A,m14_2_N,m14_2_AN))
 ```
 
