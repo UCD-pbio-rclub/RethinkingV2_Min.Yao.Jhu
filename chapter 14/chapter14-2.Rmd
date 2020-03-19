@@ -258,9 +258,15 @@ head(dat)
 m14M3 <- ulam(
     alist(
         A ~ dbinom( App, p ),
-        logit(p) <- a[gid]+a_dept[did],
-        a[gid] ~ dnorm( 0 , 1.5 ),
-        a_dept[did] ~ dnorm( 0 , 1.5 )
+        logit(p) <- g[did]+alpha[gid, did],
+        
+        # adaptive priors
+        vector[6]:alpha[gid] ~ multi_normal(0,Rho_gid,sigma_gid),
+        
+        # fixed priors
+        g[did] ~ dnorm( 0 , 1 ),
+        sigma_gid ~ dexp(1),
+        Rho_gid ~ dlkjcorr(4)
     ), data=dat , chains=4 , cores=4 , log_lik = TRUE)
 
 precis(m14M3, depth=2)
@@ -269,12 +275,20 @@ precis(m14M3, depth=2)
 m14M3_noncentered <- ulam(
     alist(
         A ~ dbinom( App, p ),
-        logit(p) <- a_bar + a[gid]*sigma_a + a_dept[did]*sigma_d,
-        a_bar ~ dnorm( 0 , 1.5 ),
-        a[gid] ~ dnorm( 0 , 1.5 ),
-        a_dept[did] ~ dnorm( 0 , 1.5 ),
-        sigma_a ~ dexp(1),
-        sigma_d ~ dexp(1)
+        logit(p) <- g[did]+alpha[gid, did],
+        
+        # adaptive priors - non-centered
+        transpars> matrix[gid,6]:alpha <- 
+          compose_noncentered( sigma_gid , L_Rho_gid , z_gid ),
+        matrix[6,gid]:z_gid ~ normal( 0 , 1 ),
+        
+        # fixed priors
+        g[did] ~ dnorm( 0 , 1 ),
+        vector[6]:sigma_gid ~ dexp(1),
+        cholesky_factor_corr[6]:L_Rho_gid ~ lkj_corr_cholesky( 2 ),
+        
+        # compute ordinary correlation matrixes from Cholesky factors
+        gq> matrix[6,6]:Rho_gid <<- multiply_lower_tri_self_transpose(L_Rho_gid)
     ), data=dat , chains=4 , cores=4 , log_lik = TRUE)
 
 precis(m14M3_noncentered, depth=2)
@@ -283,10 +297,21 @@ precis(m14M3_noncentered, depth=2)
 ```{r}
 compare(m14M3,m14M3_noncentered)
 plot(compare(m14M3,m14M3_noncentered))
-plot(coeftab(m14M3,m14M3_noncentered))
+#plot(coeftab(m14M3,m14M3_noncentered))
 ```
 
 > Models look very similar between these two. The non-centered model samples much more efficiently, evidenced by the `n_eff` counts.
+
+```{r}
+## R code 14.20
+# extract n_eff values for each model
+neff_nc <- precis(m14M3_noncentered,3,pars=c("alpha"))$n_eff
+neff_c <- precis(m14M3,3,pars=c("alpha"))$n_eff
+plot( neff_c , neff_nc , xlab="centered (default)" ,
+    ylab="non-centered (cholesky)" , lwd=1.5 )
+abline(a=0,b=1,lty=2)
+```
+
 
 #### 1. Revisit the Bangladesh fertility data, data(bangladesh). Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.
 
