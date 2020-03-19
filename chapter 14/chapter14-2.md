@@ -101,23 +101,12 @@ m14.2 <- ulam(
 ```
 
 ```
-## Warning: There were 18 divergent transitions after warmup. Increasing adapt_delta above 0.95 may help. See
+## Warning: There were 11 divergent transitions after warmup. Increasing adapt_delta above 0.95 may help. See
 ## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
 ```
 
 ```
-## Warning: There were 4 transitions after warmup that exceeded the maximum treedepth. Increase max_treedepth above 10. See
-## http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
-```
-
-```
 ## Warning: Examine the pairs() plot to diagnose sampling problems
-```
-
-```
-## Warning: The largest R-hat is 1.05, indicating chains have not mixed.
-## Running the chains for more iterations may help. See
-## http://mc-stan.org/misc/warnings.html#r-hat
 ```
 
 ```
@@ -182,15 +171,15 @@ precis( m14.2 , depth=2 , pars=c("sigma_actor","sigma_block") )
 ```
 
 ```
-##                     mean        sd       5.5%     94.5%     n_eff     Rhat
-## sigma_actor[1] 1.3841987 0.5113749 0.80779532 2.2807450  664.4278 1.006191
-## sigma_actor[2] 0.9114280 0.4245672 0.39238580 1.6637022  623.0577 1.009010
-## sigma_actor[3] 1.8511300 0.5775114 1.12221315 2.8491017 1101.8327 1.001155
-## sigma_actor[4] 1.5957079 0.6507045 0.86741875 2.7807044  575.9586 1.001588
-## sigma_block[1] 0.4321708 0.3100782 0.06401890 0.9897692  407.3245 1.003161
-## sigma_block[2] 0.4159335 0.3155206 0.04786570 0.9881891  278.3955 1.006305
-## sigma_block[3] 0.2943339 0.2682470 0.02410769 0.7685520  281.4468 1.016096
-## sigma_block[4] 0.5072097 0.3896404 0.06257776 1.1796562  199.4472 1.019242
+##                     mean        sd       5.5%     94.5%     n_eff      Rhat
+## sigma_actor[1] 1.4053797 0.5068365 0.78430489 2.3302176 1149.1149 1.0004564
+## sigma_actor[2] 0.8925055 0.4033378 0.37800186 1.5959132  832.5455 1.0047874
+## sigma_actor[3] 1.8484144 0.5853053 1.08600742 2.9190079 1201.7584 0.9995019
+## sigma_actor[4] 1.5768524 0.6126308 0.82176637 2.6617098  915.1332 0.9993323
+## sigma_block[1] 0.3979475 0.3372914 0.04073493 1.0374333  282.4454 1.0014845
+## sigma_block[2] 0.4329825 0.3531417 0.04343702 1.0205240  288.5243 1.0175282
+## sigma_block[3] 0.3039063 0.2648520 0.02321109 0.7986538  245.2216 1.0124949
+## sigma_block[4] 0.4970924 0.3784547 0.04788815 1.2002353  263.5025 1.0244486
 ```
 
 ```r
@@ -199,14 +188,14 @@ precis( m14.3 , depth=2 , pars=c("sigma_actor","sigma_block") )
 
 ```
 ##                     mean        sd       5.5%     94.5%     n_eff      Rhat
-## sigma_actor[1] 1.4030374 0.4703800 0.80920340 2.2292551  959.1682 0.9994056
-## sigma_actor[2] 0.9141453 0.4036680 0.40268194 1.6548898 1406.2909 1.0007352
-## sigma_actor[3] 1.8623147 0.5837334 1.11978135 2.8475209 1271.2526 1.0015408
-## sigma_actor[4] 1.5816136 0.6261912 0.83713204 2.7226177 1144.9613 0.9986853
-## sigma_block[1] 0.4105534 0.3218220 0.03926324 1.0160577  934.2576 0.9997610
-## sigma_block[2] 0.4438367 0.3565338 0.03695063 1.0760632  800.8017 1.0041905
-## sigma_block[3] 0.2937417 0.2602322 0.02224211 0.7750928 1490.4543 0.9990829
-## sigma_block[4] 0.4573700 0.3647852 0.03589410 1.1118910 1023.5617 1.0047709
+## sigma_actor[1] 1.3683958 0.4880611 0.77004855 2.1955326 1083.7600 1.0016529
+## sigma_actor[2] 0.9323169 0.4299369 0.40348178 1.7130118 1107.7709 1.0012052
+## sigma_actor[3] 1.8525152 0.5791935 1.11830150 2.9067994 1720.5009 0.9987820
+## sigma_actor[4] 1.5643982 0.5946499 0.82090376 2.6740858 1371.2927 1.0001891
+## sigma_block[1] 0.4033388 0.3173200 0.03163326 1.0050474 1030.2480 0.9996929
+## sigma_block[2] 0.4614706 0.3568616 0.04078897 1.1239156  978.0516 1.0020015
+## sigma_block[3] 0.2988761 0.2787835 0.02338776 0.8144884 2042.5417 1.0009401
+## sigma_block[4] 0.4775734 0.3659464 0.04344742 1.1362540 1133.5870 1.0044034
 ```
 
 ```r
@@ -215,7 +204,7 @@ WAIC(m14.3)
 
 ```
 ##       WAIC      lppd  penalty  std_err
-## 1 545.2385 -245.5763 27.04299 19.73106
+## 1 545.0296 -245.5355 26.97927 19.62857
 ```
 
 
@@ -474,10 +463,31 @@ head(dat)
 m14M3 <- ulam(
     alist(
         A ~ dbinom( App, p ),
-        logit(p) <- a[gid]+a_dept[did],
-        a[gid] ~ dnorm( 0 , 1.5 ),
-        a_dept[did] ~ dnorm( 0 , 1.5 )
+        logit(p) <- g[did]+alpha[gid, did],
+        
+        # adaptive priors
+        vector[6]:alpha[gid] ~ multi_normal(0,Rho_gid,sigma_gid),
+        
+        # fixed priors
+        g[did] ~ dnorm( 0 , 1 ),
+        sigma_gid ~ dexp(1),
+        Rho_gid ~ dlkjcorr(4)
     ), data=dat , chains=4 , cores=4 , log_lik = TRUE)
+```
+
+```
+## Warning: There were 488 divergent transitions after warmup. Increasing adapt_delta above 0.95 may help. See
+## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+```
+
+```
+## Warning: Examine the pairs() plot to diagnose sampling problems
+```
+
+```
+## Warning: The largest R-hat is 1.54, indicating chains have not mixed.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#r-hat
 ```
 
 ```
@@ -497,32 +507,48 @@ precis(m14M3, depth=2)
 ```
 
 ```
-##                 mean        sd       5.5%      94.5%    n_eff     Rhat
-## a[1]      -0.5064077 0.5231652 -1.3193195  0.4317579 113.8004 1.038284
-## a[2]      -0.4105844 0.5219980 -1.2148134  0.5062906 111.7309 1.038882
-## a_dept[1]  1.0880336 0.5245530  0.1609037  1.9034814 113.5110 1.038709
-## a_dept[2]  1.0432687 0.5268083  0.1190381  1.8683348 113.1264 1.039081
-## a_dept[3] -0.1717109 0.5231228 -1.1253761  0.6364937 116.1088 1.036874
-## a_dept[4] -0.2065568 0.5284228 -1.1511796  0.6327985 113.6295 1.038662
-## a_dept[5] -0.6448683 0.5266484 -1.5646862  0.1759418 113.7115 1.038536
-## a_dept[6] -2.2054594 0.5320180 -3.1369072 -1.3926510 119.8059 1.038085
+## 48 matrix parameters hidden. Use depth=3 to show them.
+```
+
+```
+##                    mean        sd         5.5%      94.5%     n_eff     Rhat
+## g[1]          0.6552661 0.5199849 -0.296356801  1.4073260 430.97949 1.019241
+## g[2]          0.4879005 0.2918036 -0.006713878  0.9569454 301.08843 1.008740
+## g[3]         -0.5525122 0.2552282 -0.857140082 -0.1678376 174.99597 1.029378
+## g[4]         -0.6911212 0.2689471 -0.977601366 -0.3267803  51.34721 1.077373
+## g[5]         -0.9607672 0.4062635 -1.307015591 -0.1731326 145.76290 1.044954
+## g[6]         -2.1529798 0.8747016 -2.845735306 -0.3374131  16.85146 1.125805
+## sigma_gid[1]  0.9394780 0.5963512  0.388747097  2.0246435  19.04031 1.079340
+## sigma_gid[2]  0.3669011 0.4619837  0.041957325  1.2606337  17.44651 1.096040
+## sigma_gid[3]  0.2969962 0.3787698  0.026651252  0.9468593  44.76478 1.061025
+## sigma_gid[4]  0.3537891 0.3810342  0.027289265  0.9698447 492.38228 1.009895
+## sigma_gid[5]  0.6011549 0.5185883  0.036446961  1.4083749  15.37057 1.111850
+## sigma_gid[6]  0.7199007 0.9236529  0.007317527  2.5919000  13.04187 1.137281
 ```
 
 ```r
 m14M3_noncentered <- ulam(
     alist(
         A ~ dbinom( App, p ),
-        logit(p) <- a_bar + a[gid]*sigma_a + a_dept[did]*sigma_d,
-        a_bar ~ dnorm( 0 , 1.5 ),
-        a[gid] ~ dnorm( 0 , 1.5 ),
-        a_dept[did] ~ dnorm( 0 , 1.5 ),
-        sigma_a ~ dexp(1),
-        sigma_d ~ dexp(1)
+        logit(p) <- g[did]+alpha[gid, did],
+        
+        # adaptive priors - non-centered
+        transpars> matrix[gid,6]:alpha <- 
+          compose_noncentered( sigma_gid , L_Rho_gid , z_gid ),
+        matrix[6,gid]:z_gid ~ normal( 0 , 1 ),
+        
+        # fixed priors
+        g[did] ~ dnorm( 0 , 1 ),
+        vector[6]:sigma_gid ~ dexp(1),
+        cholesky_factor_corr[6]:L_Rho_gid ~ lkj_corr_cholesky( 2 ),
+        
+        # compute ordinary correlation matrixes from Cholesky factors
+        gq> matrix[6,6]:Rho_gid <<- multiply_lower_tri_self_transpose(L_Rho_gid)
     ), data=dat , chains=4 , cores=4 , log_lik = TRUE)
 ```
 
 ```
-## Warning: There were 6 divergent transitions after warmup. Increasing adapt_delta above 0.95 may help. See
+## Warning: There were 1 divergent transitions after warmup. Increasing adapt_delta above 0.95 may help. See
 ## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
 ```
 
@@ -530,29 +556,28 @@ m14M3_noncentered <- ulam(
 ## Warning: Examine the pairs() plot to diagnose sampling problems
 ```
 
-```
-## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
-## Running the chains for more iterations may help. See
-## http://mc-stan.org/misc/warnings.html#bulk-ess
-```
-
 ```r
 precis(m14M3_noncentered, depth=2)
 ```
 
 ```
-##                  mean        sd        5.5%      94.5%     n_eff      Rhat
-## a_bar     -0.50906245 0.6314060 -1.51748480  0.4704567  371.5326 1.0043960
-## a[1]      -0.41210670 1.1440757 -2.27340587  1.3585117 1057.6661 1.0012691
-## a[2]       0.21209378 1.0794520 -1.44466023  1.9226006  959.8455 0.9999065
-## a_dept[1]  1.37575940 0.7355592  0.24581919  2.5814415  359.5858 1.0134822
-## a_dept[2]  1.32324110 0.7274844  0.21441305  2.4916422  354.0231 1.0132348
-## a_dept[3] -0.09937764 0.5660124 -0.98579987  0.7954230  363.1063 1.0036413
-## a_dept[4] -0.13783920 0.5689404 -1.04697091  0.7691425  383.6665 1.0034284
-## a_dept[5] -0.65763529 0.5935557 -1.64628183  0.2754358  399.7298 1.0027363
-## a_dept[6] -2.48774648 0.9149094 -4.02167917 -1.0838275  443.9321 1.0109449
-## sigma_a    0.27250973 0.3534447  0.01191694  0.9801347  642.4252 1.0010184
-## sigma_d    0.94132295 0.3449272  0.54805740  1.5787329  406.2374 1.0197050
+## 96 matrix parameters hidden. Use depth=3 to show them.
+```
+
+```
+##                    mean        sd        5.5%       94.5%     n_eff      Rhat
+## g[1]          0.6022055 0.6289499 -0.50643800  1.48637445  934.0905 0.9988729
+## g[2]          0.4933717 0.3937761 -0.21036964  1.05090263  594.8512 1.0072242
+## g[3]         -0.5423420 0.2937029 -0.88435598 -0.03887975  691.3053 1.0011672
+## g[4]         -0.6069872 0.3312566 -0.98081644 -0.08629110  529.4043 1.0042382
+## g[5]         -0.9369694 0.3876990 -1.36550529 -0.17261173  751.4194 1.0038141
+## g[6]         -1.9432294 0.8881846 -2.87102665 -0.17639381  494.7492 1.0083966
+## sigma_gid[1]  1.0702718 0.6688493  0.37485743  2.28887023  941.9410 1.0030323
+## sigma_gid[2]  0.4687946 0.4940161  0.02765702  1.37791418  949.5341 1.0025923
+## sigma_gid[3]  0.3463148 0.4286159  0.01494634  1.09867349  741.8921 1.0024508
+## sigma_gid[4]  0.3472887 0.4355598  0.01746949  1.07787735  856.0776 1.0069717
+## sigma_gid[5]  0.4568876 0.4967954  0.02244684  1.40072701 1096.4000 1.0071735
+## sigma_gid[6]  0.9180469 0.9360000  0.04435777  2.71337673  656.2770 1.0059632
 ```
 
 
@@ -561,9 +586,9 @@ compare(m14M3,m14M3_noncentered)
 ```
 
 ```
-##                       WAIC       SE    dWAIC       dSE    pWAIC    weight
-## m14M3_noncentered 107.7078 16.13788 0.000000        NA 8.879626 0.6807714
-## m14M3             109.2224 15.94570 1.514638 0.8457569 9.801726 0.3192286
+##                       WAIC       SE     dWAIC     dSE    pWAIC    weight
+## m14M3             87.72090 4.438869 0.0000000      NA 5.562483 0.5203779
+## m14M3_noncentered 87.88401 4.031557 0.1631137 2.91676 5.519110 0.4796221
 ```
 
 ```r
@@ -573,12 +598,24 @@ plot(compare(m14M3,m14M3_noncentered))
 ![](chapter14-2_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 ```r
-plot(coeftab(m14M3,m14M3_noncentered))
+#plot(coeftab(m14M3,m14M3_noncentered))
 ```
 
-![](chapter14-2_files/figure-html/unnamed-chunk-16-2.png)<!-- -->
-
 > Models look very similar between these two. The non-centered model samples much more efficiently, evidenced by the `n_eff` counts.
+
+
+```r
+## R code 14.20
+# extract n_eff values for each model
+neff_nc <- precis(m14M3_noncentered,3,pars=c("alpha"))$n_eff
+neff_c <- precis(m14M3,3,pars=c("alpha"))$n_eff
+plot( neff_c , neff_nc , xlab="centered (default)" ,
+    ylab="non-centered (cholesky)" , lwd=1.5 )
+abline(a=0,b=1,lty=2)
+```
+
+![](chapter14-2_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+
 
 #### 1. Revisit the Bangladesh fertility data, data(bangladesh). Fit a model with both varying intercepts by district_id and varying slopes of urban (as a 0/1 indicator variable) by district_id. You are still predicting use.contraception. Inspect the correlation between the intercepts and slopes. Can you interpret this correlation, in terms of what it tells you about the pattern of contraceptive use in the sample? It might help to plot the varying effect estimates for both the intercepts and slopes, by district. Then you can visualize the correlation and maybe more easily think through what it means to have a particular correlation. Plotting predicted proportion of women using contraception, in each district, with urban women on one axis and rural on the other, might also help.
 
@@ -759,7 +796,7 @@ for ( l in c(0.1,0.3,0.5,0.8,0.99) )
         col=col.alpha("black",0.5))
 ```
 
-![](chapter14-2_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+![](chapter14-2_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
 
 > negative correlation
 
@@ -771,7 +808,7 @@ u1 <- inv_logit( a2 + b2 )
 plot( u0 , u1 , xlim=c(0,1) , pch=16 , col=rangi2 , ylim=c(0,1) , xlab="urban: 0" , ylab="urban: 1" )
 ```
 
-![](chapter14-2_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+![](chapter14-2_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
 
 > Urban areas centered at 0.5, rural areas are mostly below 0.5
 
@@ -808,7 +845,7 @@ dag <- dagitty("dag{A -> N -> C <- A}")
 ggdag(dag, layout = "circle")
 ```
 
-![](chapter14-2_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+![](chapter14-2_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
 
 ```r
@@ -974,5 +1011,5 @@ compare(m14_2_A,m14_2_N,m14_2_AN)
 plot(compare(m14_2_A,m14_2_N,m14_2_AN))
 ```
 
-![](chapter14-2_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
+![](chapter14-2_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
 
