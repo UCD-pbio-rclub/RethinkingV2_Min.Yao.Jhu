@@ -2,7 +2,9 @@
 title: "chapter14-3"
 author: "Min-Yao"
 date: "2020/3/19"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ```{r}
@@ -40,6 +42,46 @@ head(qob_new)
 ```
 
 ```{r}
+dat <- list(
+    W=standardize(qob_new$LWKLYWGE) ,
+    E=standardize(qob_new$EDUC) ,
+    Q=standardize(qob_new$QOB) )
+summary(dat)
+str(dat)
+```
 
+```{r}
+## R code 14.24
+m14.4_qob <- ulam(
+    alist(
+        W ~ dnorm( mu , sigma ),
+        mu <- aW + bEW*E,
+        aW ~ dnorm( 0 , 0.2 ),
+        bEW ~ dnorm( 0 , 0.5 ),
+        sigma ~ dexp( 1 )
+    ) , data=dat , chains=4 , cores=4 , log_lik = TRUE)
+
+precis( m14.4_qob )
+```
+
+```{r}
+## R code 14.25
+m14.5_qob <- ulam(
+    alist(
+        c(W,E) ~ multi_normal( c(muW,muE) , Rho , Sigma ),
+        muW <- aW + bEW*E,
+        muE <- aE + bQE*Q,
+        c(aW,aE) ~ normal( 0 , 0.2 ),
+        c(bEW,bQE) ~ normal( 0 , 0.5 ),
+        Rho ~ lkj_corr( 2 ),
+        Sigma ~ exponential( 1 )
+    ), data=dat_sim , chains=4 , cores=4 , log_lik = TRUE)
+
+precis( m14.5_qob , depth=3 )
+```
+
+```{r}
+compare(m14.4_qob,m14.5_qob)
+plot(compare(m14.4_qob,m14.5_qob))
 ```
 

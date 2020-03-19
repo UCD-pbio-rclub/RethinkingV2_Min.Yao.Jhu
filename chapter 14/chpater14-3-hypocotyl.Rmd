@@ -1,0 +1,16 @@
+---
+title: "chapter14-3-hypocotyl"
+author: "Min-Yao"
+date: "2020/3/19"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r}
+hyp <- read.csv("hyp.lengths.both.experiments.labels.csv")
+head(hyp)
+summary(hyp)
+str(hyp)
+```
+
