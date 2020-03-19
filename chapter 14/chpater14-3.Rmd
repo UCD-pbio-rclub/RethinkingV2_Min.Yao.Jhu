@@ -1,0 +1,45 @@
+---
+title: "chapter14-3"
+author: "Min-Yao"
+date: "2020/3/19"
+output: html_document
+---
+
+```{r}
+library(foreign)
+qob = read.dta("NEW7080.dta")
+head(qob)
+```
+
+```{r}
+library(tidyverse)
+qob <- as_tibble(qob)
+head(qob)
+qob_new = qob %>% 
+  rename(
+    AGE = v1,
+    AGEQ = v2,
+    EDUC = v4,
+    ENOCENT = v5,
+    ESOCENT = v6,
+    LWKLYWGE = v9,
+    MARRIED = v10,
+    MIDATL = v11,
+    MT = v12,
+    NEWENG = v13,
+    CENSUS = v16,
+    QOB = v18,
+    RACE = v19,
+    SMSA = v20,
+    SOATL = v21,
+    WNOCENT = v24,
+    WSOCENT = v25,
+    YOB = v27
+    )
+head(qob_new)
+```
+
+```{r}
+
+```
+
