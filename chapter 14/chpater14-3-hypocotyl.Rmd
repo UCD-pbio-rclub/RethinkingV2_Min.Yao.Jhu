@@ -8,9 +8,121 @@ output:
 ---
 
 ```{r}
+library(rethinking)
 hyp <- read.csv("hyp.lengths.both.experiments.labels.csv")
 head(hyp)
 summary(hyp)
 str(hyp)
 ```
 
+### 1. without pooling_base
+
+```{r}
+library(dplyr)
+hyp_s <- sample_n(hyp, 10000)
+summary(hyp_s)
+str(hyp_s)
+
+
+dat_list1 <- list(
+  length = scale(hyp_s$length),
+  line = as.integer(as.factor(hyp_s$line)),
+  light = as.integer(hyp_s$light=="H")
+)
+
+
+modle_base <- ulam(
+  alist(
+    length ~ dnorm(mu, sigma),
+    mu <- a[line] + bI[line]*light,
+    a[line] ~ dnorm(0, 1),
+    bI[line] ~ dnorm(0, 1),
+    sigma ~ dexp(1)
+  ), data=dat_list1 , chains=4 , cores=4 , log_lik=TRUE)
+
+precis( modle_base, depth=2 , pars=c("bI","sigma"))
+plot( precis(modle_base) )
+```
+
+```{r}
+library(tidyverse)
+hyp_s_new <- hyp_s %>% unite("plate_exp", c("plate", "exp"), remove = FALSE)
+#head(hyp_s_new)
+str(hyp_s_new)
+
+dat_list <- list(
+  length = scale(hyp_s_new$length),
+  line = as.integer(as.factor(hyp_s_new$line)),
+  light = as.integer(hyp_s_new$light=="H"),
+  plate_exp = as.integer(as.factor(hyp_s_new$plate_exp))
+)
+
+#head(dat_list)
+summary(dat_list)
+str(dat_list)
+```
+
+### 1.without pooling_fixed
+
+```{r}
+modle_fixed <- ulam(
+  alist(
+    length ~ dnorm(mu, sigma),
+    mu <- a[line] + bI[line]*light + bP[plate_exp],
+    a[line] ~ dnorm(0, 1),
+    bI[line] ~ dnorm(0, 1),
+    bP[plate_exp] ~ dnorm(0, 1),
+    sigma ~ dexp(1)
+  ), data=dat_list , chains=4 , cores=4 , log_lik=TRUE)
+
+precis( modle_fixed, depth=2 , pars=c("bI","sigma"))
+plot( precis(modle_fixed) )
+```
+
+### 2.partial pooling across plate_exp
+
+```{r}
+modle_multilevel <- ulam(
+  alist(
+    length ~ dnorm(mu, sigma),
+    mu <- a[line] + bI[line]*light + bP[plate_exp],
+    a[line] ~ dnorm(a_bar, sigma_a),
+    bI[line] ~ dnorm(0, 1),
+    bP[plate_exp] ~ dnorm(0, sigma_p),
+    a_bar ~ dnorm( 0 , 1 ),
+    sigma_a ~ dexp(1),
+    sigma_p ~ dexp(1),
+    sigma ~ dexp(1)
+  ), data=dat_list , chains=4 , cores=4 , log_lik=TRUE)
+
+precis( modle_multilevel, depth=2 , pars=c("bI","sigma"))
+plot(precis( modle_multilevel ))
+```
+
+```{r}
+compare(modle_base, modle_fixed, modle_multilevel)
+plot(compare(modle_base, modle_fixed, modle_multilevel))
+```
+
+### 3.As 2, but use a multivariate normal model for the line slope and intercept effects
+
+```{r}
+modle_base_multivariate <- ulam(
+    alist(
+        length ~ normal(mu, sigma),
+        mu <- a[line] + bI[line]*light,
+        c(a,bI)[line] ~ multi_normal( c(a_bar,b_bar) , Rho , sigma_line ),
+        a_bar ~ normal(0,1),
+        b_bar ~ normal(0,1),
+        sigma_line ~ exponential(1),
+        sigma ~ exponential(1),
+        Rho ~ lkj_corr(2)
+    ) , data=dat_list1 , chains=4 , cores=4, log_lik = TRUE )
+
+precis(modle_base_multivariate, depth=3 , pars=c("Rho","sigma_line"))
+```
+
+```{r}
+compare(modle_base, modle_fixed, modle_multilevel,modle_base_multivariate)
+plot(compare(modle_base, modle_fixed, modle_multilevel,modle_base_multivariate))
+```

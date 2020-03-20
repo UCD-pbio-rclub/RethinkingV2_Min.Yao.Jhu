@@ -8,6 +8,7 @@ output:
 ---
 
 ```{r}
+library(rethinking)
 library(foreign)
 qob = read.dta("NEW7080.dta")
 head(qob)
@@ -15,6 +16,7 @@ head(qob)
 
 ```{r}
 library(tidyverse)
+library(dplyr)
 qob <- as_tibble(qob)
 head(qob)
 qob_new = qob %>% 
@@ -39,13 +41,19 @@ qob_new = qob %>%
     YOB = v27
     )
 head(qob_new)
+summary(qob_new)
+str(qob_new)
+
+qob_new2 <- sample_n(qob_new, 10000)
+summary(qob_new2)
+str(qob_new2)
 ```
 
 ```{r}
 dat <- list(
-    W=standardize(qob_new$LWKLYWGE) ,
-    E=standardize(qob_new$EDUC) ,
-    Q=standardize(qob_new$QOB) )
+    W=standardize(qob_new2$LWKLYWGE) ,
+    E=standardize(qob_new2$EDUC) ,
+    Q=standardize(qob_new2$QOB) )
 summary(dat)
 str(dat)
 ```
@@ -75,13 +83,10 @@ m14.5_qob <- ulam(
         c(bEW,bQE) ~ normal( 0 , 0.5 ),
         Rho ~ lkj_corr( 2 ),
         Sigma ~ exponential( 1 )
-    ), data=dat_sim , chains=4 , cores=4 , log_lik = TRUE)
+    ), data=dat , chains=4 , cores=4 )
 
 precis( m14.5_qob , depth=3 )
 ```
 
-```{r}
-compare(m14.4_qob,m14.5_qob)
-plot(compare(m14.4_qob,m14.5_qob))
-```
+
 
