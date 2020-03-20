@@ -126,3 +126,53 @@ precis(modle_base_multivariate, depth=3 , pars=c("Rho","sigma_line"))
 compare(modle_base, modle_fixed, modle_multilevel,modle_base_multivariate)
 plot(compare(modle_base, modle_fixed, modle_multilevel,modle_base_multivariate))
 ```
+
+```{r}
+modle_fixed_multivariate <- ulam(
+    alist(
+        length ~ normal(mu, sigma),
+        mu <- a[line] + bI[line]*light + bP[plate_exp],
+        c(a,bI)[line] ~ multi_normal( c(a_bar,b_bar) , Rho , sigma_line ),
+        a_bar ~ normal(0,1),
+        b_bar ~ normal(0,1),
+        bP[plate_exp] ~ dnorm(0, 1),
+        sigma_line ~ exponential(1),
+        sigma ~ exponential(1),
+        Rho ~ lkj_corr(2)
+    ) , data=dat_list , chains=4 , cores=4, log_lik = TRUE )
+
+precis(modle_fixed_multivariate, depth=3 , pars=c("Rho","sigma_line"))
+```
+
+```{r}
+compare(modle_base, modle_fixed, modle_multilevel,modle_base_multivariate,modle_fixed_multivariate)
+plot(compare(modle_base, modle_fixed, modle_multilevel,modle_base_multivariate,modle_fixed_multivariate))
+```
+
+### multivariate normal model with varying slopes model
+
+```{r}
+# dat_list2 <- list(
+#   length = scale(hyp_s$length),
+#   line = as.integer(as.factor(hyp_s$line)),
+#   light = ifelse(hyp_s$light=="H", 1L , 2L )
+# )
+# head(dat_list2)
+# 
+# modle_base_multivariate_varying_slope <- ulam(
+#     alist(
+#         length ~ normal(mu, sigma),
+#         mu <- g[line] + alpha[line, light],
+#         
+#         # adaptive priors
+#         vector[180]:alpha[line] ~ multi_normal(0,Rho_line,sigma_line),
+#         
+#         # fixed priors
+#         g[line] ~ dnorm( 0 , 1 ),
+#         sigma_line ~ dexp(1),
+#         Rho_line ~ dlkjcorr(4)
+#     ), data=dat_list2 , chains=4 , cores=4 , log_lik = TRUE)
+# 
+# precis(modle_base_multivariate_varying_slope, depth=2)
+```
+
