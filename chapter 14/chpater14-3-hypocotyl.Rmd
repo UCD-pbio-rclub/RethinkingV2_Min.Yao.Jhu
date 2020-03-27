@@ -19,7 +19,7 @@ str(hyp)
 
 ```{r}
 library(dplyr)
-hyp_s <- sample_n(hyp, 100)
+hyp_s <- sample_n(hyp, 1000)
 summary(hyp_s)
 str(hyp_s)
 
@@ -157,24 +157,24 @@ dat_list2 <- list(
   line = as.integer(as.factor(hyp_s$line)),
   light = ifelse(hyp_s$light=="H", 1L , 2L )
 )
-head(dat_list2)
+str(dat_list2)
 
-modle_base_multivariate_varying_slope <- ulam(
+modle_base_multivariate_vslope <- ulam(
     alist(
         length ~ normal(mu, sigma),
-        mu <- g[line] + alpha[light,line],
+        mu <- g[light] + alpha[line,light],
 
         # adaptive priors
-        vector[180]:alpha[light] ~ multi_normal(0,Rho_line,sigma_line),
+        vector[2]:alpha[line] ~ multi_normal(0,Rho_line,sigma_line),
 
         # fixed priors
-        g[line] ~ dnorm( 0 , 1 ),
+        g[light] ~ dnorm(0,1),
         sigma_line ~ dexp(1),
         Rho_line ~ dlkjcorr(4),
         sigma ~ dexp(1)
     ), data=dat_list2 , chains=4 , cores=4 , log_lik = TRUE)
 
-precis(modle_base_multivariate_varying_slope, depth=2)
+precis(modle_base_multivariate_vslope, depth=3 , pars=c("Rho_line","sigma_line"))
 ```
 
 ```{r}
@@ -186,81 +186,93 @@ dat_list3 <- list(
 )
 summary(dat_list3)
 
-modle_base_multivariate_varying_slope_2 <- ulam(
+modle_fixed_multivariate_vslope <- ulam(
     alist(
         length ~ normal(mu, sigma),
-        mu <- g[line] + alpha[light,line] + beta[plate_exp,line],
+        mu <- g[light] + alpha[line,light] + beta[plate_exp,light],
 
         # adaptive priors
-        vector[180]:alpha[light] ~ multi_normal(0,Rho_line,sigma_line),
-        vector[180]:beta[plate_exp] ~ multi_normal(0,Rho_plate_exp,sigma_plate_exp),
+        vector[2]:alpha[line] ~ multi_normal(0,Rho_line,sigma_line),
+        vector[2]:beta[plate_exp] ~ multi_normal(0,Rho_plate_exp,sigma_plate_exp),
 
         # fixed priors
-        g[line] ~ dnorm( 0 , 1 ),
+        g[light] ~ dnorm(0,1),
         sigma_line ~ dexp(1),
         Rho_line ~ dlkjcorr(4),
         sigma_plate_exp ~ dexp(1),
         Rho_plate_exp ~ dlkjcorr(4),
         sigma ~ dexp(1)
-    ) , data=dat_list3 , chains=4 , cores=4 )
+    ) , data=dat_list3 , chains=4 , cores=4 , log_lik = TRUE)
+
+precis(modle_fixed_multivariate_vslope, depth=3 , pars=c("Rho_line","sigma_line"))
 ```
 
+```{r}
+compare(modle_base, modle_fixed, modle_multilevel,modle_base_multivariate,modle_fixed_multivariate,modle_base_multivariate_vslope,modle_fixed_multivariate_vslope)
+plot(compare(modle_base, modle_fixed, modle_multilevel,modle_base_multivariate,modle_fixed_multivariate,modle_base_multivariate_vslope,modle_fixed_multivariate_vslope))
+```
 
 ### non-centered multivariate normal model with varying slopes model
+```{r}
+## R code 14.19
+modle_base_multivariate_vslope_nc <- ulam(
+    alist(
+        length ~ normal(mu, sigma),
+        mu <- g[light] + alpha[line,light],
+
+        # adaptive priors - non-centered
+        transpars> matrix[line,2]:alpha <-
+                compose_noncentered( sigma_line , L_Rho_line , z_line ),
+        
+        matrix[2,line]:z_line ~ normal( 0 , 1 ),
+        
+        # fixed priors
+        g[light] ~ normal(0,1),
+        vector[2]:sigma_line ~ dexp(1),
+        cholesky_factor_corr[2]:L_Rho_line ~ lkj_corr_cholesky( 2 ),
+        sigma ~ dexp(1),
+
+        # compute ordinary correlation matrixes from Cholesky factors
+        gq> matrix[2,2]:Rho_line <<- multiply_lower_tri_self_transpose(L_Rho_line)
+    ) , data=dat_list2 , chains=4 , cores=4 , log_lik=TRUE )
+
+precis(modle_base_multivariate_vslope_nc, depth=3 , pars=c("Rho_line","sigma_line"))
+```
+
 
 ```{r}
 ## R code 14.19
-modle_base_multivariate_varying_slope_non_centered <- ulam(
+modle_fixed_multivariate_vslope_nc <- ulam(
     alist(
         length ~ normal(mu, sigma),
-        logit(p) <- g[tid] + alpha[actor,tid] + beta[block_id,tid],
+        mu <- g[light] + alpha[line,light] + beta[plate_exp,light],
 
         # adaptive priors - non-centered
-        transpars> matrix[actor,4]:alpha <-
-                compose_noncentered( sigma_actor , L_Rho_actor , z_actor ),
-        transpars> matrix[block_id,4]:beta <-
-                compose_noncentered( sigma_block , L_Rho_block , z_block ),
-        matrix[4,actor]:z_actor ~ normal( 0 , 1 ),
-        matrix[4,block_id]:z_block ~ normal( 0 , 1 ),
+        transpars> matrix[line,2]:alpha <-
+                compose_noncentered( sigma_line , L_Rho_line , z_line ),
+        transpars> matrix[plate_exp,2]:beta <-
+                compose_noncentered( sigma_plate_exp , L_Rho_plate_exp , z_plate_exp ),
+        matrix[2,line]:z_line ~ normal( 0 , 1 ),
+        matrix[2,plate_exp]:z_plate_exp ~ normal( 0 , 1 ),
 
         # fixed priors
-        g[tid] ~ normal(0,1),
-        vector[4]:sigma_actor ~ dexp(1),
-        cholesky_factor_corr[4]:L_Rho_actor ~ lkj_corr_cholesky( 2 ),
-        vector[4]:sigma_block ~ dexp(1),
-        cholesky_factor_corr[4]:L_Rho_block ~ lkj_corr_cholesky( 2 ),
+        g[light] ~ normal(0,1),
+        vector[2]:sigma_line ~ dexp(1),
+        cholesky_factor_corr[2]:L_Rho_line ~ lkj_corr_cholesky( 2 ),
+        vector[2]:sigma_plate_exp ~ dexp(1),
+        cholesky_factor_corr[2]:L_Rho_plate_exp ~ lkj_corr_cholesky( 2 ),
+        sigma ~ dexp(1),
 
         # compute ordinary correlation matrixes from Cholesky factors
-        gq> matrix[4,4]:Rho_actor <<- multiply_lower_tri_self_transpose(L_Rho_actor),
-        gq> matrix[4,4]:Rho_block <<- multiply_lower_tri_self_transpose(L_Rho_block)
-    ) , data=dat , chains=4 , cores=4 , log_lik=TRUE )
+        gq> matrix[2,2]:Rho_line <<- multiply_lower_tri_self_transpose(L_Rho_line),
+        gq> matrix[2,2]:Rho_plate_exp <<- multiply_lower_tri_self_transpose(L_Rho_plate_exp)
+    ) , data=dat_list3 , chains=4 , cores=4 , log_lik=TRUE )
+
+precis(modle_fixed_multivariate_vslope_nc, depth=3 , pars=c("Rho_line","sigma_line"))
 ```
 
 ```{r}
-## R code 14.19
-modle_base_multivariate_varying_slope_non_centered <- ulam(
-    alist(
-        length ~ normal(mu, sigma),
-        logit(p) <- g[tid] + alpha[actor,tid] + beta[block_id,tid],
-
-        # adaptive priors - non-centered
-        transpars> matrix[actor,4]:alpha <-
-                compose_noncentered( sigma_actor , L_Rho_actor , z_actor ),
-        transpars> matrix[block_id,4]:beta <-
-                compose_noncentered( sigma_block , L_Rho_block , z_block ),
-        matrix[4,actor]:z_actor ~ normal( 0 , 1 ),
-        matrix[4,block_id]:z_block ~ normal( 0 , 1 ),
-
-        # fixed priors
-        g[tid] ~ normal(0,1),
-        vector[4]:sigma_actor ~ dexp(1),
-        cholesky_factor_corr[4]:L_Rho_actor ~ lkj_corr_cholesky( 2 ),
-        vector[4]:sigma_block ~ dexp(1),
-        cholesky_factor_corr[4]:L_Rho_block ~ lkj_corr_cholesky( 2 ),
-
-        # compute ordinary correlation matrixes from Cholesky factors
-        gq> matrix[4,4]:Rho_actor <<- multiply_lower_tri_self_transpose(L_Rho_actor),
-        gq> matrix[4,4]:Rho_block <<- multiply_lower_tri_self_transpose(L_Rho_block)
-    ) , data=dat , chains=4 , cores=4 , log_lik=TRUE )
+compare(modle_base, modle_fixed, modle_multilevel,modle_base_multivariate,modle_fixed_multivariate,modle_base_multivariate_vslope,modle_fixed_multivariate_vslope,modle_base_multivariate_vslope_nc,modle_fixed_multivariate_vslope_nc)
+plot(compare(modle_base, modle_fixed, modle_multilevel,modle_base_multivariate,modle_fixed_multivariate,modle_base_multivariate_vslope,modle_fixed_multivariate_vslope,modle_base_multivariate_vslope_nc,modle_fixed_multivariate_vslope_nc))
 ```
 
