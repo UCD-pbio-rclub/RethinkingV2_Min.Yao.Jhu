@@ -19,7 +19,7 @@ str(hyp)
 
 ```{r}
 library(dplyr)
-hyp_s <- sample_n(hyp, 1000)
+hyp_s <- sample_n(hyp, 10000)
 summary(hyp_s)
 str(hyp_s)
 
