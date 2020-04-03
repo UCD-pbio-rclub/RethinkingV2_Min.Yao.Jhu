@@ -338,6 +338,7 @@ U = d$urban)
 summary(dat_list)
 str(dat_list)
 ```
+
 ```{r}
 m14_1 <- ulam(
   alist(

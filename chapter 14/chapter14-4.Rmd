@@ -99,3 +99,138 @@ dy2 <- apply( post$d[,,2] , 2 , mean )
 plot( dy1 , dy2 )
 ```
 
+#### 2. Now consider the predictor variables age.centered and living.children, also contained in data(bangladesh). Suppose that age influences contraceptive use (changing attitudes) and number of children (older people have had more time to have kids). Number of children may also directly influence contraceptive use. Draw a DAG that reflects these hypothetical relationships. Then build models needed to evaluate the DAG. You will need at least two models. Retain district and urban, as in Problem 1. What do you conclude about the causal influence of age and children?
+
+```{r}
+data(bangladesh)
+d <- bangladesh
+head(d)
+summary(d)
+```
+
+```{r}
+d$did <- as.integer( as.factor(d$district) )
+
+dat_list <- list(
+  C = d$use.contraception,
+  D = d$did,
+  U = d$urban)
+summary(dat_list)
+str(dat_list)
+```
+
+```{r}
+library(rethinking)
+library(dagitty)
+library(ggdag)
+
+# age = A, number of children = N, contraceptive use = C
+dag <- dagitty("dag{A -> N -> C <- A}")
+
+ggdag(dag, layout = "circle")
+```
+
+```{r}
+dat_list$children <- scale( d$living.children )
+dat_list$age <- scale( d$age.centered )
+str(dat_list)
+```
+
+```{r}
+m14_2_A <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U + bA*age,
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    bA ~ normal(0,1),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik = TRUE)
+precis(m14_2_A)
+```
+
+```{r}
+m14_2_N <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U + bN*children,
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    bN ~ normal(0,1),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik = TRUE)
+precis(m14_2_N)
+```
+
+```{r}
+m14_2_AN <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U + bA*age + bN*children,
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    bA ~ normal(0,1),
+    bN ~ normal(0,1),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , log_lik = TRUE)
+precis(m14_2_AN)
+```
+
+```{r}
+compare(m14_2_A,m14_2_N,m14_2_AN)
+plot(compare(m14_2_A,m14_2_N,m14_2_AN))
+```
+
+
+#### 3. Modify any models from Problem 2 that contained that children variable and model the variable now as a monotonic ordered category, like education from the week we did ordered categories. Education in that example had 8 categories. Children here will have fewer (no one in the sample had 8 children). So modify the code appropriately. What do you conclude about the causal influence of each additional child on use of contraception?
+
+```{r}
+summary(d$living.children)
+```
+
+> With 4 child levels, we’ll need 3 parameters.
+
+```{r}
+dat <- list(
+  C = d$use.contraception,
+  D = d$did,
+  U = d$urban,
+  age = scale( d$age.centered ),
+  child_index = d$living.children, # of children as an index
+  alpha = rep( 2 , 3 ) ) # delta prior
+str(dat)
+```
+
+```{r}
+# follow from Rcode 12.34
+m14_3 <- ulam(
+  alist(
+    C ~ dbinom( 1 , p ),
+    logit(p) <- a[D] + b[D]*U + bA*age + bN*sum( delta_j[1:child_index] ),
+    c(a,b)[D] ~ multi_normal( c(a_bar,b_bar) , Rho , Sigma ),
+    a_bar ~ normal(0,1),
+    b_bar ~ normal(0,1),
+    bA ~ normal(0,1),
+    bN ~ normal(0,1),
+    vector[4]: delta_j <<- append_row( 0 , delta ),
+    simplex[3]: delta ~ dirichlet( alpha ),
+    Rho ~ lkj_corr(2),
+    Sigma ~ exponential(1)
+    ) , data=dat , chains=4 , cores=4 , log_lik = TRUE)
+```
+
+
+```{r}
+precis(m14_3)
+```
+
+```{r}
+precis(m14_3, 3 , pars=c("Rho","Sigma","delta"))
+```
+

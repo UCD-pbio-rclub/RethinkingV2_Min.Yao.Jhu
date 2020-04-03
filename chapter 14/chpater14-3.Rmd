@@ -87,6 +87,3 @@ m14.5_qob <- ulam(
 
 precis( m14.5_qob , depth=3 )
 ```
-
-
-
