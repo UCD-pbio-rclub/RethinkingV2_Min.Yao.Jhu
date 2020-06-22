@@ -234,3 +234,7 @@ precis(m14_3)
 precis(m14_3, 3 , pars=c("Rho","Sigma","delta"))
 ```
 
+```{r}
+compare(m14_2_A,m14_2_N,m14_2_AN,m14_3)
+plot(compare(m14_2_A,m14_2_N,m14_2_AN,m14_3))
+```
