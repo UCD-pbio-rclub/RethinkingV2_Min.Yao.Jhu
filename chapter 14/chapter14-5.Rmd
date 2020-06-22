@@ -2,7 +2,9 @@
 title: "chapter14-5"
 author: "Min-Yao"
 date: "2020/6/19"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ## 14.5. Continuous categories and the Gaussian process
@@ -185,64 +187,32 @@ plot(compare(m14.7,m14.7nc))
 
 ### 14M4. Use WAIC to compare the Gaussian process model of Oceanic tools to the models fit to the same data in Chapter 11. Pay special attention to the effective numbers of parameters, as estimated by WAIC.
 
+> Gaussian process model: m14.7, m14.7nc
+
+> Chapter 11 model: m11.9, m11.10, m11.11
+
 ### 11.2.1. Example: Oceanic tool complexity.
 
 ```{r}
-## R code 11.39
+## R code 11.36
 library(rethinking)
 data(Kline)
 d <- Kline
 d
 ```
 
+
 ```{r}
-## R code 11.40
+## R code 11.37
 d$P <- scale( log(d$population) )
 d$contact_id <- ifelse( d$contact=="high" , 2 , 1 )
+
 ```
 
-```{r}
-## R code 11.41
-curve( dlnorm( x , 0 , 10 ) , from=0 , to=100 , n=200 )
-
-## R code 11.42
-a <- rnorm(1e4,0,10)
-lambda <- exp(a)
-mean( lambda )
-
-## R code 11.43
-curve( dlnorm( x , 3 , 0.5 ) , from=0 , to=100 , n=200 )
-```
+### Chapter 11 models
 
 ```{r}
-## R code 11.44
-N <- 100
-a <- rnorm( N , 3 , 0.5 )
-b <- rnorm( N , 0 , 10 )
-plot( NULL , xlim=c(-2,2) , ylim=c(0,100) )
-for ( i in 1:N ) curve( exp( a[i] + b[i]*x ) , add=TRUE , col=col.alpha("black",0.5) )
-
 ## R code 11.45
-set.seed(10)
-N <- 100
-a <- rnorm( N , 3 , 0.5 )
-b <- rnorm( N , 0 , 0.2 )
-plot( NULL , xlim=c(-2,2) , ylim=c(0,100) )
-for ( i in 1:N ) curve( exp( a[i] + b[i]*x ) , add=TRUE , col=col.alpha("black",0.5) )
-```
-
-```{r}
-## R code 11.46
-x_seq <- seq( from=log(100) , to=log(200000) , length.out=100 )
-lambda <- sapply( x_seq , function(x) exp( a + b*x ) )
-plot( NULL , xlim=range(x_seq) , ylim=c(0,500) , xlab="log population" , ylab="total tools" )
-for ( i in 1:N ) lines( x_seq , lambda[i,] , col=col.alpha("black",0.5) , lwd=1.5 )
-
-## R code 11.47
-plot( NULL , xlim=range(exp(x_seq)) , ylim=c(0,500) , xlab="population" , ylab="total tools" )
-for ( i in 1:N ) lines( exp(x_seq) , lambda[i,] , col=col.alpha("black",0.5) , lwd=1.5 )
-
-## R code 11.48
 dat <- list(
     T = d$total_tools ,
     P = d$P ,
@@ -264,12 +234,24 @@ m11.10 <- ulam(
         a[cid] ~ dnorm( 3 , 0.5 ),
         b[cid] ~ dnorm( 0 , 0.2 )
     ), data=dat , chains=4 , log_lik=TRUE )
+```
 
-## R code 11.49
-compare( m11.9 , m11.10 , func=LOO )
 
-## R code 11.50
-k <- LOOPk(m11.10)
+```{r}
+## R code 11.46
+compare( m11.9 , m11.10 , func=PSIS )
+plot(compare(  m11.9 , m11.10 , func=PSIS ))
+```
+
+```{r}
+## R code 11.46
+compare( m11.9 , m11.10 )
+plot(compare(  m11.9 , m11.10 ))
+```
+
+```{r}
+## R code 11.47
+k <- PSIS( m11.10 , pointwise=TRUE )$k
 plot( dat$P , dat$T , xlab="log population (std)" , ylab="total tools" ,
     col=rangi2 , pch=ifelse( dat$cid==1 , 1 , 16 ) , lwd=2 ,
     ylim=c(0,75) , cex=1+normalize(k) )
@@ -292,7 +274,7 @@ lci <- apply( lambda , 2 , PI )
 lines( P_seq , lmu , lty=1 , lwd=1.5 )
 shade( lci , P_seq , xpd=TRUE )
 
-## R code 11.51
+## R code 11.48
 plot( d$population , d$total_tools , xlab="population" , ylab="total tools" ,
     col=rangi2 , pch=ifelse( dat$cid==1 , 1 , 16 ) , lwd=2 ,
     ylim=c(0,75) , cex=1+normalize(k) )
@@ -318,8 +300,14 @@ shade( lci , pop_seq , xpd=TRUE )
 
 ### Overthinking: Modeling tool innovation.
 
+Taking the verbal model in the main text above, we can write that the change in the expected number of tools in one time step is:
+ΔT = αPβ − γT
+where P is the population size, T is the number of tools, and α, β, and γ are parameters to be estimated.
+To find an equilibrium number of tools T, just set ΔT = 0 and solve for T. This yields:
+ˆT = αPβ / γ
+
 ```{r}
-## R code 11.52
+## R code 11.49
 dat2 <- list( T=d$total_tools, P=d$population, cid=d$contact_id )
 m11.11 <- ulam(
     alist(
@@ -331,13 +319,23 @@ m11.11 <- ulam(
     ), data=dat2 , chains=4 , log_lik=TRUE )
 ```
 
+```{r}
+## R code 11.46
+compare( m11.9 , m11.10 , m11.11 , func=PSIS )
+plot(compare(  m11.9 , m11.10 , m11.11 , func=PSIS ))
+```
 
 ```{r}
-## R code 11.49
-compare( m11.9 , m11.10 , m11.11 , func=LOO )
+## R code 11.46
+compare( m11.9 , m11.10 , m11.11 )
+plot(compare(  m11.9 , m11.10 , m11.11 ))
 ```
 
 ### overall compare
+
+> Gaussian process model: m14.7, m14.7nc
+
+> Chapter 11 model: m11.9, m11.10, m11.11
 
 ```{r}
 compare(m14.7, m14.7nc , m11.9 , m11.10 , m11.11)
