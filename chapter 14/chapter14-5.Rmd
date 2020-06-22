@@ -52,7 +52,7 @@ m14.7 <- ulam(
         c(a,b,g) ~ dexp( 1 ),
         etasq ~ dexp( 2 ),
         rhosq ~ dexp( 0.5 )
-    ), data=dat_list , chains=4 , cores=4 , iter=2000 )
+    ), data=dat_list , chains=4 , cores=4 , iter=2000 , log_lik = TRUE)
 ```
 
 ```{r}
@@ -125,7 +125,7 @@ for( i in 1:10 )
 ## R code 14.44
 # compute posterior median relationship, ignoring distance
 logpop.seq <- seq( from=6 , to=14 , length.out=30 )
-lambda <- sapply( logpop.seq , function(lp) exp( post$a + post$bp*lp ) )
+lambda <- sapply( logpop.seq , function(lp) post$a*exp(lp)^post$b/post$g )
 lambda.median <- apply( lambda , 2 , median )
 lambda.PI80 <- apply( lambda , 2 , PI , prob=0.8 )
 
@@ -148,6 +148,7 @@ for( i in 1:10 )
                    c( d$total_tools[i],d$total_tools[j] ) ,
                    lwd=2 , col=col.alpha("black",Rho[i,j]^2) )
 ```
+### Overthinking: Non-centered islands.
 
 ```{r}
 ## R code 14.45
@@ -165,9 +166,18 @@ m14.7nc <- ulam(
         c(a,b,g) ~ dexp( 1 ),
         etasq ~ dexp( 2 ),
         rhosq ~ dexp( 0.5 )
-    ), data=dat_list , chains=4 , cores=4 , iter=2000 )
+    ), data=dat_list , chains=4 , cores=4 , iter=2000 , log_lik = TRUE)
+```
+```{r}
+## R code 14.39
+precis( m14.7 , depth=3 )
+precis( m14.7nc , depth=3 )
 ```
 
+```{r}
+compare(m14.7,m14.7nc)
+plot(compare(m14.7,m14.7nc))
+```
 
 
 ## 14.6. Summary
@@ -175,7 +185,162 @@ m14.7nc <- ulam(
 
 ### 14M4. Use WAIC to compare the Gaussian process model of Oceanic tools to the models fit to the same data in Chapter 11. Pay special attention to the effective numbers of parameters, as estimated by WAIC.
 
-```{r}
+### 11.2.1. Example: Oceanic tool complexity.
 
+```{r}
+## R code 11.39
+library(rethinking)
+data(Kline)
+d <- Kline
+d
+```
+
+```{r}
+## R code 11.40
+d$P <- scale( log(d$population) )
+d$contact_id <- ifelse( d$contact=="high" , 2 , 1 )
+```
+
+```{r}
+## R code 11.41
+curve( dlnorm( x , 0 , 10 ) , from=0 , to=100 , n=200 )
+
+## R code 11.42
+a <- rnorm(1e4,0,10)
+lambda <- exp(a)
+mean( lambda )
+
+## R code 11.43
+curve( dlnorm( x , 3 , 0.5 ) , from=0 , to=100 , n=200 )
+```
+
+```{r}
+## R code 11.44
+N <- 100
+a <- rnorm( N , 3 , 0.5 )
+b <- rnorm( N , 0 , 10 )
+plot( NULL , xlim=c(-2,2) , ylim=c(0,100) )
+for ( i in 1:N ) curve( exp( a[i] + b[i]*x ) , add=TRUE , col=col.alpha("black",0.5) )
+
+## R code 11.45
+set.seed(10)
+N <- 100
+a <- rnorm( N , 3 , 0.5 )
+b <- rnorm( N , 0 , 0.2 )
+plot( NULL , xlim=c(-2,2) , ylim=c(0,100) )
+for ( i in 1:N ) curve( exp( a[i] + b[i]*x ) , add=TRUE , col=col.alpha("black",0.5) )
+```
+
+```{r}
+## R code 11.46
+x_seq <- seq( from=log(100) , to=log(200000) , length.out=100 )
+lambda <- sapply( x_seq , function(x) exp( a + b*x ) )
+plot( NULL , xlim=range(x_seq) , ylim=c(0,500) , xlab="log population" , ylab="total tools" )
+for ( i in 1:N ) lines( x_seq , lambda[i,] , col=col.alpha("black",0.5) , lwd=1.5 )
+
+## R code 11.47
+plot( NULL , xlim=range(exp(x_seq)) , ylim=c(0,500) , xlab="population" , ylab="total tools" )
+for ( i in 1:N ) lines( exp(x_seq) , lambda[i,] , col=col.alpha("black",0.5) , lwd=1.5 )
+
+## R code 11.48
+dat <- list(
+    T = d$total_tools ,
+    P = d$P ,
+    cid = d$contact_id )
+
+# intercept only
+m11.9 <- ulam(
+    alist(
+        T ~ dpois( lambda ),
+        log(lambda) <- a,
+        a ~ dnorm(3,0.5)
+    ), data=dat , chains=4 , log_lik=TRUE )
+
+# interaction model
+m11.10 <- ulam(
+    alist(
+        T ~ dpois( lambda ),
+        log(lambda) <- a[cid] + b[cid]*P,
+        a[cid] ~ dnorm( 3 , 0.5 ),
+        b[cid] ~ dnorm( 0 , 0.2 )
+    ), data=dat , chains=4 , log_lik=TRUE )
+
+## R code 11.49
+compare( m11.9 , m11.10 , func=LOO )
+
+## R code 11.50
+k <- LOOPk(m11.10)
+plot( dat$P , dat$T , xlab="log population (std)" , ylab="total tools" ,
+    col=rangi2 , pch=ifelse( dat$cid==1 , 1 , 16 ) , lwd=2 ,
+    ylim=c(0,75) , cex=1+normalize(k) )
+
+# set up the horizontal axis values to compute predictions at
+ns <- 100
+P_seq <- seq( from=-1.4 , to=3 , length.out=ns )
+
+# predictions for cid=1 (low contact)
+lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=1 ) )
+lmu <- apply( lambda , 2 , mean )
+lci <- apply( lambda , 2 , PI )
+lines( P_seq , lmu , lty=2 , lwd=1.5 )
+shade( lci , P_seq , xpd=TRUE )
+
+# predictions for cid=2 (high contact)
+lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=2 ) )
+lmu <- apply( lambda , 2 , mean )
+lci <- apply( lambda , 2 , PI )
+lines( P_seq , lmu , lty=1 , lwd=1.5 )
+shade( lci , P_seq , xpd=TRUE )
+
+## R code 11.51
+plot( d$population , d$total_tools , xlab="population" , ylab="total tools" ,
+    col=rangi2 , pch=ifelse( dat$cid==1 , 1 , 16 ) , lwd=2 ,
+    ylim=c(0,75) , cex=1+normalize(k) )
+
+ns <- 100
+P_seq <- seq( from=-5 , to=3 , length.out=ns )
+# 1.53 is sd of log(population)
+# 9 is mean of log(population)
+pop_seq <- exp( P_seq*1.53 + 9 )
+
+lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=1 ) )
+lmu <- apply( lambda , 2 , mean )
+lci <- apply( lambda , 2 , PI )
+lines( pop_seq , lmu , lty=2 , lwd=1.5 )
+shade( lci , pop_seq , xpd=TRUE )
+
+lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=2 ) )
+lmu <- apply( lambda , 2 , mean )
+lci <- apply( lambda , 2 , PI )
+lines( pop_seq , lmu , lty=1 , lwd=1.5 )
+shade( lci , pop_seq , xpd=TRUE )
+```
+
+### Overthinking: Modeling tool innovation.
+
+```{r}
+## R code 11.52
+dat2 <- list( T=d$total_tools, P=d$population, cid=d$contact_id )
+m11.11 <- ulam(
+    alist(
+        T ~ dpois( lambda ),
+        lambda <- exp(a[cid])*P^b[cid]/g,
+        a[cid] ~ dnorm(1,1),
+        b[cid] ~ dexp(1),
+        g ~ dexp(1)
+    ), data=dat2 , chains=4 , log_lik=TRUE )
+```
+
+
+```{r}
+## R code 11.49
+compare( m11.9 , m11.10 , m11.11 , func=LOO )
+```
+
+### overall compare
+
+```{r}
+compare(m14.7, m14.7nc , m11.9 , m11.10 , m11.11)
+plot(compare(m14.7, m14.7nc , m11.9 , m11.10 , m11.11))
 ```
 
