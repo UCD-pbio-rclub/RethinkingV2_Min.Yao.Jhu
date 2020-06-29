@@ -49,6 +49,7 @@ m14.8 <- ulam(
         sigma_sq ~ exponential( 1 )
     ), data=dat_list , chains=4 , cores=4 )
 precis( m14.8 )
+plot(precis( m14.8 ))
 ```
 
 ```{r}
@@ -81,6 +82,7 @@ m14.9 <- ulam(
         sigma_sq ~ exponential( 1 )
     ), data=dat_list , chains=4 , cores=4 )
 precis( m14.9 )
+plot(precis( m14.9 ))
 ```
 
 ```{r}
@@ -99,6 +101,7 @@ m14.10 <- ulam(
         rhosq ~ half_normal(3,0.25)
     ), data=dat_list , chains=4 , cores=4 )
 precis( m14.10 )
+plot(precis( m14.10 ))
 ```
 
 ```{r}
@@ -127,13 +130,140 @@ text( 0.2 , 0.1 , "posterior" , col=rangi2 )
 
 ### 14M5. Modify the phylogenetic distance example to use group size as the outcome and brain size as a predictor. Assuming brain size influences group size, what is your estimate of the effect? How does phylogeny influence the estimate?
 
+```{r}
+## R code 14.48
+dat_list <- list(
+    N_spp = nrow(dstan),
+    M = standardize(log(dstan$body)),
+    B = standardize(log(dstan$brain)),
+    G = standardize(log(dstan$group_size)),
+    Imat = diag( nrow(dstan) )
+)
+
+m14.8_G <- ulam(
+    alist(
+        G ~ multi_normal( mu , SIGMA ),
+        mu <- a + bM*M + bB*B,
+        matrix[N_spp,N_spp]: SIGMA <- Imat * sigma_sq,
+        a ~ normal( 0 , 1 ),
+        c(bM,bB) ~ normal( 0 , 0.5 ),
+        sigma_sq ~ exponential( 1 )
+    ), data=dat_list , chains=4 , cores=4 )
+precis( m14.8_G )
+plot(precis( m14.8_G ))
+```
+
+```{r}
+## R code 14.50
+# put species in right order
+dat_list$V <- V[ spp_obs , spp_obs ]
+# convert to correlation matrix
+dat_list$R <- dat_list$V / max(V)
+
+# Brownian motion model
+m14.9_G <- ulam(
+    alist(
+        G ~ multi_normal( mu , SIGMA ),
+        mu <- a + bM*M + bB*B,
+        matrix[N_spp,N_spp]: SIGMA <- R * sigma_sq,
+        a ~ normal( 0 , 1 ),
+        c(bM,bB) ~ normal( 0 , 0.5 ),
+        sigma_sq ~ exponential( 1 )
+    ), data=dat_list , chains=4 , cores=4 )
+precis( m14.9_G )
+plot(precis( m14.9_G ))
+```
+
+```{r}
+## R code 14.51
+# add scaled and reordered distance matrix
+dat_list$Dmat <- Dmat[ spp_obs , spp_obs ] / max(Dmat)
+
+m14.10_G <- ulam(
+    alist(
+        G ~ multi_normal( mu , SIGMA ),
+        mu <- a + bM*M + bB*B,
+        matrix[N_spp,N_spp]: SIGMA <- cov_GPL1( Dmat , etasq , rhosq , 0.01 ),
+        a ~ normal(0,1),
+        c(bM,bB) ~ normal(0,0.5),
+        etasq ~ half_normal(1,0.25),
+        rhosq ~ half_normal(3,0.25)
+    ), data=dat_list , chains=4 , cores=4 )
+precis( m14.10_G )
+plot(precis( m14.10_G ))
+```
+
 ### 14H2. Varying effects models are useful for modeling time series, as well as spatial clustering. In a time series, the observations cluster by entities that have continuity through time, such as individuals. Since observations within individuals are likely highly correlated, the multilevel structure can help quite a lot. You’ll use the data in data(Oxboys), which is 234 height measurements on 26 boys from an Oxford Boys Club (I think these were like youth athletic leagues?), at 9 different ages (centered and standardized) per boy. You’ll be interested in predicting height, using age, clustered by Subject (individual boy).
 ### Fit a model with varying intercepts and slopes (on age), clustered by Subject. Present and interpret the parameter estimates. Which varying effect contributes more variation to the heights, the intercept or the slope?
 
-### 14H3. Now consider the correlation between the varying intercepts and slopes. Can you explain its value? How would this estimated correlation influence your predictions about a new sample of boys?
-
 ```{r}
-## R code 14.53
-#S <- matrix( c( sa^2 , sa*sb*rho , sa*sb*rho , sb^2 ) , nrow=2 )
+library(tidyverse)
+library(dplyr)
+
+data(Oxboys)
+d <- Oxboys
+
+d %>% ggplot(aes(age, height, group=Subject, color=as.factor(Subject))) + 
+    geom_line() + 
+    geom_point(size=2) + 
+    ggtitle("Boys height as function of age", subtitle = "Each line: group=Subject")
+
+d$height_centered <- (d$height - mean(d$height)) / sd(d$height)
+str(d)
+summary(d)
+
+dat_list_OB <- list(
+    height_centered = d$height_centered,
+    Subject = d$Subject,
+    age = d$age)
+str(dat_list_OB)
+summary(dat_list_OB)
 ```
 
+```{r}
+m14H2_centered <- ulam(
+  alist(
+    height_centered ~ dnorm(mu, sigma), 
+    mu <- a + a_S[Subject] + (b + b_S[Subject])*age,
+    c(a_S, b_S)[Subject] ~ multi_normal(0, Rho, sigma_S),
+    a ~ dnorm(150, 10),
+    b ~ dnorm(0, 1),
+    sigma ~ exponential( 1 ),
+    sigma_S ~ exponential( 1 ),
+    Rho ~ lkj_corr( 2 )
+    ), data=dat_list_OB, chains=4, cores=4, log_lik = TRUE )
+
+precis(m14H2_centered, depth=2)
+```
+```{r}
+precis(m14H2_centered, depth=3, pars = c("a", "b", "sigma_S", "sigma", "Rho"))
+plot(precis(m14H2_centered, depth=3, pars = c("a", "b", "sigma_S", "sigma", "Rho")))
+```
+
+> Number of effective samples for a_S and b_S are very small
+
+```{r}
+m14H2_centered_2 <- ulam(
+  alist(
+    height_centered ~ dnorm(mu, sigma), 
+    mu <- a_S[Subject] + (b_S[Subject])*age,
+    c(a_S, b_S)[Subject] ~ multi_normal(c(a, b), Rho, sigma_S),
+    a ~ dnorm(150, 10),
+    b ~ dnorm(0, 1),
+    sigma ~ exponential( 1 ),
+    sigma_S ~ exponential( 1 ),
+    Rho ~ lkj_corr( 2 )
+    ), data=dat_list_OB, chains=4, cores=4, log_lik = TRUE )
+
+precis(m14H2_centered_2, depth=2)
+precis(m14H2_centered_2, depth=3, pars = c("a", "b", "sigma_S", "sigma", "Rho"))
+plot(precis(m14H2_centered_2, depth=3, pars = c("a", "b", "sigma_S", "sigma", "Rho")))
+```
+
+> Deviance of the a is a little bit bigger than deviance of the slope b. So, I think the intercept contributes more variation to the heights.
+
+### 14H3. Now consider the correlation between the varying intercepts and slopes. Can you explain its value? How would this estimated correlation influence your predictions about a new sample of boys?
+
+> This model suggests that intercept and slope are correlated.
+
+> The boys who are higher on average (bigger intercepts) also have faster speed of growth (slope for age is bigger).
