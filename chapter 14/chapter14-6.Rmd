@@ -152,6 +152,7 @@ m14.8_G <- ulam(
 precis( m14.8_G )
 plot(precis( m14.8_G ))
 ```
+> Using an identity matrix (no phylogeny), brain size influences group size strongly positively and body mass influences group size slightly negativly. 
 
 ```{r}
 ## R code 14.50
@@ -174,6 +175,8 @@ precis( m14.9_G )
 plot(precis( m14.9_G ))
 ```
 
+> Using the Brownian motion model, body mass influences group size slightly positively.
+
 ```{r}
 ## R code 14.51
 # add scaled and reordered distance matrix
@@ -192,6 +195,9 @@ m14.10_G <- ulam(
 precis( m14.10_G )
 plot(precis( m14.10_G ))
 ```
+
+> Using the Ornstein–Uhlenbeck process (or OU process), both brain size and body mass seems to have much smaller positive effects (almost no effect) on group size.
+
 
 ### 14H2. Varying effects models are useful for modeling time series, as well as spatial clustering. In a time series, the observations cluster by entities that have continuity through time, such as individuals. Since observations within individuals are likely highly correlated, the multilevel structure can help quite a lot. You’ll use the data in data(Oxboys), which is 234 height measurements on 26 boys from an Oxford Boys Club (I think these were like youth athletic leagues?), at 9 different ages (centered and standardized) per boy. You’ll be interested in predicting height, using age, clustered by Subject (individual boy).
 ### Fit a model with varying intercepts and slopes (on age), clustered by Subject. Present and interpret the parameter estimates. Which varying effect contributes more variation to the heights, the intercept or the slope?
