@@ -169,11 +169,11 @@ plot(precis( m14_7_with_OU ))
 
 # 5) Discuss your findings.
 
-> Using an identity matrix (no phylogeny), size influences rang positively 
+> Using an identity matrix (no phylogeny), body size influences the range size of carnivores positively 
 
-> Using the Brownian motion model, size influences rang even more positively.
+> Using the Brownian motion model, body size influences the range size of carnivores even more positively.
 
-> Using the Ornstein–Uhlenbeck process (or OU process), size influences rang even more positively.
+> Using the Ornstein–Uhlenbeck process (or OU process), body size influences the range size of carnivores even more positively.
 
 ```{r}
 precis( m14_7_without )
