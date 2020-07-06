@@ -15,6 +15,7 @@ output:
 library(rethinking)
 library(ape)
 library(ade4)
+library(stringr)
 ```
 
 ```{r}
@@ -24,15 +25,164 @@ data("carni70")
 ```{r}
 tre <- read.tree(text=carni70$tre)
 d <- carni70$tab
+str(d)
+summary(d)
+```
+
+```{r}
+plot( ladderize(tre) , type="fan" , font=1 , no.margin=TRUE ,
+    label.offset=1 , cex=0.5 )
 ```
 
 # 2) Note that the species name given in "rownames(d)" and in "tre$tip.label" do not match.  Fix that (e.g. using str_replace() )
 
+```{r}
+head(rownames(d))
+head(tre$tip.label)
+```
+```{r}
+rownames(d) = str_replace(rownames(d), "_", ".")
+
+head(rownames(d))
+head(tre$tip.label)
+```
+
 # 3) Should either range or size be transformed?
+
+```{r}
+str(d)
+summary(d)
+head(d)
+```
+```{r}
+dens(d$size)
+dens(standardize(log(d$size)))
+```
+```{r}
+dens(d$range)
+dens(standardize(d$range))
+dens(standardize(log(d$range)))
+```
 
 # 4) Does size predict range?  Evaluate this question without and with accounting for phylogenetic relationships.
 
+```{r}
+plot( d$size , d$range , xlab="size" , ylab="range" )
+plot( standardize(log(d$size)) , standardize(d$range) , xlab="log_size" , ylab="log_range" )
+plot( standardize(log(d$size)) , standardize(log(d$range)) , xlab="log_size" , ylab="log_range" )
+```
+```{r}
+## R code 14.47
+d$name <- as.character(rownames(d))
+spp_obs <- d$name
+```
+
+```{r}
+## modified from R code 14.48
+dat_list <- list(
+    N_spp = nrow(d),
+    S = standardize(log(d$size)),
+    R = standardize(log(d$range)),
+    Imat = diag( nrow(d) )
+)
+
+str(dat_list)
+```
+> Evaluate this question without accounting for phylogenetic relationships
+
+> Using an identity matrix (no phylogeny)
+
+```{r}
+m14_7_without <- ulam(
+    alist(
+        R ~ multi_normal( mu , SIGMA ),
+        mu <- a + bS*S ,
+        matrix[N_spp,N_spp]: SIGMA <- Imat * sigma_sq,
+        a ~ normal( 0 , 1 ),
+        bS ~ normal( 0 , 0.5 ),
+        sigma_sq ~ exponential( 1 )
+    ), data=dat_list , chains=4 , cores=4 )
+precis( m14_7_without )
+plot(precis( m14_7_without ))
+```
+
+> Evaluate this question with accounting for phylogenetic relationships
+
+> Using the Brownian motion model
+
+```{r}
+## modified from R code 14.49
+
+Rbm <- corBrownian( phy=tre , form = ~tre$tip.label)
+V <- vcv(Rbm)
+#error: No covariate specified, species will be taken as ordered in the data frame. To avoid this message, specify a covariate containing the species names with the 'form' argument.
+Dmat <- cophenetic( tre )
+plot( Dmat , V , xlab="phylogenetic distance" , ylab="covariance" )
+image(V)
+image(Dmat)
+```
+
+```{r}
+## modified from R code 14.50
+# put species in right order
+dat_list$V <- V[ spp_obs , spp_obs ] #subscript out of bounds?
+
+# convert to correlation matrix
+dat_list$CoR <- dat_list$V / max(V)
+
+# Brownian motion model
+m14_7_with <- ulam(
+    alist(
+        R ~ multi_normal( mu , SIGMA ),
+        mu <- a + bS*S ,
+        matrix[N_spp,N_spp]: SIGMA <- CoR * sigma_sq,
+        a ~ normal( 0 , 1 ),
+        bS ~ normal( 0 , 0.5 ),
+        sigma_sq ~ exponential( 1 )
+    ), data=dat_list , chains=4 , cores=4 )
+precis( m14_7_with )
+plot(precis( m14_7_with ))
+```
+
+> Using the Ornstein–Uhlenbeck process (or OU process)
+
+> use the OU process kernel, which is known more generally as the L1 norm, which ulam() provides as cov_GPL1().
+
+```{r}
+## R code 14.51
+# add scaled and reordered distance matrix
+dat_list$Dmat <- Dmat[ spp_obs , spp_obs ] / max(Dmat)
+
+m14_7_with_OU <- ulam(
+    alist(
+        R ~ multi_normal( mu , SIGMA ),
+        mu <- a + bS*S ,
+        matrix[N_spp,N_spp]: SIGMA <- cov_GPL1( Dmat , etasq , rhosq , 0.01 ),
+        a ~ normal(0,1),
+        bS ~ normal(0,0.5),
+        etasq ~ half_normal(1,0.25),
+        rhosq ~ half_normal(3,0.25)
+    ), data=dat_list , chains=4 , cores=4 )
+precis( m14_7_with_OU )
+plot(precis( m14_7_with_OU ))
+```
+
 # 5) Discuss your findings.
+
+> Using an identity matrix (no phylogeny), size influences rang positively 
+
+> Using the Brownian motion model, size influences rang even more positively.
+
+> Using the Ornstein–Uhlenbeck process (or OU process), size influences rang even more positively.
+
+```{r}
+precis( m14_7_without )
+plot(precis( m14_7_without ))
+precis( m14_7_with )
+plot(precis( m14_7_with ))
+precis( m14_7_with_OU )
+plot(precis( m14_7_with_OU ))
+```
 
 
 
