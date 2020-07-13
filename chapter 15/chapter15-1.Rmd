@@ -295,35 +295,54 @@ B_missidx <- which( is.na( dat_list$B ) )
 ## 15.5. Practice
 
 ### 15E1.Rewrite the Oceanic tools model (from Chapter 11) below so that it assumes measured error on the log population sizes of each society.
-Ti ∼ Poisson(μi)
-log μi = α + β log Pi
-α ∼ Normal(0, 10)
-β ∼ Normal(0, 1)
+
+> Ti ∼ Poisson(μi)
+
+> log μi = α + β log Pi
+
+> α ∼ Normal(0, 10)
+
+> β ∼ Normal(0, 1)
 
 > new model
 
-Ti ∼ Poisson(μi)
-log μi = α + β log P_true_i
-log P_observed_i ~ Normal(log P_true_i, log P_se_i)
-α ∼ Normal(0, 10)
-β ∼ Normal(0, 1)
+> Ti ∼ Poisson(μi)
 
+> log μi = α + β log P_true_i
+
+> log P_observed_i ~ Normal(log P_true_i, log P_se_i)
+
+> α ∼ Normal(0, 10)
+
+> β ∼ Normal(0, 1)
+
+> P_true_i ~ Normal(0, 1)
 
 ### 15E2. Rewrite the same model so that it allows imputation of missing values for log population. There aren’t any missing values in the variable, but you can still write down a model formula that would imply imputation, if any values were missing.
-Ti ∼ Poisson(μi)
-log μi = α + β log Pi
-α ∼ Normal(0, 10)
-β ∼ Normal(0, 1)
+
+> Ti ∼ Poisson(μi)
+
+> log μi = α + β log Pi
+
+> α ∼ Normal(0, 10)
+
+> β ∼ Normal(0, 1)
 
 > new model. The simplest model will simply impute log Pi from its own normal distribution.
 
-Ti ∼ Poisson(μi)
-log μi = α + β log Pi
-log Pi ~ Normal(ν, σ_logP)
-α ∼ Normal(0, 10)
-β ∼ Normal(0, 1)
-ν ∼ Normal(0.5, 1)
-σ_logP ∼ Exponential(1)
+> Ti ∼ Poisson(μi)
+
+> log μi = α + β log Pi
+
+> log Pi ~ Normal(ν, σ_logP)
+
+> α ∼ Normal(0, 10)
+
+> β ∼ Normal(0, 1)
+
+> ν ∼ Normal(0.5, 1)
+
+> σ_logP ∼ Exponential(1)
 
 ### 15M2. In earlier chapters, we threw away cases from the primate milk data, so we could use the neocortex variable. Now repeat the WAIC model comparison example from Chapter 6, but use imputation on the neocortex variable so that you can include all of the cases in the original data. The simplest form of imputation is acceptable. How are the model comparison results affected by being able to include all of the cases?
 

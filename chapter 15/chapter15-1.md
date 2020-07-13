@@ -29,7 +29,7 @@ num_11/num_11_10
 ```
 
 ```
-## [1] 0.6623351
+## [1] 0.6526594
 ```
 
 ## 15.1. Measurement error
@@ -137,61 +137,61 @@ precis( m15.1 , depth=2 )
 ```
 
 ```
-##                   mean         sd        5.5%        94.5%     n_eff     Rhat4
-## D_true[1]   1.17208322 0.36739351  0.59759566  1.759797988 2556.5060 0.9998244
-## D_true[2]   0.68548170 0.54906867 -0.16428478  1.578064180 2844.5988 0.9997248
-## D_true[3]   0.42591645 0.34611617 -0.13243117  0.986429463 3241.9615 1.0007665
-## D_true[4]   1.42273239 0.45978027  0.70496214  2.156133271 1698.2923 1.0019802
-## D_true[5]  -0.90078478 0.12842773 -1.10534334 -0.700322610 2948.5643 0.9997399
-## D_true[6]   0.66246352 0.39831577  0.03959602  1.307494301 2386.8667 1.0001046
-## D_true[7]  -1.37674468 0.34728789 -1.92308338 -0.823342592 2996.5256 0.9990869
-## D_true[8]  -0.35426010 0.47894486 -1.12597328  0.397316835 2403.2967 0.9995526
-## D_true[9]  -1.90122298 0.56914779 -2.81691074 -0.961703501 1554.5526 0.9992997
-## D_true[10] -0.61680233 0.17424383 -0.90319666 -0.342104258 3035.7250 0.9983337
-## D_true[11]  0.77499855 0.29264764  0.30709288  1.240139678 2742.5584 0.9998273
-## D_true[12] -0.54762279 0.47600395 -1.30574610  0.191803310 1869.5709 0.9998124
-## D_true[13]  0.16162307 0.49257275 -0.61680925  0.926181017 1326.8773 1.0030589
-## D_true[14] -0.87155377 0.22549738 -1.23233138 -0.510188480 3433.3135 0.9995453
-## D_true[15]  0.55305392 0.31025132  0.06844027  1.042418589 2631.5689 0.9999440
-## D_true[16]  0.28896411 0.39408838 -0.35807791  0.921179117 2871.5617 0.9997493
-## D_true[17]  0.49530387 0.43869861 -0.19681591  1.172681986 2982.5923 0.9987905
-## D_true[18]  1.26347126 0.35987785  0.70048377  1.850638007 2575.2880 0.9994888
-## D_true[19]  0.43756383 0.37749256 -0.14998890  1.053579312 2823.9615 0.9984569
-## D_true[20]  0.40570473 0.52962519 -0.39802906  1.291804693 1875.1516 0.9999326
-## D_true[21] -0.54975225 0.32074319 -1.05150634 -0.040497757 3509.5436 0.9985214
-## D_true[22] -1.08802682 0.26685575 -1.51585965 -0.652100716 2594.9415 0.9987378
-## D_true[23] -0.27455209 0.26905117 -0.70660641  0.175740839 3159.9768 0.9986168
-## D_true[24] -0.99964683 0.30053244 -1.48668947 -0.533177888 2754.2226 0.9990893
-## D_true[25]  0.43298741 0.40351489 -0.18899354  1.079650657 2885.1627 0.9997284
-## D_true[26] -0.01698713 0.30355466 -0.51895519  0.466880459 3332.6765 1.0000561
-## D_true[27] -0.01939452 0.53902431 -0.90243721  0.820099463 3802.0655 1.0008309
-## D_true[28] -0.15824334 0.39052931 -0.78542933  0.444210049 2341.6368 0.9998566
-## D_true[29] -0.24745131 0.50578325 -1.01969771  0.577452373 2617.4053 0.9981144
-## D_true[30] -1.80753683 0.23043358 -2.18042670 -1.449833487 2090.4033 1.0000993
-## D_true[31]  0.17094844 0.40627721 -0.45508833  0.826407117 2927.7869 1.0009093
-## D_true[32] -1.66227861 0.16865695 -1.92849443 -1.395109828 3067.8831 0.9989708
-## D_true[33]  0.11893095 0.23756637 -0.27557273  0.499472781 4084.3632 0.9993516
-## D_true[34] -0.08082964 0.54278898 -0.95748970  0.747962799 2085.4987 0.9986062
-## D_true[35] -0.12258595 0.21753322 -0.47077588  0.226499521 2433.9316 0.9993687
-## D_true[36]  1.28152622 0.40378354  0.67116046  1.923359888 2459.1098 0.9988293
-## D_true[37]  0.22692244 0.35243759 -0.32697638  0.803972316 2943.6434 0.9998206
-## D_true[38] -1.02259973 0.21972496 -1.36679879 -0.679682660 3287.7446 0.9989808
-## D_true[39] -0.91657308 0.57008660 -1.82214992 -0.021168908 2502.5021 0.9992281
-## D_true[40] -0.67911415 0.31382715 -1.18633582 -0.188453850 2888.5900 0.9986884
-## D_true[41]  0.26186555 0.56182268 -0.64414593  1.162971610 2871.8937 0.9991247
-## D_true[42]  0.74738957 0.34692549  0.20856128  1.295213289 2649.4478 0.9992375
-## D_true[43]  0.19038291 0.17388142 -0.08273207  0.458792671 3687.2045 0.9988055
-## D_true[44]  0.78432425 0.44430078  0.05934907  1.491242162 2185.8337 0.9995667
-## D_true[45] -0.41267375 0.52603612 -1.25195187  0.427159334 2568.2319 0.9993085
-## D_true[46] -0.38919179 0.24816933 -0.78316668  0.007661327 3765.6032 0.9992978
-## D_true[47]  0.13020654 0.31330546 -0.37443624  0.629826194 2502.1053 0.9994645
-## D_true[48]  0.55608944 0.48486769 -0.20703999  1.336218614 2296.4395 0.9988348
-## D_true[49] -0.63765149 0.26587728 -1.08107628 -0.214896982 2823.1352 0.9994118
-## D_true[50]  0.85308017 0.59996253 -0.11256014  1.802021242 1826.3385 0.9993055
-## a          -0.05405237 0.09514588 -0.20575272  0.100709101 1667.1502 1.0005873
-## bA         -0.61568604 0.16000884 -0.86941516 -0.351271499  905.9842 1.0022912
-## bM          0.05086642 0.17555479 -0.22550786  0.325358193  918.6388 1.0021573
-## sigma       0.59060433 0.10725350  0.43551339  0.770191964  734.4818 1.0095779
+##                   mean         sd        5.5%       94.5%     n_eff     Rhat4
+## D_true[1]   1.17213732 0.36271957  0.60347623  1.75232551 2613.5020 0.9993657
+## D_true[2]   0.69319952 0.56676541 -0.19751572  1.61543909 2432.0575 0.9986942
+## D_true[3]   0.43455645 0.33359009 -0.08207652  0.98147060 3430.2115 0.9993220
+## D_true[4]   1.41141717 0.44978575  0.68597598  2.14374628 2725.3565 0.9996455
+## D_true[5]  -0.90086800 0.13162445 -1.11210495 -0.69384517 2548.5080 0.9988845
+## D_true[6]   0.66315057 0.40551055  0.05151198  1.34748517 2507.1894 0.9991545
+## D_true[7]  -1.37270794 0.34704803 -1.92363772 -0.81436579 2529.2590 1.0007814
+## D_true[8]  -0.33761826 0.48792812 -1.10664119  0.42029307 2802.1002 1.0002825
+## D_true[9]  -1.89295181 0.60811787 -2.83710393 -0.91657830 2347.2129 1.0000402
+## D_true[10] -0.61912245 0.16302335 -0.87741451 -0.35797151 3449.9385 0.9988355
+## D_true[11]  0.76817205 0.28135151  0.31550176  1.22264908 2255.0343 1.0032673
+## D_true[12] -0.57436205 0.48351745 -1.34305066  0.19726235 2290.6465 0.9994158
+## D_true[13]  0.16870924 0.50269950 -0.64239172  0.94741153 1544.3859 1.0019733
+## D_true[14] -0.86690464 0.22259240 -1.21956164 -0.51985966 3603.4518 1.0003807
+## D_true[15]  0.55489597 0.29878455  0.07536558  1.03470438 3624.3423 0.9987108
+## D_true[16]  0.28007955 0.39161865 -0.32046628  0.91696659 4480.3019 0.9985226
+## D_true[17]  0.50348715 0.42471305 -0.17248569  1.18195475 2862.6701 0.9986500
+## D_true[18]  1.25717000 0.35481561  0.68688316  1.79851635 3228.5731 0.9986029
+## D_true[19]  0.42258389 0.37002880 -0.15181227  1.01422972 2114.8700 1.0006302
+## D_true[20]  0.40548759 0.51137116 -0.36929908  1.27245827 1711.5261 0.9993812
+## D_true[21] -0.56726899 0.32540106 -1.09383564 -0.02975283 3498.3593 0.9986942
+## D_true[22] -1.09922429 0.26626548 -1.51920111 -0.67508666 3833.0009 0.9997582
+## D_true[23] -0.27472977 0.26228189 -0.69812122  0.13926398 3957.3147 0.9985141
+## D_true[24] -1.00740366 0.28617152 -1.45438690 -0.53995543 2713.9093 0.9991932
+## D_true[25]  0.42978225 0.40414254 -0.19108222  1.07066823 2148.2614 0.9985192
+## D_true[26] -0.02553240 0.31390901 -0.51942973  0.47285344 3101.4473 0.9998296
+## D_true[27] -0.01925444 0.52083673 -0.86336243  0.81004128 2425.7193 0.9995910
+## D_true[28] -0.15830555 0.40921634 -0.80798362  0.49073637 3495.2387 0.9996620
+## D_true[29] -0.26548913 0.50825250 -1.04983889  0.57803944 2008.3634 1.0011921
+## D_true[30] -1.79952181 0.23903946 -2.19883932 -1.42775132 3014.8296 0.9989362
+## D_true[31]  0.15079986 0.42407555 -0.53105451  0.83563511 2532.8948 1.0007559
+## D_true[32] -1.65919790 0.16741225 -1.92271379 -1.39530897 3699.8030 0.9986445
+## D_true[33]  0.11640885 0.23657577 -0.26033412  0.50239224 3025.0163 0.9998087
+## D_true[34] -0.06107832 0.53564756 -0.89290471  0.79026057 2658.1476 0.9991912
+## D_true[35] -0.12404793 0.22689595 -0.48464512  0.24102483 4294.7857 0.9992734
+## D_true[36]  1.28469815 0.41057979  0.64511956  1.95146403 2626.1182 0.9996470
+## D_true[37]  0.23745682 0.33204875 -0.28827914  0.76129080 3708.4028 0.9985991
+## D_true[38] -1.02658169 0.22273262 -1.38636829 -0.67127960 3943.2239 0.9995168
+## D_true[39] -0.91129416 0.53899084 -1.73505702 -0.03163037 2485.6435 1.0000973
+## D_true[40] -0.67624951 0.31333091 -1.20050733 -0.18995561 3039.3661 0.9990652
+## D_true[41]  0.24362770 0.53002280 -0.56242529  1.08146104 2425.1321 0.9995862
+## D_true[42]  0.74819267 0.35262687  0.19775282  1.30825292 3623.9025 0.9996271
+## D_true[43]  0.19575153 0.19077148 -0.11171975  0.51070630 3577.1829 0.9995146
+## D_true[44]  0.78995502 0.43083900  0.10587090  1.47054504 2353.7285 0.9998651
+## D_true[45] -0.41254456 0.51641831 -1.21244989  0.42168473 2117.2624 1.0000862
+## D_true[46] -0.39105838 0.25940243 -0.80099893  0.01992445 4627.1479 0.9998131
+## D_true[47]  0.12365475 0.28874904 -0.33234055  0.58768140 2999.8247 0.9999294
+## D_true[48]  0.55378113 0.43228510 -0.13476142  1.25103963 3594.5473 0.9991618
+## D_true[49] -0.63124116 0.27350473 -1.06043261 -0.19334477 2960.4472 0.9984328
+## D_true[50]  0.83473289 0.58161634 -0.10007829  1.74758464 1959.5271 1.0001545
+## a          -0.05622621 0.09472139 -0.20941656  0.09738435 2023.9458 1.0003914
+## bA         -0.61615203 0.16504677 -0.88001964 -0.35449915 1419.6095 0.9997827
+## bM          0.05212535 0.17053153 -0.22638295  0.31405339 1072.8026 1.0039786
+## sigma       0.58449862 0.10058853  0.42952015  0.74932484  639.8066 1.0059022
 ```
 
 ### 15.1.2. Error on both outcome and predictor.
@@ -291,8 +291,8 @@ m15.3 <- ulam(
 ## 
 ## SAMPLING FOR MODEL '23aa98f3ed8699c2ba8ae951caa2fdf8' NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 0 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 1: Gradient evaluation took 0.001 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -309,15 +309,15 @@ m15.3 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 1.055 seconds (Warm-up)
-## Chain 1:                1.077 seconds (Sampling)
-## Chain 1:                2.132 seconds (Total)
+## Chain 1:  Elapsed Time: 1.276 seconds (Warm-up)
+## Chain 1:                1.308 seconds (Sampling)
+## Chain 1:                2.584 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '23aa98f3ed8699c2ba8ae951caa2fdf8' NOW (CHAIN 2).
 ## Chain 2: 
-## Chain 2: Gradient evaluation took 0 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 2: Gradient evaluation took 0.001 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 2: Adjust your expectations accordingly!
 ## Chain 2: 
 ## Chain 2: 
@@ -334,15 +334,15 @@ m15.3 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 1.126 seconds (Warm-up)
-## Chain 2:                1.032 seconds (Sampling)
-## Chain 2:                2.158 seconds (Total)
+## Chain 2:  Elapsed Time: 1.31 seconds (Warm-up)
+## Chain 2:                1.164 seconds (Sampling)
+## Chain 2:                2.474 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '23aa98f3ed8699c2ba8ae951caa2fdf8' NOW (CHAIN 3).
 ## Chain 3: 
-## Chain 3: Gradient evaluation took 0.001 seconds
-## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+## Chain 3: Gradient evaluation took 0 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
 ## Chain 3: Adjust your expectations accordingly!
 ## Chain 3: 
 ## Chain 3: 
@@ -359,9 +359,9 @@ m15.3 <- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 1.164 seconds (Warm-up)
-## Chain 3:                1.174 seconds (Sampling)
-## Chain 3:                2.338 seconds (Total)
+## Chain 3:  Elapsed Time: 1.279 seconds (Warm-up)
+## Chain 3:                1.164 seconds (Sampling)
+## Chain 3:                2.443 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '23aa98f3ed8699c2ba8ae951caa2fdf8' NOW (CHAIN 4).
@@ -384,9 +384,9 @@ m15.3 <- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 1.275 seconds (Warm-up)
-## Chain 4:                1.101 seconds (Sampling)
-## Chain 4:                2.376 seconds (Total)
+## Chain 4:  Elapsed Time: 1.335 seconds (Warm-up)
+## Chain 4:                1.248 seconds (Sampling)
+## Chain 4:                2.583 seconds (Total)
 ## Chain 4:
 ```
 
@@ -438,15 +438,15 @@ m15.4 <- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 1.024 seconds (Warm-up)
-## Chain 1:                1.018 seconds (Sampling)
-## Chain 1:                2.042 seconds (Total)
+## Chain 1:  Elapsed Time: 1.022 seconds (Warm-up)
+## Chain 1:                1.015 seconds (Sampling)
+## Chain 1:                2.037 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL 'b0ffcbbcd522526a2407e59b1b1b4f2c' NOW (CHAIN 2).
 ## Chain 2: 
-## Chain 2: Gradient evaluation took 0 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 2: Gradient evaluation took 0.001 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 2: Adjust your expectations accordingly!
 ## Chain 2: 
 ## Chain 2: 
@@ -463,9 +463,9 @@ m15.4 <- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 1.168 seconds (Warm-up)
-## Chain 2:                0.91 seconds (Sampling)
-## Chain 2:                2.078 seconds (Total)
+## Chain 2:  Elapsed Time: 1.121 seconds (Warm-up)
+## Chain 2:                0.9 seconds (Sampling)
+## Chain 2:                2.021 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL 'b0ffcbbcd522526a2407e59b1b1b4f2c' NOW (CHAIN 3).
@@ -488,9 +488,9 @@ m15.4 <- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.973 seconds (Warm-up)
-## Chain 3:                0.913 seconds (Sampling)
-## Chain 3:                1.886 seconds (Total)
+## Chain 3:  Elapsed Time: 0.962 seconds (Warm-up)
+## Chain 3:                0.885 seconds (Sampling)
+## Chain 3:                1.847 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL 'b0ffcbbcd522526a2407e59b1b1b4f2c' NOW (CHAIN 4).
@@ -513,9 +513,9 @@ m15.4 <- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 1.024 seconds (Warm-up)
-## Chain 4:                1.045 seconds (Sampling)
-## Chain 4:                2.069 seconds (Total)
+## Chain 4:  Elapsed Time: 0.995 seconds (Warm-up)
+## Chain 4:                1.017 seconds (Sampling)
+## Chain 4:                2.012 seconds (Total)
 ## Chain 4:
 ```
 
@@ -734,35 +734,54 @@ B_missidx <- which( is.na( dat_list$B ) )
 ## 15.5. Practice
 
 ### 15E1.Rewrite the Oceanic tools model (from Chapter 11) below so that it assumes measured error on the log population sizes of each society.
-Ti ∼ Poisson(μi)
-log μi = α + β log Pi
-α ∼ Normal(0, 10)
-β ∼ Normal(0, 1)
+
+> Ti ∼ Poisson(μi)
+
+> log μi = α + β log Pi
+
+> α ∼ Normal(0, 10)
+
+> β ∼ Normal(0, 1)
 
 > new model
 
-Ti ∼ Poisson(μi)
-log μi = α + β log P_true_i
-log P_observed_i ~ Normal(log P_true_i, log P_se_i)
-α ∼ Normal(0, 10)
-β ∼ Normal(0, 1)
+> Ti ∼ Poisson(μi)
 
+> log μi = α + β log P_true_i
+
+> log P_observed_i ~ Normal(log P_true_i, log P_se_i)
+
+> α ∼ Normal(0, 10)
+
+> β ∼ Normal(0, 1)
+
+> P_true_i ~ Normal(0, 1)
 
 ### 15E2. Rewrite the same model so that it allows imputation of missing values for log population. There aren’t any missing values in the variable, but you can still write down a model formula that would imply imputation, if any values were missing.
-Ti ∼ Poisson(μi)
-log μi = α + β log Pi
-α ∼ Normal(0, 10)
-β ∼ Normal(0, 1)
+
+> Ti ∼ Poisson(μi)
+
+> log μi = α + β log Pi
+
+> α ∼ Normal(0, 10)
+
+> β ∼ Normal(0, 1)
 
 > new model. The simplest model will simply impute log Pi from its own normal distribution.
 
-Ti ∼ Poisson(μi)
-log μi = α + β log Pi
-log Pi ~ Normal(ν, σ_logP)
-α ∼ Normal(0, 10)
-β ∼ Normal(0, 1)
-ν ∼ Normal(0.5, 1)
-σ_logP ∼ Exponential(1)
+> Ti ∼ Poisson(μi)
+
+> log μi = α + β log Pi
+
+> log Pi ~ Normal(ν, σ_logP)
+
+> α ∼ Normal(0, 10)
+
+> β ∼ Normal(0, 1)
+
+> ν ∼ Normal(0.5, 1)
+
+> σ_logP ∼ Exponential(1)
 
 ### 15M2. In earlier chapters, we threw away cases from the primate milk data, so we could use the neocortex variable. Now repeat the WAIC model comparison example from Chapter 6, but use imputation on the neocortex variable so that you can include all of the cases in the original data. The simplest form of imputation is acceptable. How are the model comparison results affected by being able to include all of the cases?
 

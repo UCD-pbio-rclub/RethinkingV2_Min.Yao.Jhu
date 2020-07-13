@@ -399,7 +399,7 @@ down &lt;- pancakes[2,]
 num_11_10 &lt;- sum( up==1 )
 num_11 &lt;- sum( up==1 &amp; down==1 )
 num_11/num_11_10</code></pre>
-<pre><code>## [1] 0.6623351</code></pre>
+<pre><code>## [1] 0.6526594</code></pre>
 <div id="measurement-error" class="section level2">
 <h2>15.1. Measurement error</h2>
 <pre class="r"><code>## R code 15.2
@@ -461,61 +461,61 @@ m15.1 &lt;- ulam(
 
 ## R code 15.4
 precis( m15.1 , depth=2 )</code></pre>
-<pre><code>##                   mean         sd        5.5%        94.5%     n_eff     Rhat4
-## D_true[1]   1.17208322 0.36739351  0.59759566  1.759797988 2556.5060 0.9998244
-## D_true[2]   0.68548170 0.54906867 -0.16428478  1.578064180 2844.5988 0.9997248
-## D_true[3]   0.42591645 0.34611617 -0.13243117  0.986429463 3241.9615 1.0007665
-## D_true[4]   1.42273239 0.45978027  0.70496214  2.156133271 1698.2923 1.0019802
-## D_true[5]  -0.90078478 0.12842773 -1.10534334 -0.700322610 2948.5643 0.9997399
-## D_true[6]   0.66246352 0.39831577  0.03959602  1.307494301 2386.8667 1.0001046
-## D_true[7]  -1.37674468 0.34728789 -1.92308338 -0.823342592 2996.5256 0.9990869
-## D_true[8]  -0.35426010 0.47894486 -1.12597328  0.397316835 2403.2967 0.9995526
-## D_true[9]  -1.90122298 0.56914779 -2.81691074 -0.961703501 1554.5526 0.9992997
-## D_true[10] -0.61680233 0.17424383 -0.90319666 -0.342104258 3035.7250 0.9983337
-## D_true[11]  0.77499855 0.29264764  0.30709288  1.240139678 2742.5584 0.9998273
-## D_true[12] -0.54762279 0.47600395 -1.30574610  0.191803310 1869.5709 0.9998124
-## D_true[13]  0.16162307 0.49257275 -0.61680925  0.926181017 1326.8773 1.0030589
-## D_true[14] -0.87155377 0.22549738 -1.23233138 -0.510188480 3433.3135 0.9995453
-## D_true[15]  0.55305392 0.31025132  0.06844027  1.042418589 2631.5689 0.9999440
-## D_true[16]  0.28896411 0.39408838 -0.35807791  0.921179117 2871.5617 0.9997493
-## D_true[17]  0.49530387 0.43869861 -0.19681591  1.172681986 2982.5923 0.9987905
-## D_true[18]  1.26347126 0.35987785  0.70048377  1.850638007 2575.2880 0.9994888
-## D_true[19]  0.43756383 0.37749256 -0.14998890  1.053579312 2823.9615 0.9984569
-## D_true[20]  0.40570473 0.52962519 -0.39802906  1.291804693 1875.1516 0.9999326
-## D_true[21] -0.54975225 0.32074319 -1.05150634 -0.040497757 3509.5436 0.9985214
-## D_true[22] -1.08802682 0.26685575 -1.51585965 -0.652100716 2594.9415 0.9987378
-## D_true[23] -0.27455209 0.26905117 -0.70660641  0.175740839 3159.9768 0.9986168
-## D_true[24] -0.99964683 0.30053244 -1.48668947 -0.533177888 2754.2226 0.9990893
-## D_true[25]  0.43298741 0.40351489 -0.18899354  1.079650657 2885.1627 0.9997284
-## D_true[26] -0.01698713 0.30355466 -0.51895519  0.466880459 3332.6765 1.0000561
-## D_true[27] -0.01939452 0.53902431 -0.90243721  0.820099463 3802.0655 1.0008309
-## D_true[28] -0.15824334 0.39052931 -0.78542933  0.444210049 2341.6368 0.9998566
-## D_true[29] -0.24745131 0.50578325 -1.01969771  0.577452373 2617.4053 0.9981144
-## D_true[30] -1.80753683 0.23043358 -2.18042670 -1.449833487 2090.4033 1.0000993
-## D_true[31]  0.17094844 0.40627721 -0.45508833  0.826407117 2927.7869 1.0009093
-## D_true[32] -1.66227861 0.16865695 -1.92849443 -1.395109828 3067.8831 0.9989708
-## D_true[33]  0.11893095 0.23756637 -0.27557273  0.499472781 4084.3632 0.9993516
-## D_true[34] -0.08082964 0.54278898 -0.95748970  0.747962799 2085.4987 0.9986062
-## D_true[35] -0.12258595 0.21753322 -0.47077588  0.226499521 2433.9316 0.9993687
-## D_true[36]  1.28152622 0.40378354  0.67116046  1.923359888 2459.1098 0.9988293
-## D_true[37]  0.22692244 0.35243759 -0.32697638  0.803972316 2943.6434 0.9998206
-## D_true[38] -1.02259973 0.21972496 -1.36679879 -0.679682660 3287.7446 0.9989808
-## D_true[39] -0.91657308 0.57008660 -1.82214992 -0.021168908 2502.5021 0.9992281
-## D_true[40] -0.67911415 0.31382715 -1.18633582 -0.188453850 2888.5900 0.9986884
-## D_true[41]  0.26186555 0.56182268 -0.64414593  1.162971610 2871.8937 0.9991247
-## D_true[42]  0.74738957 0.34692549  0.20856128  1.295213289 2649.4478 0.9992375
-## D_true[43]  0.19038291 0.17388142 -0.08273207  0.458792671 3687.2045 0.9988055
-## D_true[44]  0.78432425 0.44430078  0.05934907  1.491242162 2185.8337 0.9995667
-## D_true[45] -0.41267375 0.52603612 -1.25195187  0.427159334 2568.2319 0.9993085
-## D_true[46] -0.38919179 0.24816933 -0.78316668  0.007661327 3765.6032 0.9992978
-## D_true[47]  0.13020654 0.31330546 -0.37443624  0.629826194 2502.1053 0.9994645
-## D_true[48]  0.55608944 0.48486769 -0.20703999  1.336218614 2296.4395 0.9988348
-## D_true[49] -0.63765149 0.26587728 -1.08107628 -0.214896982 2823.1352 0.9994118
-## D_true[50]  0.85308017 0.59996253 -0.11256014  1.802021242 1826.3385 0.9993055
-## a          -0.05405237 0.09514588 -0.20575272  0.100709101 1667.1502 1.0005873
-## bA         -0.61568604 0.16000884 -0.86941516 -0.351271499  905.9842 1.0022912
-## bM          0.05086642 0.17555479 -0.22550786  0.325358193  918.6388 1.0021573
-## sigma       0.59060433 0.10725350  0.43551339  0.770191964  734.4818 1.0095779</code></pre>
+<pre><code>##                   mean         sd        5.5%       94.5%     n_eff     Rhat4
+## D_true[1]   1.17213732 0.36271957  0.60347623  1.75232551 2613.5020 0.9993657
+## D_true[2]   0.69319952 0.56676541 -0.19751572  1.61543909 2432.0575 0.9986942
+## D_true[3]   0.43455645 0.33359009 -0.08207652  0.98147060 3430.2115 0.9993220
+## D_true[4]   1.41141717 0.44978575  0.68597598  2.14374628 2725.3565 0.9996455
+## D_true[5]  -0.90086800 0.13162445 -1.11210495 -0.69384517 2548.5080 0.9988845
+## D_true[6]   0.66315057 0.40551055  0.05151198  1.34748517 2507.1894 0.9991545
+## D_true[7]  -1.37270794 0.34704803 -1.92363772 -0.81436579 2529.2590 1.0007814
+## D_true[8]  -0.33761826 0.48792812 -1.10664119  0.42029307 2802.1002 1.0002825
+## D_true[9]  -1.89295181 0.60811787 -2.83710393 -0.91657830 2347.2129 1.0000402
+## D_true[10] -0.61912245 0.16302335 -0.87741451 -0.35797151 3449.9385 0.9988355
+## D_true[11]  0.76817205 0.28135151  0.31550176  1.22264908 2255.0343 1.0032673
+## D_true[12] -0.57436205 0.48351745 -1.34305066  0.19726235 2290.6465 0.9994158
+## D_true[13]  0.16870924 0.50269950 -0.64239172  0.94741153 1544.3859 1.0019733
+## D_true[14] -0.86690464 0.22259240 -1.21956164 -0.51985966 3603.4518 1.0003807
+## D_true[15]  0.55489597 0.29878455  0.07536558  1.03470438 3624.3423 0.9987108
+## D_true[16]  0.28007955 0.39161865 -0.32046628  0.91696659 4480.3019 0.9985226
+## D_true[17]  0.50348715 0.42471305 -0.17248569  1.18195475 2862.6701 0.9986500
+## D_true[18]  1.25717000 0.35481561  0.68688316  1.79851635 3228.5731 0.9986029
+## D_true[19]  0.42258389 0.37002880 -0.15181227  1.01422972 2114.8700 1.0006302
+## D_true[20]  0.40548759 0.51137116 -0.36929908  1.27245827 1711.5261 0.9993812
+## D_true[21] -0.56726899 0.32540106 -1.09383564 -0.02975283 3498.3593 0.9986942
+## D_true[22] -1.09922429 0.26626548 -1.51920111 -0.67508666 3833.0009 0.9997582
+## D_true[23] -0.27472977 0.26228189 -0.69812122  0.13926398 3957.3147 0.9985141
+## D_true[24] -1.00740366 0.28617152 -1.45438690 -0.53995543 2713.9093 0.9991932
+## D_true[25]  0.42978225 0.40414254 -0.19108222  1.07066823 2148.2614 0.9985192
+## D_true[26] -0.02553240 0.31390901 -0.51942973  0.47285344 3101.4473 0.9998296
+## D_true[27] -0.01925444 0.52083673 -0.86336243  0.81004128 2425.7193 0.9995910
+## D_true[28] -0.15830555 0.40921634 -0.80798362  0.49073637 3495.2387 0.9996620
+## D_true[29] -0.26548913 0.50825250 -1.04983889  0.57803944 2008.3634 1.0011921
+## D_true[30] -1.79952181 0.23903946 -2.19883932 -1.42775132 3014.8296 0.9989362
+## D_true[31]  0.15079986 0.42407555 -0.53105451  0.83563511 2532.8948 1.0007559
+## D_true[32] -1.65919790 0.16741225 -1.92271379 -1.39530897 3699.8030 0.9986445
+## D_true[33]  0.11640885 0.23657577 -0.26033412  0.50239224 3025.0163 0.9998087
+## D_true[34] -0.06107832 0.53564756 -0.89290471  0.79026057 2658.1476 0.9991912
+## D_true[35] -0.12404793 0.22689595 -0.48464512  0.24102483 4294.7857 0.9992734
+## D_true[36]  1.28469815 0.41057979  0.64511956  1.95146403 2626.1182 0.9996470
+## D_true[37]  0.23745682 0.33204875 -0.28827914  0.76129080 3708.4028 0.9985991
+## D_true[38] -1.02658169 0.22273262 -1.38636829 -0.67127960 3943.2239 0.9995168
+## D_true[39] -0.91129416 0.53899084 -1.73505702 -0.03163037 2485.6435 1.0000973
+## D_true[40] -0.67624951 0.31333091 -1.20050733 -0.18995561 3039.3661 0.9990652
+## D_true[41]  0.24362770 0.53002280 -0.56242529  1.08146104 2425.1321 0.9995862
+## D_true[42]  0.74819267 0.35262687  0.19775282  1.30825292 3623.9025 0.9996271
+## D_true[43]  0.19575153 0.19077148 -0.11171975  0.51070630 3577.1829 0.9995146
+## D_true[44]  0.78995502 0.43083900  0.10587090  1.47054504 2353.7285 0.9998651
+## D_true[45] -0.41254456 0.51641831 -1.21244989  0.42168473 2117.2624 1.0000862
+## D_true[46] -0.39105838 0.25940243 -0.80099893  0.01992445 4627.1479 0.9998131
+## D_true[47]  0.12365475 0.28874904 -0.33234055  0.58768140 2999.8247 0.9999294
+## D_true[48]  0.55378113 0.43228510 -0.13476142  1.25103963 3594.5473 0.9991618
+## D_true[49] -0.63124116 0.27350473 -1.06043261 -0.19334477 2960.4472 0.9984328
+## D_true[50]  0.83473289 0.58161634 -0.10007829  1.74758464 1959.5271 1.0001545
+## a          -0.05622621 0.09472139 -0.20941656  0.09738435 2023.9458 1.0003914
+## bA         -0.61615203 0.16504677 -0.88001964 -0.35449915 1419.6095 0.9997827
+## bM          0.05212535 0.17053153 -0.22638295  0.31405339 1072.8026 1.0039786
+## sigma       0.58449862 0.10058853  0.42952015  0.74932484  639.8066 1.0059022</code></pre>
 </div>
 <div id="error-on-both-outcome-and-predictor." class="section level3">
 <h3>15.1.2. Error on both outcome and predictor.</h3>
@@ -551,7 +551,7 @@ plot( dlist$M_obs , dlist$D_obs , pch=16 , col=rangi2 ,
 points( M_est , D_est )
 for ( i in 1:nrow(d) )
     lines( c( dlist$M_obs[i] , M_est[i] ) , c( dlist$D_obs[i] , D_est[i] ) )</code></pre>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="measurement-terrors." class="section level3">
 <h3>15.1.3. Measurement terrors.</h3>
@@ -607,8 +607,8 @@ m15.3 &lt;- ulam(
 <pre><code>## 
 ## SAMPLING FOR MODEL &#39;23aa98f3ed8699c2ba8ae951caa2fdf8&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 0 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 1: Gradient evaluation took 0.001 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -625,15 +625,15 @@ m15.3 &lt;- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 1.055 seconds (Warm-up)
-## Chain 1:                1.077 seconds (Sampling)
-## Chain 1:                2.132 seconds (Total)
+## Chain 1:  Elapsed Time: 1.276 seconds (Warm-up)
+## Chain 1:                1.308 seconds (Sampling)
+## Chain 1:                2.584 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL &#39;23aa98f3ed8699c2ba8ae951caa2fdf8&#39; NOW (CHAIN 2).
 ## Chain 2: 
-## Chain 2: Gradient evaluation took 0 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 2: Gradient evaluation took 0.001 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 2: Adjust your expectations accordingly!
 ## Chain 2: 
 ## Chain 2: 
@@ -650,15 +650,15 @@ m15.3 &lt;- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 1.126 seconds (Warm-up)
-## Chain 2:                1.032 seconds (Sampling)
-## Chain 2:                2.158 seconds (Total)
+## Chain 2:  Elapsed Time: 1.31 seconds (Warm-up)
+## Chain 2:                1.164 seconds (Sampling)
+## Chain 2:                2.474 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL &#39;23aa98f3ed8699c2ba8ae951caa2fdf8&#39; NOW (CHAIN 3).
 ## Chain 3: 
-## Chain 3: Gradient evaluation took 0.001 seconds
-## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+## Chain 3: Gradient evaluation took 0 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
 ## Chain 3: Adjust your expectations accordingly!
 ## Chain 3: 
 ## Chain 3: 
@@ -675,9 +675,9 @@ m15.3 &lt;- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 1.164 seconds (Warm-up)
-## Chain 3:                1.174 seconds (Sampling)
-## Chain 3:                2.338 seconds (Total)
+## Chain 3:  Elapsed Time: 1.279 seconds (Warm-up)
+## Chain 3:                1.164 seconds (Sampling)
+## Chain 3:                2.443 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL &#39;23aa98f3ed8699c2ba8ae951caa2fdf8&#39; NOW (CHAIN 4).
@@ -700,9 +700,9 @@ m15.3 &lt;- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 1.275 seconds (Warm-up)
-## Chain 4:                1.101 seconds (Sampling)
-## Chain 4:                2.376 seconds (Total)
+## Chain 4:  Elapsed Time: 1.335 seconds (Warm-up)
+## Chain 4:                1.248 seconds (Sampling)
+## Chain 4:                2.583 seconds (Total)
 ## Chain 4:</code></pre>
 <pre class="r"><code>precis( m15.3 )</code></pre>
 <pre><code>##         mean         sd      5.5%     94.5%     n_eff    Rhat4
@@ -741,15 +741,15 @@ m15.4 &lt;- ulam(
 ## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 1.024 seconds (Warm-up)
-## Chain 1:                1.018 seconds (Sampling)
-## Chain 1:                2.042 seconds (Total)
+## Chain 1:  Elapsed Time: 1.022 seconds (Warm-up)
+## Chain 1:                1.015 seconds (Sampling)
+## Chain 1:                2.037 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL &#39;b0ffcbbcd522526a2407e59b1b1b4f2c&#39; NOW (CHAIN 2).
 ## Chain 2: 
-## Chain 2: Gradient evaluation took 0 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 2: Gradient evaluation took 0.001 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 2: Adjust your expectations accordingly!
 ## Chain 2: 
 ## Chain 2: 
@@ -766,9 +766,9 @@ m15.4 &lt;- ulam(
 ## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 1.168 seconds (Warm-up)
-## Chain 2:                0.91 seconds (Sampling)
-## Chain 2:                2.078 seconds (Total)
+## Chain 2:  Elapsed Time: 1.121 seconds (Warm-up)
+## Chain 2:                0.9 seconds (Sampling)
+## Chain 2:                2.021 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL &#39;b0ffcbbcd522526a2407e59b1b1b4f2c&#39; NOW (CHAIN 3).
@@ -791,9 +791,9 @@ m15.4 &lt;- ulam(
 ## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.973 seconds (Warm-up)
-## Chain 3:                0.913 seconds (Sampling)
-## Chain 3:                1.886 seconds (Total)
+## Chain 3:  Elapsed Time: 0.962 seconds (Warm-up)
+## Chain 3:                0.885 seconds (Sampling)
+## Chain 3:                1.847 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL &#39;b0ffcbbcd522526a2407e59b1b1b4f2c&#39; NOW (CHAIN 4).
@@ -816,9 +816,9 @@ m15.4 &lt;- ulam(
 ## Chain 4: Iteration: 900 / 1000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 1000 / 1000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 1.024 seconds (Warm-up)
-## Chain 4:                1.045 seconds (Sampling)
-## Chain 4:                2.069 seconds (Total)
+## Chain 4:  Elapsed Time: 0.995 seconds (Warm-up)
+## Chain 4:                1.017 seconds (Sampling)
+## Chain 4:                2.012 seconds (Total)
 ## Chain 4:</code></pre>
 <pre class="r"><code>precis( m15.4 )</code></pre>
 <pre><code>##         mean         sd      5.5%     94.5%     n_eff    Rhat4
@@ -977,19 +977,78 @@ B_missidx &lt;- which( is.na( dat_list$B ) )</code></pre>
 <h2>15.5. Practice</h2>
 <div id="e1.rewrite-the-oceanic-tools-model-from-chapter-11-below-so-that-it-assumes-measured-error-on-the-log-population-sizes-of-each-society." class="section level3">
 <h3>15E1.Rewrite the Oceanic tools model (from Chapter 11) below so that it assumes measured error on the log population sizes of each society.</h3>
-<p>Ti ∼ Poisson(μi) log μi = α + β log Pi α ∼ Normal(0, 10) β ∼ Normal(0, 1)</p>
+<blockquote>
+<p>Ti ∼ Poisson(μi)</p>
+</blockquote>
+<blockquote>
+<p>log μi = α + β log Pi</p>
+</blockquote>
+<blockquote>
+<p>α ∼ Normal(0, 10)</p>
+</blockquote>
+<blockquote>
+<p>β ∼ Normal(0, 1)</p>
+</blockquote>
 <blockquote>
 <p>new model</p>
 </blockquote>
-<p>Ti ∼ Poisson(μi) log μi = α + β log P_true_i log P_observed_i ~ Normal(log P_true_i, log P_se_i) α ∼ Normal(0, 10) β ∼ Normal(0, 1)</p>
+<blockquote>
+<p>Ti ∼ Poisson(μi)</p>
+</blockquote>
+<blockquote>
+<p>log μi = α + β log P_true_i</p>
+</blockquote>
+<blockquote>
+<p>log P_observed_i ~ Normal(log P_true_i, log P_se_i)</p>
+</blockquote>
+<blockquote>
+<p>α ∼ Normal(0, 10)</p>
+</blockquote>
+<blockquote>
+<p>β ∼ Normal(0, 1)</p>
+</blockquote>
+<blockquote>
+<p>P_true_i ~ Normal(0, 1)</p>
+</blockquote>
 </div>
 <div id="e2.-rewrite-the-same-model-so-that-it-allows-imputation-of-missing-values-for-log-population.-there-arent-any-missing-values-in-the-variable-but-you-can-still-write-down-a-model-formula-that-would-imply-imputation-if-any-values-were-missing." class="section level3">
 <h3>15E2. Rewrite the same model so that it allows imputation of missing values for log population. There aren’t any missing values in the variable, but you can still write down a model formula that would imply imputation, if any values were missing.</h3>
-<p>Ti ∼ Poisson(μi) log μi = α + β log Pi α ∼ Normal(0, 10) β ∼ Normal(0, 1)</p>
+<blockquote>
+<p>Ti ∼ Poisson(μi)</p>
+</blockquote>
+<blockquote>
+<p>log μi = α + β log Pi</p>
+</blockquote>
+<blockquote>
+<p>α ∼ Normal(0, 10)</p>
+</blockquote>
+<blockquote>
+<p>β ∼ Normal(0, 1)</p>
+</blockquote>
 <blockquote>
 <p>new model. The simplest model will simply impute log Pi from its own normal distribution.</p>
 </blockquote>
-<p>Ti ∼ Poisson(μi) log μi = α + β log Pi log Pi ~ Normal(ν, σ_logP) α ∼ Normal(0, 10) β ∼ Normal(0, 1) ν ∼ Normal(0.5, 1) σ_logP ∼ Exponential(1)</p>
+<blockquote>
+<p>Ti ∼ Poisson(μi)</p>
+</blockquote>
+<blockquote>
+<p>log μi = α + β log Pi</p>
+</blockquote>
+<blockquote>
+<p>log Pi ~ Normal(ν, σ_logP)</p>
+</blockquote>
+<blockquote>
+<p>α ∼ Normal(0, 10)</p>
+</blockquote>
+<blockquote>
+<p>β ∼ Normal(0, 1)</p>
+</blockquote>
+<blockquote>
+<p>ν ∼ Normal(0.5, 1)</p>
+</blockquote>
+<blockquote>
+<p>σ_logP ∼ Exponential(1)</p>
+</blockquote>
 </div>
 <div id="m2.-in-earlier-chapters-we-threw-away-cases-from-the-primate-milk-data-so-we-could-use-the-neocortex-variable.-now-repeat-the-waic-model-comparison-example-from-chapter-6-but-use-imputation-on-the-neocortex-variable-so-that-you-can-include-all-of-the-cases-in-the-original-data.-the-simplest-form-of-imputation-is-acceptable.-how-are-the-model-comparison-results-affected-by-being-able-to-include-all-of-the-cases" class="section level3">
 <h3>15M2. In earlier chapters, we threw away cases from the primate milk data, so we could use the neocortex variable. Now repeat the WAIC model comparison example from Chapter 6, but use imputation on the neocortex variable so that you can include all of the cases in the original data. The simplest form of imputation is acceptable. How are the model comparison results affected by being able to include all of the cases?</h3>
