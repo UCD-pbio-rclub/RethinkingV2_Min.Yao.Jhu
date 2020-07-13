@@ -294,12 +294,29 @@ log μi = α + β log Pi
 α ∼ Normal(0, 10)
 β ∼ Normal(0, 1)
 
+> new model
+
+Ti ∼ Poisson(μi)
+log μi = α + β log P_true_i
+log P_observed_i ~ Normal(log P_true_i, log P_se_i)
+α ∼ Normal(0, 10)
+β ∼ Normal(0, 1)
+
+
 ### 15E2. Rewrite the same model so that it allows imputation of missing values for log population. There aren’t any missing values in the variable, but you can still write down a model formula that would imply imputation, if any values were missing.
+
+
 
 ### 15M2. In earlier chapters, we threw away cases from the primate milk data, so we could use the neocortex variable. Now repeat the WAIC model comparison example from Chapter 6, but use imputation on the neocortex variable so that you can include all of the cases in the original data. The simplest form of imputation is acceptable. How are the model comparison results affected by being able to include all of the cases?
 
+
+
 ### 15M3. Repeat the divorce data measurement error models, but this time double the standard errors. Can you explain how doubling the standard errors impacts inference?
 
+
+
 ### 15H1. The data in data(elephants) are counts of matings observed for bull elephants of differing ages. There is a strong positive relationship between age and matings. However, age is not always assessed accurately. First, fit a Poisson model predicting MATINGS with AGE as a predictor. Second, assume that the observed AGE values are uncertain and have a standard error of±5 years. Re-estimate the relationship between MATINGS and AGE, incorporating this measurement error. Compare the inferences of the two models.
+
+
 
 ### 15H2. Repeat the model fitting problem above, now increasing the assumed standard error on AGE. How large does the standard error have to get before the posterior mean for the coefficient on AGE reaches zero?
