@@ -159,7 +159,9 @@ m15.3 <- ulam(
         bS ~ normal( 0 , 0.5 )
     ), data=dat_list , chains=4 )
 precis( m15.3 )
+```
 
+```{r}
 ## R code 15.13
 dat_list0 <- list(
     H = H[D==0],
@@ -173,7 +175,9 @@ m15.4 <- ulam(
         bS ~ normal( 0 , 0.5 )
     ), data=dat_list0 , chains=4 )
 precis( m15.4 )
+```
 
+```{r}
 ## R code 15.14
 D <- ifelse( abs(X) < 1 , 1 , 0 )
 
@@ -215,7 +219,9 @@ m15.3 <- ulam(
 
 ## R code 15.18
 precis( m15.3 , depth=2 )
+```
 
+```{r}
 ## R code 15.19
 obs_idx <- which( !is.na(d$neocortex.prop) )
 dat_list_obs <- list(
@@ -304,19 +310,200 @@ log P_observed_i ~ Normal(log P_true_i, log P_se_i)
 
 
 ### 15E2. Rewrite the same model so that it allows imputation of missing values for log population. There aren’t any missing values in the variable, but you can still write down a model formula that would imply imputation, if any values were missing.
+Ti ∼ Poisson(μi)
+log μi = α + β log Pi
+α ∼ Normal(0, 10)
+β ∼ Normal(0, 1)
 
+> new model. The simplest model will simply impute log Pi from its own normal distribution.
 
+Ti ∼ Poisson(μi)
+log μi = α + β log Pi
+log Pi ~ Normal(ν, σ_logP)
+α ∼ Normal(0, 10)
+β ∼ Normal(0, 1)
+ν ∼ Normal(0.5, 1)
+σ_logP ∼ Exponential(1)
 
 ### 15M2. In earlier chapters, we threw away cases from the primate milk data, so we could use the neocortex variable. Now repeat the WAIC model comparison example from Chapter 6, but use imputation on the neocortex variable so that you can include all of the cases in the original data. The simplest form of imputation is acceptable. How are the model comparison results affected by being able to include all of the cases?
 
+> he kind of did 15M2 in the chapter.  Sub 15M3 for 15M2
 
 
 ### 15M3. Repeat the divorce data measurement error models, but this time double the standard errors. Can you explain how doubling the standard errors impacts inference?
 
+```{r}
+## R code 15.2
+library(rethinking)
+data(WaffleDivorce)
+d <- WaffleDivorce
+```
 
+```{r}
+## R code 15.5
+dlist <- list(
+    D_obs = standardize( d$Divorce ),
+    D_sd = d$Divorce.SE / sd( d$Divorce ),
+    M_obs = standardize( d$Marriage ),
+    M_sd = d$Marriage.SE / sd( d$Marriage ),
+    A = standardize( d$MedianAgeMarriage ),
+    N = nrow(d)
+)
+
+m15.2 <- ulam(
+    alist(
+        D_obs ~ dnorm( D_est , D_sd ),
+        vector[N]:D_est ~ dnorm( mu , sigma ),
+        mu <- a + bA*A + bM*M_est[i],
+        M_obs ~ dnorm( M_est , M_sd ),
+        vector[N]:M_est ~ dnorm( 0 , 1 ),
+        a ~ dnorm(0,0.2),
+        bA ~ dnorm(0,0.5),
+        bM ~ dnorm(0,0.5),
+        sigma ~ dexp( 1 )
+    ) , data=dlist , chains=4 , cores=4 )
+precis( m15.2 )
+```
+
+> doubling the standard errors
+
+```{r}
+## modify from R code 15.5
+dlist2 <- list(
+    D_obs = standardize( d$Divorce ),
+    D_sd = 2*d$Divorce.SE / sd( d$Divorce ),
+    M_obs = standardize( d$Marriage ),
+    M_sd = 2*d$Marriage.SE / sd( d$Marriage ),
+    A = standardize( d$MedianAgeMarriage ),
+    N = nrow(d)
+)
+
+m15.2_double <- ulam(
+    alist(
+        D_obs ~ dnorm( D_est , D_sd ),
+        vector[N]:D_est ~ dnorm( mu , sigma ),
+        mu <- a + bA*A + bM*M_est[i],
+        M_obs ~ dnorm( M_est , M_sd ),
+        vector[N]:M_est ~ dnorm( 0 , 1 ),
+        a ~ dnorm(0,0.2),
+        bA ~ dnorm(0,0.5),
+        bM ~ dnorm(0,0.5),
+        sigma ~ dexp( 1 )
+    ) , data=dlist2 , chains=4 , cores=4 )
+precis( m15.2_double )
+plot(precis( m15.2 ))
+plot(precis( m15.2_double ))
+```
+
+> effective number of samples are small.
+
+> larger deviance of observations makes inference harder
 
 ### 15H1. The data in data(elephants) are counts of matings observed for bull elephants of differing ages. There is a strong positive relationship between age and matings. However, age is not always assessed accurately. First, fit a Poisson model predicting MATINGS with AGE as a predictor. Second, assume that the observed AGE values are uncertain and have a standard error of±5 years. Re-estimate the relationship between MATINGS and AGE, incorporating this measurement error. Compare the inferences of the two models.
 
+```{r}
+data(elephants)
+d <- elephants
+str(d)
+summary(d)
+plot(d$MATINGS, d$AGE)
+```
+```{r}
+dlist <- list(
+    A = standardize( d$AGE ),
+    M = d$MATINGS,
+    N = nrow(d)
+)
+str(dlist)
+summary(dlist)
+plot(dlist$M, dlist$A)
+```
+> fit a Poisson model using age to predict matings
+
+```{r}
+m15H1.base <- ulam(
+  alist(
+    M ~ dpois(lambda),
+    log(lambda) <- a + bA*A,
+    a ~ dnorm(0,1),
+    bA ~ dnorm(0,1)
+    ), data = dlist, chains = 4, cores = 4)
+
+precis(m15H1.base)
+plot(m15H1.base)
+```
+
+> Second, assume that the observed AGE values are uncertain and have a standard error of±5 years
+
+```{r}
+m15H1.se <- ulam(
+  alist(
+    M ~ dpois(lambda),
+    log(lambda) <- a + bA*A_est[i],
+    A ~ dnorm(A_est, 5),
+    vector[N]:A_est ~ dnorm(0,1),
+    a ~ dnorm(0,1),
+    bA ~ dnorm(0,1)
+    ), data = dlist, chains = 4, cores = 4)
+
+precis(m15H1.se)
+plot(m15H1.se)
+```
 
 
 ### 15H2. Repeat the model fitting problem above, now increasing the assumed standard error on AGE. How large does the standard error have to get before the posterior mean for the coefficient on AGE reaches zero?
+
+> increasing the assumed standard error on AGE to 10
+
+```{r}
+m15H2.se10 <- ulam(
+  alist(
+    M ~ dpois(lambda),
+    log(lambda) <- a + bA*A_est[i],
+    A ~ dnorm(A_est, 10),
+    vector[N]:A_est ~ dnorm(0,1),
+    a ~ dnorm(0,1),
+    bA ~ dnorm(0,1)
+    ), data = dlist, chains = 4, cores = 4)
+
+precis(m15H2.se10)
+plot(m15H2.se10)
+```
+
+> increasing the assumed standard error on AGE to 50
+
+```{r}
+m15H2.se50 <- ulam(
+  alist(
+    M ~ dpois(lambda),
+    log(lambda) <- a + bA*A_est[i],
+    A ~ dnorm(A_est, 50),
+    vector[N]:A_est ~ dnorm(0,1),
+    a ~ dnorm(0,1),
+    bA ~ dnorm(0,1)
+    ), data = dlist, chains = 4, cores = 4)
+
+precis(m15H2.se50)
+plot(m15H2.se50)
+```
+
+> AGE estimates become very close to zero
+
+> increasing the assumed standard error on AGE to 100
+
+```{r}
+m15H2.se100 <- ulam(
+  alist(
+    M ~ dpois(lambda),
+    log(lambda) <- a + bA*A_est[i],
+    A ~ dnorm(A_est, 100),
+    vector[N]:A_est ~ dnorm(0,1),
+    a ~ dnorm(0,1),
+    bA ~ dnorm(0,1)
+    ), data = dlist, chains = 4, cores = 4)
+
+precis(m15H2.se100)
+plot(m15H2.se100)
+```
+
+> AGE estimates become negative (close to zero)
