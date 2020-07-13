@@ -2,7 +2,9 @@
 title: "chapter15-1"
 author: "Min-Yao"
 date: "2020/7/12"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ```{r}
@@ -23,7 +25,10 @@ down <- pancakes[2,]
 num_11_10 <- sum( up==1 )
 num_11 <- sum( up==1 & down==1 )
 num_11/num_11_10
+```
 
+## 15.1. Measurement error
+```{r}
 ## R code 15.2
 library(rethinking)
 data(WaffleDivorce)
@@ -39,7 +44,10 @@ for ( i in 1:nrow(d) ) {
     x <- d$MedianAgeMarriage[i]
     lines( c(x,x) , ci )
 }
+```
 
+### 15.1.1. Error on the outcome.
+```{r}
 ## R code 15.3
 dlist <- list(
     D_obs = standardize( d$Divorce ),
@@ -62,7 +70,10 @@ m15.1 <- ulam(
 
 ## R code 15.4
 precis( m15.1 , depth=2 )
+```
 
+### 15.1.2. Error on both outcome and predictor.
+```{r}
 ## R code 15.5
 dlist <- list(
     D_obs = standardize( d$Divorce ),
@@ -95,14 +106,21 @@ plot( dlist$M_obs , dlist$D_obs , pch=16 , col=rangi2 ,
 points( M_est , D_est )
 for ( i in 1:nrow(d) )
     lines( c( dlist$M_obs[i] , M_est[i] ) , c( dlist$D_obs[i] , D_est[i] ) )
+```
 
+### 15.1.3. Measurement terrors.
+```{r}
 ## R code 15.7
 N <- 500
 A <- rnorm(N)
 M <- rnorm(N,-A)
 D <- rnorm(N,A)
 A_obs <- rnorm(N,A)
+```
 
+## 15.2. Missing data
+### 15.2.1. DAG ate my homework.
+```{r}
 ## R code 15.8
 N <- 100
 S <- rnorm( N )
@@ -166,7 +184,10 @@ H <- rbinom( N , size=10 , inv_logit(S) )
 D <- ifelse( H < 5 , 1 , 0 )
 Hm <- H
 Hm[D==1] <- NA
+```
 
+### 15.2.2. Imputing primates.
+```{r}
 ## R code 15.16
 library(rethinking)
 data(milk)
@@ -265,3 +286,20 @@ B_missidx <- which( is.na( dat_list$B ) )
 
 ```
 
+## 15.5. Practice
+
+### 15E1.Rewrite the Oceanic tools model (from Chapter 11) below so that it assumes measured error on the log population sizes of each society.
+Ti ∼ Poisson(μi)
+log μi = α + β log Pi
+α ∼ Normal(0, 10)
+β ∼ Normal(0, 1)
+
+### 15E2. Rewrite the same model so that it allows imputation of missing values for log population. There aren’t any missing values in the variable, but you can still write down a model formula that would imply imputation, if any values were missing.
+
+### 15M2. In earlier chapters, we threw away cases from the primate milk data, so we could use the neocortex variable. Now repeat the WAIC model comparison example from Chapter 6, but use imputation on the neocortex variable so that you can include all of the cases in the original data. The simplest form of imputation is acceptable. How are the model comparison results affected by being able to include all of the cases?
+
+### 15M3. Repeat the divorce data measurement error models, but this time double the standard errors. Can you explain how doubling the standard errors impacts inference?
+
+### 15H1. The data in data(elephants) are counts of matings observed for bull elephants of differing ages. There is a strong positive relationship between age and matings. However, age is not always assessed accurately. First, fit a Poisson model predicting MATINGS with AGE as a predictor. Second, assume that the observed AGE values are uncertain and have a standard error of±5 years. Re-estimate the relationship between MATINGS and AGE, incorporating this measurement error. Compare the inferences of the two models.
+
+### 15H2. Repeat the model fitting problem above, now increasing the assumed standard error on AGE. How large does the standard error have to get before the posterior mean for the coefficient on AGE reaches zero?
