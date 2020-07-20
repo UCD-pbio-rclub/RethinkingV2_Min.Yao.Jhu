@@ -8,29 +8,43 @@ output: html_document
 ### 15.2.3. Where is your god now?
 
 ```{r}
+library(rethinking)
 ## R code 15.24
 data(Moralizing_gods)
 str(Moralizing_gods)
+```
 
+```{r}
 ## R code 15.25
 table( Moralizing_gods$moralizing_gods , useNA="always" )
+```
 
+
+```{r}
 ## R code 15.26
 symbol <- ifelse( Moralizing_gods$moralizing_gods==1 , 16 , 1 )
 symbol <- ifelse( is.na(Moralizing_gods$moralizing_gods) , 4 , symbol )
 color <- ifelse( is.na(Moralizing_gods$moralizing_gods) , "black" , rangi2 )
 plot( Moralizing_gods$year , Moralizing_gods$population , pch=symbol ,
     col=color , xlab="Time (year)" , ylab="Population size" , lwd=1.5 )
+```
 
+```{r}
 ## R code 15.27
 dmg <- Moralizing_gods
 table( gods=dmg$moralizing_gods , literacy=dmg$writing , useNA="always" )
+```
 
+```{r}
 ## R code 15.28
 dmg <- Moralizing_gods
 haw <- which( dmg$polity=="Big Island Hawaii" )
 t( dmg[ haw , c("year","population","writing","moralizing_gods") ] )
+```
+## 15.3. Categorical errors and discrete absences
+### 15.3.1. Discrete cats.
 
+```{r}
 ## R code 15.29
 set.seed(9)
 N_houses <- 100L
@@ -43,7 +57,9 @@ notes <- rpois( N_houses , alpha + beta*cat )
 R_C <- rbern( N_houses , r )
 cat_obs <- cat
 cat_obs[R_C==1] <- (-9L)
+```
 
+```{r}
 ## R code 15.30
 dat <- list(
     notes = notes,
@@ -71,7 +87,10 @@ m15.6 <- ulam(
         cat|RC==0 ~ bernoulli(k),
         k ~ beta(2,2)
     ), data=dat , chains=4 , cores=4 )
+precis(m15.6)
+```
 
+```{r}
 ## R code 15.31
 m15.7 <- ulam(
     alist(
@@ -94,11 +113,204 @@ m15.7 <- ulam(
         gq> vector[N]:lpC1 <- log(k) + poisson_lpmf( notes[i] | exp(a+b) ),
         gq> vector[N]:lpC0 <- log(1-k) + poisson_lpmf( notes[i] | exp(a) )
     ), data=dat , chains=4 , cores=4 )
+precis(m15.7)
+```
 
+
+```{r}
 ## R code 15.32
 set.seed(100)
 x <- c( rnorm(10) , NA )
 y <- c( rnorm(10,x) , 100 )
 d <- list(x=x,y=y)
 ```
+
+## HOMEWORK, WEEK 10
+
+### 1. 
+
+#### Consider the relationship between brain volume (brain) and body mass (body) in the data(Primates301). These values are presented as single values for each species. However, there is always a range of sizes in a species, and some of these measurements are taken from very small samples. So these values are measured with some unknown error.
+
+#### We don’t have the raw measurements to work with—that would be best. But we can imagine what might happen if we had them. Suppose error is proportional to the measurement. This makes sense, because larger animals have larger variation.
+
+#### As a consequence, the uncertainty is not uniform across the values and this could mean trouble.
+#### Let’s make up some standard errors for these measurements, to see what might happen. Load the data and scale the the measurements so the maximum is 1 in both cases:
+
+```{r}
+library(rethinking)
+data(Primates301)
+d <- Primates301
+cc <- complete.cases( d$brain , d$body )
+B <- d$brain[cc]
+M <- d$body[cc]
+B <- B / max(B)
+M <- M / max(M)
+#Now I’ll make up some standard errors for B and M, assuming error is 10% of the measurement.
+Bse <- B*0.1
+Mse <- M*0.1
+```
+
+#### Let’s model these variables with this relationship:
+Bi ~ Log-Normal(ui; sigma)
+ui = a + b log Mi
+
+#### This says that brain volume is a log-normal variable, and the mean on the log scale is given by u. What this model implies is that the expected value of B is:
+E(Bi|Mi) = exp(a)Mi^b
+
+#### So this is a standard allometric scaling relationship—incredibly common in biology.
+Ignoring measurement error, the corresponding ulam model is:
+
+```{r}
+dat_list <- list(
+  B = B,
+  M = M )
+str(dat_list)
+```
+
+```{r}
+m1.1 <- ulam(
+  alist(
+    B ~ dlnorm( mu , sigma ),
+    mu <- a + b*log(M),
+    a ~ normal(0,1),
+    b ~ normal(0,1),
+    sigma ~ exponential(1)
+    ) , data=dat_list, chains=4 , cores=4, log_lik = TRUE )
+precis( m1.1 )
+```
+
+#### Your job is to add the measurement errors to this model. Use the divorce/marriage example in the chapter as a guide. It might help to initialize the unobserved true values of B and M using the observed values, by adding a list like this to ulam:
+
+```{r}
+start=list( M_true=dat_list$M , B_true=dat_list$B )
+str(start)
+```
+
+Compare the inference of the measurement error model to those of m1.1 above.
+Has anything changed? Why or why not?
+
+```{r}
+## modified from R code 15.5
+dat_list <- list(
+  B = B,
+  M = M,
+  Bse = Bse,
+  Mse = Mse,
+  B_true = start$B_true,
+  M_true = start$M_true,
+  N = sum(cc))
+str(dat_list)
+```
+```{r}
+## modified from R code 15.5
+m1.1_err <- ulam(
+  alist(
+    B ~ normal( B_true , Bse ),
+    vector[N_spp]:B_true ~ dlnorm( mu , sigma ),
+    mu <- a + b*log( M_true[i] ),
+    M ~ normal( M_true , Mse ),
+    vector[N_spp]:M_true ~ normal( 0.5 , 1 ),
+    a ~ normal(0,1),
+    b ~ normal(0,1),
+    sigma ~ exponential(1)
+    ), data=dat_list, chains=4 , cores=4, log_lik = TRUE )
+precis( m1.1_err )
+compare(m1.1,m1.1_err)
+plot(compare(m1.1,m1.1_err))
+```
+
+> m1.1_err seem to have much lower pWAIC value, but both model have the same a, b, sigma
+
+### 2. 
+#### Now consider missing values—this data set is lousy with them. You can ignore measurement error in this problem. Let’s get a quick idea of the missing values by counting them in each variable:
+
+```{r}
+library(rethinking)
+data(Primates301)
+d <- Primates301
+colSums( is.na(d) )
+```
+
+#### We’ll continue to focus on just brain and body, to stave off insanity. Consider only those species with measured body masses:
+
+```{r}
+cc <- complete.cases( d$body )
+M <- d$body[cc]
+M <- M / max(M)
+B <- d$brain[cc]
+B <- B / max( B , na.rm=TRUE )
+```
+
+#### You should end up with 238 species and 56 missing brain values among them.
+
+#### First, consider whether there is a pattern to the missing values. Does it look like missing values are associated with particular values of body mass? Draw a DAG that represents how missingness works in this case. Which type (MCAR, MAR, MNAR) is this?
+
+#### Second, impute missing values for brain size. It might help to initialize the 56 imputed variables to a valid value:
+
+```{r}
+start=list( B_impute=rep(0.5,56) )
+```
+
+#### This just helps the chain get started.
+#### Compare the inferences to an analysis that drops all the missing values. Has anything changed? Why or why not? Hint: Consider the density of data in the ranges where there are missing values. You might want to plot the imputed brain sizes together with the observed values.
+
+```{r}
+## modified from R code 15.5
+dat_list <- list(
+  B = B,
+  M = M)
+str(dat_list)
+```
+
+```{r}
+## modified from R code 15.22
+m2_merge_mis <- ulam(
+  alist(
+    B_merge ~ dlnorm( mu , sigma ),
+    mu <- a + b*log(M),
+    # define B_merge as mix of observed and imputed values
+    B_merge <- merge_missing( B , B_impute ),
+    a ~ normal(0,1),
+    b ~ normal(0,1),
+    sigma ~ exponential(1)
+    ) , data=dat_list , chains=4 , cores=4 , start=list( B_impute = rep(0.5,56) ) )
+precis( m2_merge_mis )
+
+```
+
+```{r}
+plot(precis( m1.1 ))
+plot(precis( m1.1_err ))
+plot(precis( m2_merge_mis ))
+```
+
+> no obvious change.
+
+> plot
+
+```{r}
+## R code 15.21
+post <- extract.samples( m2_merge_mis )
+B_impute_mu <- apply( post$B_impute , 2 , mean )
+B_impute_ci <- apply( post$B_impute , 2 , PI )
+
+
+miss_idx <- which( is.na(dat_list$B) )
+
+# M vs B
+plot( dat_list$M , dat_list$B , pch=16 , col=rangi2 ,
+    ylab="neocortex percent (std)" , xlab="log body mass (std)" )
+Mi <- dat_list$M[miss_idx]
+points( Mi , B_impute_mu )
+for ( i in 1:12 ) lines( rep(Mi[i],2) , B_impute_ci[,i] )
+```
+
+
+### optional 15H4 
+
+#### Some lad named Andrew made an eight-sided spinner. He wanted to know if it is fair. So he spun it a bunch of times, recording the counts of each value. Then he accidentally spilled coffee over the 4s and 5s. The surviving data are summarized below.
+Value 1 2 3 4 5 6 7 8
+Frequency 18 19 22 ? ? 19 20 22
+
+#### Your job is to impute the two missing values in the table above. Andrew doesn’t remember how many times he spun the spinner. So you will have to assign a prior distribution for the total number of spins and then marginalize over the unknown total. Andrew is not sure the spinner is fair (every value is equally likely), but he’s confident that none of the values is twice as likely as any other. Use a Dirichlet distribution to capture this prior belief. Plot the joint posterior distribution of 4s and 5s.
 
