@@ -165,16 +165,3 @@ for ( i in 1:N ) curve( (3.141593*k[i]*p[i]^2*x^3), from=min(d$weight) , to=max(
 dens( p , lwd=2 )
 dens( x , lwd=2 )
 ```
-```{r}
-## modify from R code 16.2
-m16M2 <- ulam(
-    alist(
-        w ~ dnorm( mu , sigma ),
-        mu <- 3.141593 * k * p^2 * h^3,
-        p ~ beta( 2 , 18 ),
-        k ~ exponential( 0.5 ),
-        sigma ~ exponential( 1 )
-    ), data=d , chains=4 , cores=4 )
-precis(m16M2)
-pairs(m16M2)
-```
