@@ -2,7 +2,9 @@
 title: "chapter16-1"
 author: "Min-Yao"
 date: "2020/8/2"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 # Generalized Linear Madness
@@ -30,7 +32,11 @@ m16.1 <- ulam(
         k ~ exponential( 0.5 ),
         sigma ~ exponential( 1 )
     ), data=d , chains=4 , cores=4 )
+precis(m16.1)
+pairs(m16.1)
+```
 
+```{r}
 ## R code 16.3
 h_seq <- seq( from=0 , to=max(d$h) , length.out=30 )
 w_sim <- sim( m16.1 , data=list(h=h_seq) )
@@ -55,7 +61,7 @@ precis(Boxes)
 table( Boxes$y ) / length( Boxes$y )
 ```
 
-### 16.2.1. Th e scientifi c model.
+### 16.2.1. The scientific model.
 
 ```{r}
 ## R code 16.6
@@ -76,7 +82,7 @@ y <- sample( c(y1,y2) )
 sum(y==2)/N
 ```
 
-### 16.2.2. Th e statistical model.
+### 16.2.2. The statistical model.
 ### 16.2.3. Coding the statistical model.
 
 ```{r}
@@ -101,7 +107,74 @@ plot( precis(m16.2,2) , labels=p_labels )
 
 ### 16.2.4. State space models.
 
-#### 16M1. Modify the cylinder height model, m16.1, so that the exponent 3 on height is instead a free parameter. Do you recover the value of 3 or not? Plot the posterior predictions for the new model. How do they diff er from those of m16.1?
+#### 16M1. Modify the cylinder height model, m16.1, so that the exponent 3 on height is instead a free parameter. Do you recover the value of 3 or not? Plot the posterior predictions for the new model. How do they differ from those of m16.1?
 
-#### 16M2. Conduct a prior predictive simulation for the cylinder height model. Begin with the priors in the chapter. Do these produce reasonable prior height distributions? If not, which modifi cations do you suggest?
+```{r}
+## modify from R code 16.2
+m16M1 <- ulam(
+    alist(
+        w ~ dlnorm( mu , sigma ),
+        exp(mu) <- 3.141593 * k * p^2 * h^e,
+        p ~ beta( 2 , 18 ),
+        k ~ exponential( 0.5 ),
+        e ~ normal(3,5),
+        sigma ~ exponential( 1 )
+    ), data=d , chains=4 , cores=4 )
+precis(m16M1)
+pairs(m16M1)
+```
 
+> No, it doen't recover the value of 3. It's about 2.33.
+
+> Plot the posterior predictions for the new model.
+
+```{r}
+## modify from R code 16.3
+h_seq <- seq( from=0 , to=max(d$h) , length.out=30 )
+w_sim <- sim( m16M1 , data=list(h=h_seq) )
+mu_mean <- apply( w_sim , 2 , mean )
+w_CI <- apply( w_sim , 2 , PI )
+plot( d$h , d$w , xlim=c(0,max(d$h)) , ylim=c(0,max(d$w)) , col=rangi2 ,
+    lwd=2 , xlab="height (scaled)" , ylab="weight (scaled)" )
+lines( h_seq , mu_mean )
+shade( w_CI , h_seq )
+```
+
+
+#### 16M2. Conduct a prior predictive simulation for the cylinder height model. Begin with the priors in the chapter. Do these produce reasonable prior height distributions? If not, which modifications do you suggest?
+
+```{r}
+## R code 16.1
+library(rethinking)
+data(Howell1)
+d <- Howell1
+str(d)
+## modify from R code 16.10
+N <- 1000
+p <- rbeta( N , 2 , 18 )
+k <- rexp(N, 0.5)
+```
+
+```{r}
+## modify from R code 4.39
+plot( NULL , xlim=range(d$weight) , ylim=c(-100,400) , xlab="weight" , ylab="height" )
+abline( h=0 , lty=2 )
+abline( h=272 , lty=1 , lwd=0.5 )
+for ( i in 1:N ) curve( (3.141593*k[i]*p[i]^2*x^3), from=min(d$weight) , to=max(d$weight) , add=TRUE , col=col.alpha("black",0.2) )
+
+dens( p , lwd=2 )
+dens( x , lwd=2 )
+```
+```{r}
+## modify from R code 16.2
+m16M2 <- ulam(
+    alist(
+        w ~ dnorm( mu , sigma ),
+        mu <- 3.141593 * k * p^2 * h^3,
+        p ~ beta( 2 , 18 ),
+        k ~ exponential( 0.5 ),
+        sigma ~ exponential( 1 )
+    ), data=d , chains=4 , cores=4 )
+precis(m16M2)
+pairs(m16M2)
+```
