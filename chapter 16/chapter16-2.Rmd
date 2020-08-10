@@ -164,13 +164,28 @@ for ( s in 1:21 ) {
 
 ### 16.4.3. Lynx lessons.
 ## 16.6. Practice
-#### 16M3
 
-#### 16H1
+#### 16M3 Use prior predictive simulations to investigate the Lynx-hare model. Begin with the priors in the chapter. Which population dynamics do these produce? Can you suggest any improvements to the priors, on the basis of your simulations?
 
-#### 16H2
+```{r}
 
-#### 16H3
+```
+
+
+#### 16H1 Modify the Panda nut opening model so that male and female chimpanzees have different maximum adult body mass. The sex variable in data(Panda_nuts) provides the information you need. Be sure to incorporate the fact that you know, prior to seeing the data, that males are on average larger than females at maturity.
+
+```{r}
+data(Panda_nuts)
+```
+
+
+#### 16H2 Now return to the Panda nut model and try to incorporate individual diff erences. Th ere are two parameters, ϕ and k, which plausibly vary by individual. Pick one of these, allow it to vary by individual, and use partial pooling to avoid overfi tting. The variable chimpanzee in data(Panda_nuts) tells you which observations belong to which individuals.
+
+```{r}
+data(Panda_nuts)
+```
+
+#### 16H3 The chapter asserts that a typical, geocentric time series model might be one that uses lag variables. Here you’ll fi t such a model and compare it to ODE model in the chapter. An autoregressive time series uses earlier values of the state variables to predict new values of the same variables. These earlier values are called lag variables. You can construct the lag variables here with:
 ```{r}
 ## R code 16.21
 data(Lynx_Hare)
@@ -182,4 +197,9 @@ dat_ar1 <- list(
 
 ```
 
-
+#### Now you can use L_lag1 and H_lag1 as predictors of the outcomes L and H. Like this:
+L t ∼ Log-Normal(log µL,t, σL)
+µL,t = αL + βLL L t−1 + βLH H t−1
+H t ∼ Log-Normal(log µH,t, σH)
+µH,t = αH + βHH H t−1 + βHL L t−1
+#### where L t−1 and H t−1 are the lag variables. Use ulam() to fi t this model. Be careful of the priors of the α and β parameters. Compare the posterior predictions of the autoregressive model to the ODE model in the chapter. How do the predictions diff er? Can you explain why, using the structures of the models?
