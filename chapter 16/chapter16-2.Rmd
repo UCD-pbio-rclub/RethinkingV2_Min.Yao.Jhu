@@ -5,11 +5,16 @@ date: "2020/8/2"
 output: html_document
 ---
 
+## 16.3. Ordinary differential nut cracking
+
 ```{r}
 ## R code 16.9
 library(rethinking)
 data(Panda_nuts)
-
+```
+### 16.3.1. Scientifi c model.
+### 16.3.2. Statistical model.
+```{r}
 ## R code 16.10
 N <- 1e4
 phi <- rlnorm( N , log(1) , 0.1 )
@@ -61,7 +66,13 @@ points( jitter(dat_list$age) , pts , col=rangi2 , lwd=2 , cex=point_size*3 )
 # 30 posterior curves
 for ( i in 1:30 ) with( post ,
     curve( phi[i]*(1-exp(-k[i]*x))^theta[i] , add=TRUE , col=grau() ) )
+```
 
+### 16.3.3. Covariates and individual diff erences.
+
+## 16.4. Population dynamics
+
+```{r}
 ## R code 16.13
 library(rethinking)
 data(Lynx_Hare)
@@ -74,7 +85,10 @@ points( 1:21 , Lynx_Hare[,3] , bg="black" , col="white" , pch=21 , cex=1.4 )
 points( 1:21 , Lynx_Hare[,2] , bg=rangi2 , col="white" , pch=21 , cex=1.4 )
 text( 17 , 80 , "Lepus" , pos=2 )
 text( 19 , 50 , "Lynx" , pos=2 , col=rangi2 )
+```
 
+### 16.4.1. Th e scientifi c model.
+```{r}
 ## R code 16.14
 sim_lynx_hare <- function( n_steps , init , theta , dt=0.002 ) {
     L <- rep(NA,n_steps)
@@ -87,7 +101,10 @@ sim_lynx_hare <- function( n_steps , init , theta , dt=0.002 ) {
     }
     return( cbind(L,H) )
 }
+```
 
+### 16.4.2. Th e statistical model.
+```{r}
 ## R code 16.15
 theta <- c( 0.5 , 0.05 , 0.025 , 0.5 )
 z <- sim_lynx_hare( 1e4 , as.numeric(Lynx_Hare[1,2:3]) , theta )
@@ -143,7 +160,18 @@ for ( s in 1:21 ) {
     lines( 1:21 , post$pop[s,,2] , col=col.alpha("black",0.2) , lwd=2 )
     lines( 1:21 , post$pop[s,,1] , col=col.alpha(rangi2,0.4) , lwd=2 )
 }
+```
 
+### 16.4.3. Lynx lessons.
+## 16.6. Practice
+#### 16M3
+
+#### 16H1
+
+#### 16H2
+
+#### 16H3
+```{r}
 ## R code 16.21
 data(Lynx_Hare)
 dat_ar1 <- list(
@@ -153,4 +181,5 @@ dat_ar1 <- list(
     H_lag1 = Lynx_Hare$Hare[1:20] )
 
 ```
+
 
