@@ -58,7 +58,7 @@ m16.4 <- ulam(
         phi ~ lognormal( log(1) , 0.1 ),
         k ~ lognormal( log(2) , 0.25 ),
         theta ~ lognormal( log(5) , 0.25 )
-    ), data=dat_list , chains=4 )
+    ), data=dat_list , chains=4 , log_lik = T)
 precis(m16.4)
 ```
 
@@ -211,7 +211,7 @@ sim_lynx_hare <- function( n_steps , init , theta , dt=0.002 ) {
 ## R code 16.16
 N <- 1e4
 Ht <- 1e4
-p <- rbeta(N,2,18)
+p <- rbeta(N,2,10)
 h <- rbinom( N , size=Ht , prob=p )
 h <- round( h/1000 , 2 )
 ```
@@ -221,7 +221,7 @@ h <- round( h/1000 , 2 )
 theta <- c( 0.5 , 0.05 , 0.025 , 0.5 )
 p_16M3list = list()
 for (i in 1:10) {
-    z <- as.matrix(sim_lynx_hare( 1e4 , c(rlnorm(1, log(10), 1), rlnorm(1, log(10), 1)) , theta ))
+    z <- as.matrix(sim_lynx_hare( 1e4 , c(rlnorm(2, log(10), 1), rlnorm(2, log(10), 1)) , theta ))
     p_16M3list[[i]] = z
 }
 
@@ -271,6 +271,30 @@ m16H1 <- ulam(
         theta ~ lognormal( log(5) , 0.25 )
     ), data=dat_list , chains=4 )
 precis(m16H1,depth=2)
+```
+
+```{r}
+## R code 16.11
+dat_list <- list(
+    n = as.integer( Panda_nuts$nuts_opened ),
+    age = Panda_nuts$age / max(Panda_nuts$age),
+    seconds = Panda_nuts$seconds,
+    sid = ifelse( Panda_nuts$sex=="m" , 1 , 2))
+
+m16H1 <- ulam(
+    alist(
+        n ~ poisson( lambda ),
+        lambda <- a[sid]+seconds*phi*(1-exp(-k*age))^theta,
+        a[sid] ~ dnorm( 0 , 1.5 ),
+        phi ~ lognormal( log(1) , 0.1 ),
+        k ~ lognormal( log(2) , 0.25 ),
+        theta ~ lognormal( log(5) , 0.25 )
+    ), data=dat_list , chains=4 , log_lik = T)
+precis(m16H1,depth=2)
+```
+
+```{r}
+compare(m16.4,m16H1)
 ```
 
 #### 16H2 Now return to the Panda nut model and try to incorporate individual differences. There are two parameters, ϕ and k, which plausibly vary by individual. Pick one of these, allow it to vary by individual, and use partial pooling to avoid overfitting. The variable chimpanzee in data(Panda_nuts) tells you which observations belong to which individuals.
@@ -334,22 +358,3 @@ m16H3 <- ulam(
 precis(m16H3,depth=2)
 ```
 
-model {
-  // priors
-  theta[{1,3}] ~ normal( 1 , 0.5 );    // bh,ml
-  theta[{2,4}] ~ normal( 0.05, 0.05 ); // mh,bl
-  sigma ~ exponential( 1 );
-  pop_init ~ lognormal( log(10) , 1 );
-  p ~ beta(40,200);
-  // observation model
-  // connect latent population state to observed pelts
-  for ( t in 1:N )
-    for ( k in 1:2 )
-      pelts[t,k] ~ lognormal( log(pop[t,k]*p[k]) , sigma[k] );
-}
-generated quantities {
-  real pelts_pred[N,2];
-  for ( t in 1:N )
-    for ( k in 1:2 )
-      pelts_pred[t,k] = lognormal_rng( log(pop[t,k]*p[k]) , sigma[k] );
-}
