@@ -28,6 +28,10 @@ at <- c(0,0.25,0.5,0.75,1,1.25,1.5)
 axis( 1 , at=at , labels=round(at*max(Panda_nuts$age)) )
 for ( i in 1:20 ) curve( (1-exp(-k[i]*x)) , add=TRUE , col=grau() , lwd=1.5 )
 
+dens(phi)
+dens(k)
+dens(theta)
+
 # implied rate of nut opening curve
 plot( NULL , xlim=c(0,1.5) , ylim=c(0,1.2) , xaxt="n" , xlab="age" ,
     ylab="nuts per second" )
@@ -36,6 +40,9 @@ axis( 1 , at=at , labels=round(at*max(Panda_nuts$age)) )
 for ( i in 1:20 ) curve( phi[i]*(1-exp(-k[i]*x))^theta[i] , add=TRUE ,
     col=grau() , lwd=1.5 )
 
+```
+
+```{r}
 ## R code 16.11
 dat_list <- list(
     n = as.integer( Panda_nuts$nuts_opened ),
@@ -50,7 +57,10 @@ m16.4 <- ulam(
         k ~ lognormal( log(2) , 0.25 ),
         theta ~ lognormal( log(5) , 0.25 )
     ), data=dat_list , chains=4 )
+precis(m16.4)
+```
 
+```{r}
 ## R code 16.12
 post <- extract.samples(m16.4)
 plot( NULL , xlim=c(0,1) , ylim=c(0,1.5) , xlab="age" ,
@@ -68,7 +78,7 @@ for ( i in 1:30 ) with( post ,
     curve( phi[i]*(1-exp(-k[i]*x))^theta[i] , add=TRUE , col=grau() ) )
 ```
 
-### 16.3.3. Covariates and individual diff erences.
+### 16.3.3. Covariates and individual differences.
 
 ## 16.4. Population dynamics
 
@@ -113,7 +123,9 @@ plot( z[,2] , type="l" , ylim=c(0,max(z[,2])) , lwd=2 , xaxt="n" ,
     ylab="number (thousands)" , xlab="" )
 lines( z[,1] , col=rangi2 , lwd=2 )
 mtext( "time" , 1 )
+```
 
+```{r}
 ## R code 16.16
 N <- 1e4
 Ht <- 1e4
@@ -121,11 +133,15 @@ p <- rbeta(N,2,18)
 h <- rbinom( N , size=Ht , prob=p )
 h <- round( h/1000 , 2 )
 dens( h , xlab="thousand of pelts" , lwd=2 )
+```
 
+```{r}
 ## R code 16.17
 data(Lynx_Hare_model)
 cat(Lynx_Hare_model)
+```
 
+```{r}
 ## R code 16.18
 dat_list <- list(
     N = nrow(Lynx_Hare),
@@ -133,7 +149,9 @@ dat_list <- list(
 
 m16.5 <- stan( model_code=Lynx_Hare_model , data=dat_list , chains=3 , cores=3 ,
     control=list( adapt_delta=0.95 ) )
+```
 
+```{r}
 ## R code 16.19
 post <- extract.samples(m16.5)
 pelts <- dat_list$pelts
@@ -150,7 +168,9 @@ for ( s in 1:21 ) {
 # text labels
 text( 17 , 90 , "Lepus" , pos=2 )
 text( 19 , 50 , "Lynx" , pos=2 , col=rangi2 )
+```
 
+```{r}
 ## R code 16.20
 plot( NULL , pch=16 , xlim=c(1,21) , ylim=c(0,500) , xlab="year" ,
     ylab="thousands of animals" , xaxt="n" )
