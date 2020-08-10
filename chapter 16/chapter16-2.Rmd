@@ -97,7 +97,7 @@ text( 17 , 80 , "Lepus" , pos=2 )
 text( 19 , 50 , "Lynx" , pos=2 , col=rangi2 )
 ```
 
-### 16.4.1. Th e scientifi c model.
+### 16.4.1. The scientific model.
 ```{r}
 ## R code 16.14
 sim_lynx_hare <- function( n_steps , init , theta , dt=0.002 ) {
@@ -113,7 +113,7 @@ sim_lynx_hare <- function( n_steps , init , theta , dt=0.002 ) {
 }
 ```
 
-### 16.4.2. Th e statistical model.
+
 ```{r}
 ## R code 16.15
 theta <- c( 0.5 , 0.05 , 0.025 , 0.5 )
@@ -124,6 +124,7 @@ plot( z[,2] , type="l" , ylim=c(0,max(z[,2])) , lwd=2 , xaxt="n" ,
 lines( z[,1] , col=rangi2 , lwd=2 )
 mtext( "time" , 1 )
 ```
+### 16.4.2. The statistical model.
 
 ```{r}
 ## R code 16.16
