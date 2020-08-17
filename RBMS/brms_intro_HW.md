@@ -211,9 +211,9 @@ m4H1brm <- brm(height ~ weight, data=d2,
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.072 seconds (Warm-up)
-## Chain 1:                0.055 seconds (Sampling)
-## Chain 1:                0.127 seconds (Total)
+## Chain 1:  Elapsed Time: 0.118 seconds (Warm-up)
+## Chain 1:                0.078 seconds (Sampling)
+## Chain 1:                0.196 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 2).
@@ -236,9 +236,9 @@ m4H1brm <- brm(height ~ weight, data=d2,
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.122 seconds (Warm-up)
-## Chain 2:                0.071 seconds (Sampling)
-## Chain 2:                0.193 seconds (Total)
+## Chain 2:  Elapsed Time: 0.125 seconds (Warm-up)
+## Chain 2:                0.088 seconds (Sampling)
+## Chain 2:                0.213 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 3).
@@ -261,9 +261,9 @@ m4H1brm <- brm(height ~ weight, data=d2,
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.075 seconds (Warm-up)
-## Chain 3:                0.048 seconds (Sampling)
-## Chain 3:                0.123 seconds (Total)
+## Chain 3:  Elapsed Time: 0.09 seconds (Warm-up)
+## Chain 3:                0.063 seconds (Sampling)
+## Chain 3:                0.153 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 4).
@@ -286,9 +286,9 @@ m4H1brm <- brm(height ~ weight, data=d2,
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.065 seconds (Warm-up)
-## Chain 4:                0.048 seconds (Sampling)
-## Chain 4:                0.113 seconds (Total)
+## Chain 4:  Elapsed Time: 0.11 seconds (Warm-up)
+## Chain 4:                0.077 seconds (Sampling)
+## Chain 4:                0.187 seconds (Total)
 ## Chain 4:
 ```
 
@@ -306,12 +306,12 @@ m4H1brm
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept    75.49      1.06    73.45    77.59 1.00     4021     2982
-## weight        1.76      0.03     1.71     1.82 1.00     4020     2752
+## Intercept    75.49      1.05    73.46    77.52 1.00     3650     2825
+## weight        1.76      0.03     1.71     1.82 1.00     3916     2896
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     9.30      0.28     8.75     9.88 1.00     4057     3229
+## sigma     9.31      0.28     8.79     9.87 1.00     3803     2772
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -333,11 +333,11 @@ head(p_m4H1brm)
 
 ```
 ##      Estimate Est.Error     Q2.5    Q97.5
-## [1,] 158.1940  9.257375 140.3488 176.1217
-## [2,] 152.6294  9.273471 134.3485 170.7382
-## [3,] 189.5719  9.394918 171.1112 208.3070
-## [4,] 133.1296  9.362837 114.7716 151.5304
-## [5,] 171.9378  9.194755 154.1938 189.5947
+## [1,] 158.4481  9.349326 140.5001 176.6525
+## [2,] 152.4734  9.269280 134.6502 170.6988
+## [3,] 189.6795  9.419969 171.2380 208.2047
+## [4,] 133.1888  9.199538 115.5698 151.2295
+## [5,] 171.4583  9.189240 153.3233 188.7710
 ```
 
 ```r
@@ -347,12 +347,12 @@ head(pp_m4H1brm)
 
 ```
 ##          [,1]     [,2]     [,3]     [,4]     [,5]
-## [1,] 147.0322 166.4069 207.1005 129.3361 178.7013
-## [2,] 148.4712 159.8151 170.9719 144.3002 186.6122
-## [3,] 149.1123 158.2986 174.7931 136.9711 173.4649
-## [4,] 147.7436 169.2218 184.5683 129.5963 170.9833
-## [5,] 159.6409 155.3340 180.4418 139.4153 166.2814
-## [6,] 157.4341 153.5970 182.2696 137.1363 182.5831
+## [1,] 164.2052 149.1159 200.1473 137.3924 163.3048
+## [2,] 154.5215 147.4828 204.1276 148.3846 169.6186
+## [3,] 165.4908 162.5322 171.8712 147.9591 172.7076
+## [4,] 159.3514 161.0935 189.2526 134.9999 179.4298
+## [5,] 152.3399 150.3073 189.2246 121.4227 164.0084
+## [6,] 158.9320 139.2636 181.9064 135.6389 178.1158
 ```
 
 ### 4H2 Select out all the rows in the Howell1 data with ages below 18 years of age. If you do it right, you should end up with a new data frame with 192 rows in it.
@@ -421,9 +421,9 @@ m4H2brm <- brm(height ~ weight, data=d4H2,
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.069 seconds (Warm-up)
-## Chain 1:                0.067 seconds (Sampling)
-## Chain 1:                0.136 seconds (Total)
+## Chain 1:  Elapsed Time: 0.073 seconds (Warm-up)
+## Chain 1:                0.057 seconds (Sampling)
+## Chain 1:                0.13 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 2).
@@ -446,9 +446,9 @@ m4H2brm <- brm(height ~ weight, data=d4H2,
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.081 seconds (Warm-up)
-## Chain 2:                0.051 seconds (Sampling)
-## Chain 2:                0.132 seconds (Total)
+## Chain 2:  Elapsed Time: 0.077 seconds (Warm-up)
+## Chain 2:                0.058 seconds (Sampling)
+## Chain 2:                0.135 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 3).
@@ -471,9 +471,9 @@ m4H2brm <- brm(height ~ weight, data=d4H2,
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.07 seconds (Warm-up)
-## Chain 3:                0.062 seconds (Sampling)
-## Chain 3:                0.132 seconds (Total)
+## Chain 3:  Elapsed Time: 0.135 seconds (Warm-up)
+## Chain 3:                0.059 seconds (Sampling)
+## Chain 3:                0.194 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 4).
@@ -496,9 +496,9 @@ m4H2brm <- brm(height ~ weight, data=d4H2,
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.067 seconds (Warm-up)
-## Chain 4:                0.058 seconds (Sampling)
-## Chain 4:                0.125 seconds (Total)
+## Chain 4:  Elapsed Time: 0.108 seconds (Warm-up)
+## Chain 4:                0.045 seconds (Sampling)
+## Chain 4:                0.153 seconds (Total)
 ## Chain 4:
 ```
 
@@ -516,12 +516,12 @@ m4H2brm
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept    58.35      1.41    55.59    61.07 1.00     4150     3058
-## weight        2.72      0.07     2.58     2.85 1.00     4329     2969
+## Intercept    58.37      1.36    55.77    61.00 1.00     4008     2864
+## weight        2.72      0.07     2.59     2.85 1.00     4019     2713
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     8.36      0.41     7.60     9.23 1.00     3380     2938
+## sigma     8.36      0.42     7.58     9.23 1.00     3878     2818
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -551,12 +551,12 @@ head(p_m4H2brm)
 
 ```
 ##      Estimate Est.Error     Q2.5     Q97.5
-## [1,] 70.15238  8.484530 53.91337  86.95461
-## [2,] 72.68486  8.597108 55.74233  89.82158
-## [3,] 75.26860  8.304111 59.29926  91.46217
-## [4,] 78.02505  8.355582 61.75865  93.99660
-## [5,] 80.74226  8.536735 63.77029  97.75802
-## [6,] 83.56729  8.521831 67.04810 100.26150
+## [1,] 69.99689  8.455166 52.71844  86.45932
+## [2,] 72.84415  8.487955 56.22047  89.02253
+## [3,] 75.43517  8.384830 58.86083  92.09113
+## [4,] 78.05875  8.314451 61.55646  94.48309
+## [5,] 80.82191  8.419815 64.47294  97.64610
+## [6,] 83.57391  8.348141 67.04805 100.41237
 ```
 
 ```r
@@ -566,10 +566,10 @@ str(df_p_m4H2brm)
 
 ```
 ## 'data.frame':	41 obs. of  4 variables:
-##  $ Estimate : num  70.2 72.7 75.3 78 80.7 ...
-##  $ Est.Error: num  8.48 8.6 8.3 8.36 8.54 ...
-##  $ Q2.5     : num  53.9 55.7 59.3 61.8 63.8 ...
-##  $ Q97.5    : num  87 89.8 91.5 94 97.8 ...
+##  $ Estimate : num  70 72.8 75.4 78.1 80.8 ...
+##  $ Est.Error: num  8.46 8.49 8.38 8.31 8.42 ...
+##  $ Q2.5     : num  52.7 56.2 58.9 61.6 64.5 ...
+##  $ Q97.5    : num  86.5 89 92.1 94.5 97.6 ...
 ```
 
 
@@ -754,13 +754,13 @@ precis(tomato_m1, depth=2)
 
 ```
 ##            mean        sd      5.5%     94.5%
-## a[1]  32.664754 0.6676548 31.597713 33.731796
-## a[2]  29.985850 0.6454282 28.954331 31.017369
-## a[3]  29.172093 0.6373864 28.153427 30.190760
-## a[4]  26.651019 0.8172876 25.344835 27.957202
-## a[5]  36.330196 0.6560536 35.281695 37.378696
-## b      4.043286 0.4924007  3.256335  4.830238
-## sigma  9.001022 0.1998795  8.681576  9.320468
+## a[1]  32.663133 0.6676470 31.596104 33.730162
+## a[2]  29.985745 0.6454225 28.954235 31.017255
+## a[3]  29.173825 0.6373834 28.155163 30.192486
+## a[4]  26.651505 0.8172813 25.345331 27.957678
+## a[5]  36.328284 0.6560458 35.279796 37.376772
+## b      4.044584 0.4923935  3.257644  4.831524
+## sigma  9.000937 0.1998749  8.681499  9.320376
 ```
 
 
@@ -780,19 +780,19 @@ precis(tomato_m2, depth=2)
 ```
 
 ```
-##              mean        sd       5.5%     94.5%
-## a[1]   32.3356600 0.7512671 31.1349901 33.536330
-## a[2]   30.3609034 0.7298622 29.1944425 31.527364
-## a[3]   29.4246258 0.7093605 28.2909308 30.558321
-## a[4]   26.0105741 0.9185978 24.5424774 27.478671
-## a[5]   35.9789845 0.7413368 34.7941850 37.163784
-## b       3.5826313 0.5852943  2.6472180  4.518045
-## bST[1]  1.1192505 0.8112035 -0.1772093  2.415710
-## bST[2] -0.2731419 0.8020540 -1.5549791  1.008695
-## bST[3] -0.0772497 0.8023533 -1.3595653  1.205066
-## bST[4]  1.6640657 0.8581256  0.2926152  3.035516
-## bST[5]  1.1495822 0.8061868 -0.1388600  2.438024
-## sigma   8.9605016 0.1992961  8.6419879  9.279015
+##               mean        sd       5.5%     94.5%
+## a[1]   32.33603547 0.7512657 31.1353678 33.536703
+## a[2]   30.36112941 0.7298603 29.1946717 31.527587
+## a[3]   29.42598037 0.7093592 28.2922874 30.559673
+## a[4]   26.01154694 0.9185975 24.5434507 27.479643
+## a[5]   35.97788898 0.7413337 34.7930946 37.162683
+## b       3.58215738 0.5852947  2.6467433  4.517571
+## bST[1]  1.11954888 0.8112026 -0.1769095  2.416007
+## bST[2] -0.27376468 0.8020529 -1.5556001  1.008071
+## bST[3] -0.07796379 0.8023524 -1.3602778  1.204350
+## bST[4]  1.66407424 0.8581249  0.2926249  3.035524
+## bST[5]  1.14965808 0.8061860 -0.1387829  2.438099
+## sigma   8.96047252 0.1992948  8.6419610  9.278984
 ```
 
 
@@ -874,6 +874,14 @@ tomato_m1_brms
 ```
 
 ```r
+plot(tomato_m1_brms)
+```
+
+![](brms_intro_HW_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+
+
+
+```r
 # tomato_m1_brms_2 <-
 #   brm(data = tomato2, 
 #       family = gaussian,
@@ -932,6 +940,14 @@ tomato_m1_brms_2
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
 ## scale reduction factor on split chains (at convergence, Rhat = 1).
 ```
+
+
+```r
+plot(tomato_m1_brms_2)
+```
+
+![](brms_intro_HW_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+
 
 * From chapter 9: 8M1 (remember that the problem numbers were offset it is actually called 9M1 in the Nov 24 PDF)
 
@@ -1018,6 +1034,14 @@ b9.1
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
 ## scale reduction factor on split chains (at convergence, Rhat = 1).
 ```
+
+```r
+plot(b9.1)
+```
+
+![](brms_intro_HW_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+
+
 #### The uniform prior should be dunif(0,10)
 
 
@@ -1082,5 +1106,11 @@ b9.1_unif
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
 ## scale reduction factor on split chains (at convergence, Rhat = 1).
 ```
+
+```r
+plot(b9.1_unif)
+```
+
+![](brms_intro_HW_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
 
 > It looks like the different priors have no detectible influence on the posterior distribution.

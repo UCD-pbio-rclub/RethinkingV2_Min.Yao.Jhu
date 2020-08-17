@@ -208,6 +208,11 @@ tomato_m1_brms <-
 tomato_m1_brms
 ```
 ```{r}
+plot(tomato_m1_brms)
+```
+
+
+```{r}
 # tomato_m1_brms_2 <-
 #   brm(data = tomato2, 
 #       family = gaussian,
@@ -235,6 +240,11 @@ tomato_m1_brms_2 <-
 ```{r}
 tomato_m1_brms_2
 ```
+
+```{r}
+plot(tomato_m1_brms_2)
+```
+
 
 * From chapter 9: 8M1 (remember that the problem numbers were offset it is actually called 9M1 in the Nov 24 PDF)
 
@@ -283,6 +293,11 @@ b9.1 <-
 ```{r}
 b9.1
 ```
+```{r}
+plot(b9.1)
+```
+
+
 #### The uniform prior should be dunif(0,10)
 
 ```{r}
@@ -303,6 +318,9 @@ b9.1_unif <-
 ```
 ```{r}
 b9.1_unif
+```
+```{r}
+plot(b9.1_unif)
 ```
 
 > It looks like the different priors have no detectible influence on the posterior distribution.
