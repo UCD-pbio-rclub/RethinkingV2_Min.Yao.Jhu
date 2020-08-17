@@ -148,7 +148,7 @@ head(tomato2)
 ```
 
 ```{r}
-tomato2$SID <- as.numeric(as.factor(tomato2$species))
+tomato2$SID <- as.factor(tomato2$species)
 tomato2$TID <- as.numeric(as.factor(tomato2$trt))-1
 str(tomato2)
 head(tomato2)
@@ -213,29 +213,29 @@ plot(tomato_m1_brms)
 
 
 ```{r}
-# tomato_m1_brms_2 <-
-#   brm(data = tomato2, 
-#       family = gaussian,
-#       hyp ~ 0 + SID + TID,
-#       prior = c(prior(normal(30 , 5), class = b, coef = SID1),
-#                 prior(normal(30 , 5), class = b, coef = SID2),
-#                 prior(normal(30 , 5), class = b, coef = SID3),
-#                 prior(normal(30 , 5), class = b, coef = SID4),
-#                 prior(normal(30 , 5), class = b, coef = SID5),
-#                 prior(normal(0 , 1), class = b),
-#                 prior(exponential(1), class = sigma)),
-#       iter = 2000, warmup = 1000, chains = 4, cores = 4,
-#       seed = 8)
-
 tomato_m1_brms_2 <-
-  brm(data = tomato2, 
+  brm(data = tomato2,
       family = gaussian,
       hyp ~ 0 + SID + TID,
-      prior = c(prior(normal(30 , 5), class = b , coef = SID),
+      prior = c(prior(normal(30 , 5), class = b, coef = SIDS.chilense),
+                prior(normal(30 , 5), class = b, coef = SIDS.chmielewskii),
+                prior(normal(30 , 5), class = b, coef = SIDS.habrochaites),
+                prior(normal(30 , 5), class = b, coef = SIDS.pennellii),
+                prior(normal(30 , 5), class = b, coef = SIDS.peruvianum),
                 prior(normal(0 , 1), class = b, coef = TID),
                 prior(exponential(1), class = sigma)),
       iter = 2000, warmup = 1000, chains = 4, cores = 4,
       seed = 8)
+
+# tomato_m1_brms_2 <-
+#   brm(data = tomato2, 
+#       family = gaussian,
+#       hyp ~ 0 + SID + TID,
+#       prior = c(prior(normal(30 , 5), class = b , coef = SID),
+#                 prior(normal(0 , 1), class = b, coef = TID),
+#                 prior(exponential(1), class = sigma)),
+#       iter = 2000, warmup = 1000, chains = 4, cores = 4,
+#       seed = 8)
 ```
 ```{r}
 tomato_m1_brms_2
@@ -245,6 +245,36 @@ tomato_m1_brms_2
 plot(tomato_m1_brms_2)
 ```
 
+```{r}
+tomato_m1_brms_2_I <- 
+  brm(data = tomato2, 
+      family = gaussian,
+      bf(hyp ~ 0 + a + b * TID, 
+         a ~ 0 + SID, 
+         b ~ 0 + SID,
+         nl = TRUE),
+      prior = c(prior(normal(30 , 5), class = b, coef = SIDS.chilense, nlpar = a),
+                prior(normal(30 , 5), class = b, coef = SIDS.chmielewskii, nlpar = a),
+                prior(normal(30 , 5), class = b, coef = SIDS.habrochaites, nlpar = a),
+                prior(normal(30 , 5), class = b, coef = SIDS.pennellii, nlpar = a),
+                prior(normal(30 , 5), class = b, coef = SIDS.peruvianum, nlpar = a),
+                prior(normal(30 , 5), class = b, coef = SIDS.chilense, nlpar = b),
+                prior(normal(30 , 5), class = b, coef = SIDS.chmielewskii, nlpar = b),
+                prior(normal(30 , 5), class = b, coef = SIDS.habrochaites, nlpar = b),
+                prior(normal(30 , 5), class = b, coef = SIDS.pennellii, nlpar = b),
+                prior(normal(30 , 5), class = b, coef = SIDS.peruvianum, nlpar = b),
+                prior(exponential(1), class = sigma)),
+      chains = 4, cores = 4,
+      seed = 9)
+```
+
+```{r}
+tomato_m1_brms_2_I
+```
+
+```{r}
+plot(tomato_m1_brms_2_I)
+```
 
 * From chapter 9: 8M1 (remember that the problem numbers were offset it is actually called 9M1 in the Nov 24 PDF)
 

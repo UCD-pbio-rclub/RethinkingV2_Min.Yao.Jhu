@@ -211,9 +211,9 @@ m4H1brm <- brm(height ~ weight, data=d2,
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.118 seconds (Warm-up)
-## Chain 1:                0.078 seconds (Sampling)
-## Chain 1:                0.196 seconds (Total)
+## Chain 1:  Elapsed Time: 0.063 seconds (Warm-up)
+## Chain 1:                0.06 seconds (Sampling)
+## Chain 1:                0.123 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 2).
@@ -236,9 +236,9 @@ m4H1brm <- brm(height ~ weight, data=d2,
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.125 seconds (Warm-up)
-## Chain 2:                0.088 seconds (Sampling)
-## Chain 2:                0.213 seconds (Total)
+## Chain 2:  Elapsed Time: 0.078 seconds (Warm-up)
+## Chain 2:                0.06 seconds (Sampling)
+## Chain 2:                0.138 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 3).
@@ -261,9 +261,9 @@ m4H1brm <- brm(height ~ weight, data=d2,
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.09 seconds (Warm-up)
-## Chain 3:                0.063 seconds (Sampling)
-## Chain 3:                0.153 seconds (Total)
+## Chain 3:  Elapsed Time: 0.105 seconds (Warm-up)
+## Chain 3:                0.055 seconds (Sampling)
+## Chain 3:                0.16 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 4).
@@ -286,9 +286,9 @@ m4H1brm <- brm(height ~ weight, data=d2,
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.11 seconds (Warm-up)
-## Chain 4:                0.077 seconds (Sampling)
-## Chain 4:                0.187 seconds (Total)
+## Chain 4:  Elapsed Time: 0.079 seconds (Warm-up)
+## Chain 4:                0.047 seconds (Sampling)
+## Chain 4:                0.126 seconds (Total)
 ## Chain 4:
 ```
 
@@ -306,12 +306,12 @@ m4H1brm
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept    75.49      1.05    73.46    77.52 1.00     3650     2825
-## weight        1.76      0.03     1.71     1.82 1.00     3916     2896
+## Intercept    75.48      1.04    73.48    77.52 1.00     4166     2869
+## weight        1.76      0.03     1.71     1.82 1.00     4304     2470
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     9.31      0.28     8.79     9.87 1.00     3803     2772
+## sigma     9.31      0.28     8.80     9.86 1.00     3731     2969
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -333,11 +333,11 @@ head(p_m4H1brm)
 
 ```
 ##      Estimate Est.Error     Q2.5    Q97.5
-## [1,] 158.4481  9.349326 140.5001 176.6525
-## [2,] 152.4734  9.269280 134.6502 170.6988
-## [3,] 189.6795  9.419969 171.2380 208.2047
-## [4,] 133.1888  9.199538 115.5698 151.2295
-## [5,] 171.4583  9.189240 153.3233 188.7710
+## [1,] 158.5149  9.337546 140.4953 176.4701
+## [2,] 152.4636  9.389424 134.2943 170.6030
+## [3,] 189.4571  9.214452 172.2374 207.3911
+## [4,] 132.7303  9.375878 114.1893 151.0093
+## [5,] 171.6362  9.197070 153.2568 189.7668
 ```
 
 ```r
@@ -347,12 +347,12 @@ head(pp_m4H1brm)
 
 ```
 ##          [,1]     [,2]     [,3]     [,4]     [,5]
-## [1,] 164.2052 149.1159 200.1473 137.3924 163.3048
-## [2,] 154.5215 147.4828 204.1276 148.3846 169.6186
-## [3,] 165.4908 162.5322 171.8712 147.9591 172.7076
-## [4,] 159.3514 161.0935 189.2526 134.9999 179.4298
-## [5,] 152.3399 150.3073 189.2246 121.4227 164.0084
-## [6,] 158.9320 139.2636 181.9064 135.6389 178.1158
+## [1,] 154.4648 160.1035 196.6244 127.9117 171.3415
+## [2,] 178.5702 140.9422 181.8364 129.3378 167.5227
+## [3,] 171.5278 165.7688 199.4809 122.5525 173.5380
+## [4,] 164.7647 153.7625 182.0530 145.0614 182.6350
+## [5,] 159.2282 178.0705 202.1272 134.7726 160.5615
+## [6,] 160.0418 160.2653 184.9159 119.2024 169.9193
 ```
 
 ### 4H2 Select out all the rows in the Howell1 data with ages below 18 years of age. If you do it right, you should end up with a new data frame with 192 rows in it.
@@ -403,8 +403,8 @@ m4H2brm <- brm(height ~ weight, data=d4H2,
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 0 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
+## Chain 1: Gradient evaluation took 0.001 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -421,9 +421,9 @@ m4H2brm <- brm(height ~ weight, data=d4H2,
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.073 seconds (Warm-up)
-## Chain 1:                0.057 seconds (Sampling)
-## Chain 1:                0.13 seconds (Total)
+## Chain 1:  Elapsed Time: 0.058 seconds (Warm-up)
+## Chain 1:                0.048 seconds (Sampling)
+## Chain 1:                0.106 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 2).
@@ -446,9 +446,9 @@ m4H2brm <- brm(height ~ weight, data=d4H2,
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.077 seconds (Warm-up)
-## Chain 2:                0.058 seconds (Sampling)
-## Chain 2:                0.135 seconds (Total)
+## Chain 2:  Elapsed Time: 0.058 seconds (Warm-up)
+## Chain 2:                0.039 seconds (Sampling)
+## Chain 2:                0.097 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 3).
@@ -471,9 +471,9 @@ m4H2brm <- brm(height ~ weight, data=d4H2,
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.135 seconds (Warm-up)
-## Chain 3:                0.059 seconds (Sampling)
-## Chain 3:                0.194 seconds (Total)
+## Chain 3:  Elapsed Time: 0.065 seconds (Warm-up)
+## Chain 3:                0.052 seconds (Sampling)
+## Chain 3:                0.117 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '4f686d4abcd6152a27b0e5a2aad2c9a4' NOW (CHAIN 4).
@@ -496,9 +496,9 @@ m4H2brm <- brm(height ~ weight, data=d4H2,
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.108 seconds (Warm-up)
-## Chain 4:                0.045 seconds (Sampling)
-## Chain 4:                0.153 seconds (Total)
+## Chain 4:  Elapsed Time: 0.06 seconds (Warm-up)
+## Chain 4:                0.049 seconds (Sampling)
+## Chain 4:                0.109 seconds (Total)
 ## Chain 4:
 ```
 
@@ -516,12 +516,12 @@ m4H2brm
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept    58.37      1.36    55.77    61.00 1.00     4008     2864
-## weight        2.72      0.07     2.59     2.85 1.00     4019     2713
+## Intercept    58.37      1.42    55.66    61.14 1.00     4056     3061
+## weight        2.72      0.07     2.58     2.85 1.00     4001     2964
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     8.36      0.42     7.58     9.23 1.00     3878     2818
+## sigma     8.35      0.42     7.59     9.21 1.00     3856     2588
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -550,13 +550,13 @@ head(p_m4H2brm)
 ```
 
 ```
-##      Estimate Est.Error     Q2.5     Q97.5
-## [1,] 69.99689  8.455166 52.71844  86.45932
-## [2,] 72.84415  8.487955 56.22047  89.02253
-## [3,] 75.43517  8.384830 58.86083  92.09113
-## [4,] 78.05875  8.314451 61.55646  94.48309
-## [5,] 80.82191  8.419815 64.47294  97.64610
-## [6,] 83.57391  8.348141 67.04805 100.41237
+##      Estimate Est.Error     Q2.5    Q97.5
+## [1,] 69.98755  8.329657 53.63433 86.39094
+## [2,] 72.75514  8.547724 56.07933 89.78980
+## [3,] 75.37592  8.523187 58.35190 92.22298
+## [4,] 77.96535  8.590483 60.87102 95.02456
+## [5,] 80.62253  8.456076 63.92399 96.95962
+## [6,] 83.55276  8.399739 66.76190 99.65032
 ```
 
 ```r
@@ -566,10 +566,10 @@ str(df_p_m4H2brm)
 
 ```
 ## 'data.frame':	41 obs. of  4 variables:
-##  $ Estimate : num  70 72.8 75.4 78.1 80.8 ...
-##  $ Est.Error: num  8.46 8.49 8.38 8.31 8.42 ...
-##  $ Q2.5     : num  52.7 56.2 58.9 61.6 64.5 ...
-##  $ Q97.5    : num  86.5 89 92.1 94.5 97.6 ...
+##  $ Estimate : num  70 72.8 75.4 78 80.6 ...
+##  $ Est.Error: num  8.33 8.55 8.52 8.59 8.46 ...
+##  $ Q2.5     : num  53.6 56.1 58.4 60.9 63.9 ...
+##  $ Q97.5    : num  86.4 89.8 92.2 95 97 ...
 ```
 
 
@@ -689,7 +689,7 @@ head(tomato2)
 
 
 ```r
-tomato2$SID <- as.numeric(as.factor(tomato2$species))
+tomato2$SID <- as.factor(tomato2$species)
 tomato2$TID <- as.numeric(as.factor(tomato2$trt))-1
 str(tomato2)
 ```
@@ -699,7 +699,7 @@ str(tomato2)
 ##  $ hyp    : num  19.5 31.3 56.6 35.2 35.3 ...
 ##  $ trt    : chr  "H" "H" "H" "H" ...
 ##  $ species: chr  "S. pennellii" "S. peruvianum" "S. peruvianum" "S. chilense" ...
-##  $ SID    : num  4 5 5 1 1 2 3 4 5 5 ...
+##  $ SID    : Factor w/ 5 levels "S. chilense",..: 4 5 5 1 1 2 3 4 5 5 ...
 ##  $ TID    : num  0 0 0 0 0 0 0 0 0 0 ...
 ```
 
@@ -708,13 +708,13 @@ head(tomato2)
 ```
 
 ```
-##     hyp trt         species SID TID
-## 1 19.46   H    S. pennellii   4   0
-## 2 31.28   H   S. peruvianum   5   0
-## 3 56.65   H   S. peruvianum   5   0
-## 4 35.18   H     S. chilense   1   0
-## 5 35.32   H     S. chilense   1   0
-## 6 28.74   H S. chmielewskii   2   0
+##     hyp trt         species             SID TID
+## 1 19.46   H    S. pennellii    S. pennellii   0
+## 2 31.28   H   S. peruvianum   S. peruvianum   0
+## 3 56.65   H   S. peruvianum   S. peruvianum   0
+## 4 35.18   H     S. chilense     S. chilense   0
+## 5 35.32   H     S. chilense     S. chilense   0
+## 6 28.74   H S. chmielewskii S. chmielewskii   0
 ```
 
 ```r
@@ -722,13 +722,13 @@ summary(tomato2)
 ```
 
 ```
-##       hyp            trt              species               SID       
-##  Min.   : 6.17   Length:1008        Length:1008        Min.   :1.000  
-##  1st Qu.:26.81   Class :character   Class :character   1st Qu.:2.000  
-##  Median :32.02   Mode  :character   Mode  :character   Median :3.000  
-##  Mean   :33.36                                         Mean   :2.927  
-##  3rd Qu.:38.56                                         3rd Qu.:4.000  
-##  Max.   :74.60                                         Max.   :5.000  
+##       hyp            trt              species                       SID     
+##  Min.   : 6.17   Length:1008        Length:1008        S. chilense    :207  
+##  1st Qu.:26.81   Class :character   Class :character   S. chmielewskii:226  
+##  Median :32.02   Mode  :character   Mode  :character   S. habrochaites:226  
+##  Mean   :33.36                                         S. pennellii   :132  
+##  3rd Qu.:38.56                                         S. peruvianum  :217  
+##  Max.   :74.60                                                              
 ##       TID        
 ##  Min.   :0.0000  
 ##  1st Qu.:0.0000  
@@ -754,13 +754,13 @@ precis(tomato_m1, depth=2)
 
 ```
 ##            mean        sd      5.5%     94.5%
-## a[1]  32.663133 0.6676470 31.596104 33.730162
-## a[2]  29.985745 0.6454225 28.954235 31.017255
-## a[3]  29.173825 0.6373834 28.155163 30.192486
-## a[4]  26.651505 0.8172813 25.345331 27.957678
-## a[5]  36.328284 0.6560458 35.279796 37.376772
-## b      4.044584 0.4923935  3.257644  4.831524
-## sigma  9.000937 0.1998749  8.681499  9.320376
+## a[1]  32.663559 0.6676654 31.596501 33.730617
+## a[2]  29.985594 0.6454395 28.954057 31.017131
+## a[3]  29.172750 0.6373990 28.154064 30.191437
+## a[4]  26.651144 0.8173026 25.344936 27.957351
+## a[5]  36.327638 0.6560625 35.279124 37.376153
+## b      4.044714 0.4924035  3.257758  4.831670
+## sigma  9.001190 0.1998889  8.681729  9.320651
 ```
 
 
@@ -781,18 +781,18 @@ precis(tomato_m2, depth=2)
 
 ```
 ##               mean        sd       5.5%     94.5%
-## a[1]   32.33603547 0.7512657 31.1353678 33.536703
-## a[2]   30.36112941 0.7298603 29.1946717 31.527587
-## a[3]   29.42598037 0.7093592 28.2922874 30.559673
-## a[4]   26.01154694 0.9185975 24.5434507 27.479643
-## a[5]   35.97788898 0.7413337 34.7930946 37.162683
-## b       3.58215738 0.5852947  2.6467433  4.517571
-## bST[1]  1.11954888 0.8112026 -0.1769095  2.416007
-## bST[2] -0.27376468 0.8020529 -1.5556001  1.008071
-## bST[3] -0.07796379 0.8023524 -1.3602778  1.204350
-## bST[4]  1.66407424 0.8581249  0.2926249  3.035524
-## bST[5]  1.14965808 0.8061860 -0.1387829  2.438099
-## sigma   8.96047252 0.1992948  8.6419610  9.278984
+## a[1]   32.33627767 0.7512677 31.1356068 33.536949
+## a[2]   30.36086681 0.7298618 29.1944066 31.527327
+## a[3]   29.42443930 0.7093599 28.2907452 30.558133
+## a[4]   26.01072289 0.9185976 24.5426265 27.478819
+## a[5]   35.97875497 0.7413361 34.7939567 37.163553
+## b       3.58254767 0.5852943  2.6471343  4.517961
+## bST[1]  1.11978294 0.8112031 -0.1766763  2.416242
+## bST[2] -0.27317965 0.8020539 -1.5550167  1.008657
+## bST[3] -0.07743399 0.8023531 -1.3597492  1.204881
+## bST[4]  1.66409540 0.8581254  0.2926452  3.035546
+## bST[5]  1.14929528 0.8061866 -0.1391467  2.437737
+## sigma   8.96049564 0.1992958  8.6419824  9.279009
 ```
 
 
@@ -806,12 +806,15 @@ get_prior(hyp ~ 1 + SID + TID, data=tomato2)
 ```
 
 ```
-##                   prior     class coef group resp dpar nlpar bound
-## 1                               b                                 
-## 2                               b  SID                            
-## 3                               b  TID                            
-## 4 student_t(3, 32, 8.5) Intercept                                 
-## 5  student_t(3, 0, 8.5)     sigma
+##                   prior     class              coef group resp dpar nlpar bound
+## 1                               b                                              
+## 2                               b SIDS.chmielewskii                            
+## 3                               b SIDS.habrochaites                            
+## 4                               b    SIDS.pennellii                            
+## 5                               b   SIDS.peruvianum                            
+## 6                               b               TID                            
+## 7 student_t(3, 32, 8.5) Intercept                                              
+## 8  student_t(3, 0, 8.5)     sigma
 ```
 
 ```r
@@ -819,11 +822,15 @@ get_prior(hyp ~ 0 + SID + TID, data=tomato2)
 ```
 
 ```
-##                  prior class coef group resp dpar nlpar bound
-## 1                          b                                 
-## 2                          b  SID                            
-## 3                          b  TID                            
-## 4 student_t(3, 0, 8.5) sigma
+##                  prior class              coef group resp dpar nlpar bound
+## 1                          b                                              
+## 2                          b     SIDS.chilense                            
+## 3                          b SIDS.chmielewskii                            
+## 4                          b SIDS.habrochaites                            
+## 5                          b    SIDS.pennellii                            
+## 6                          b   SIDS.peruvianum                            
+## 7                          b               TID                            
+## 8 student_t(3, 0, 8.5) sigma
 ```
 
 
@@ -882,25 +889,15 @@ plot(tomato_m1_brms)
 
 
 ```r
-# tomato_m1_brms_2 <-
-#   brm(data = tomato2, 
-#       family = gaussian,
-#       hyp ~ 0 + SID + TID,
-#       prior = c(prior(normal(30 , 5), class = b, coef = SID1),
-#                 prior(normal(30 , 5), class = b, coef = SID2),
-#                 prior(normal(30 , 5), class = b, coef = SID3),
-#                 prior(normal(30 , 5), class = b, coef = SID4),
-#                 prior(normal(30 , 5), class = b, coef = SID5),
-#                 prior(normal(0 , 1), class = b),
-#                 prior(exponential(1), class = sigma)),
-#       iter = 2000, warmup = 1000, chains = 4, cores = 4,
-#       seed = 8)
-
 tomato_m1_brms_2 <-
-  brm(data = tomato2, 
+  brm(data = tomato2,
       family = gaussian,
       hyp ~ 0 + SID + TID,
-      prior = c(prior(normal(30 , 5), class = b , coef = SID),
+      prior = c(prior(normal(30 , 5), class = b, coef = SIDS.chilense),
+                prior(normal(30 , 5), class = b, coef = SIDS.chmielewskii),
+                prior(normal(30 , 5), class = b, coef = SIDS.habrochaites),
+                prior(normal(30 , 5), class = b, coef = SIDS.pennellii),
+                prior(normal(30 , 5), class = b, coef = SIDS.peruvianum),
                 prior(normal(0 , 1), class = b, coef = TID),
                 prior(exponential(1), class = sigma)),
       iter = 2000, warmup = 1000, chains = 4, cores = 4,
@@ -916,6 +913,18 @@ tomato_m1_brms_2 <-
 ```
 
 ```r
+# tomato_m1_brms_2 <-
+#   brm(data = tomato2, 
+#       family = gaussian,
+#       hyp ~ 0 + SID + TID,
+#       prior = c(prior(normal(30 , 5), class = b , coef = SID),
+#                 prior(normal(0 , 1), class = b, coef = TID),
+#                 prior(exponential(1), class = sigma)),
+#       iter = 2000, warmup = 1000, chains = 4, cores = 4,
+#       seed = 8)
+```
+
+```r
 tomato_m1_brms_2
 ```
 
@@ -928,13 +937,17 @@ tomato_m1_brms_2
 ##          total post-warmup samples = 4000
 ## 
 ## Population-Level Effects: 
-##     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## SID     8.21      0.18     7.87     8.55 1.00     2704     2589
-## TID     8.14      0.68     6.81     9.48 1.00     2697     2787
+##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## SIDS.chilense        32.67      0.67    31.41    34.00 1.00     5349     2767
+## SIDS.chmielewskii    30.00      0.65    28.69    31.25 1.00     5085     3203
+## SIDS.habrochaites    29.17      0.65    27.88    30.45 1.00     6352     3449
+## SIDS.pennellii       26.66      0.82    25.06    28.24 1.00     5394     3046
+## SIDS.peruvianum      36.33      0.66    35.03    37.63 1.00     5493     3062
+## TID                   4.03      0.50     3.05     5.02 1.00     3855     3188
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma    15.29      0.35    14.62    15.99 1.00     2630     2254
+## sigma     9.04      0.20     8.66     9.45 1.00     6305     3057
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -946,8 +959,83 @@ tomato_m1_brms_2
 plot(tomato_m1_brms_2)
 ```
 
-![](brms_intro_HW_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+![](brms_intro_HW_files/figure-html/unnamed-chunk-25-1.png)<!-- -->![](brms_intro_HW_files/figure-html/unnamed-chunk-25-2.png)<!-- -->
 
+
+```r
+tomato_m1_brms_2_I <- 
+  brm(data = tomato2, 
+      family = gaussian,
+      bf(hyp ~ 0 + a + b * TID, 
+         a ~ 0 + SID, 
+         b ~ 0 + SID,
+         nl = TRUE),
+      prior = c(prior(normal(30 , 5), class = b, coef = SIDS.chilense, nlpar = a),
+                prior(normal(30 , 5), class = b, coef = SIDS.chmielewskii, nlpar = a),
+                prior(normal(30 , 5), class = b, coef = SIDS.habrochaites, nlpar = a),
+                prior(normal(30 , 5), class = b, coef = SIDS.pennellii, nlpar = a),
+                prior(normal(30 , 5), class = b, coef = SIDS.peruvianum, nlpar = a),
+                prior(normal(30 , 5), class = b, coef = SIDS.chilense, nlpar = b),
+                prior(normal(30 , 5), class = b, coef = SIDS.chmielewskii, nlpar = b),
+                prior(normal(30 , 5), class = b, coef = SIDS.habrochaites, nlpar = b),
+                prior(normal(30 , 5), class = b, coef = SIDS.pennellii, nlpar = b),
+                prior(normal(30 , 5), class = b, coef = SIDS.peruvianum, nlpar = b),
+                prior(exponential(1), class = sigma)),
+      chains = 4, cores = 4,
+      seed = 9)
+```
+
+```
+## Compiling Stan program...
+```
+
+```
+## Start sampling
+```
+
+
+```r
+tomato_m1_brms_2_I
+```
+
+```
+##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: hyp ~ 0 + a + b * TID 
+##          a ~ 0 + SID
+##          b ~ 0 + SID
+##    Data: tomato2 (Number of observations: 1008) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##                     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## a_SIDS.chilense        30.78      0.86    29.03    32.46 1.00     3625     3044
+## a_SIDS.chmielewskii    29.80      0.85    28.13    31.43 1.00     3997     2829
+## a_SIDS.habrochaites    28.79      0.79    27.24    30.33 1.00     4343     2912
+## a_SIDS.pennellii       22.91      1.11    20.71    25.13 1.00     4145     3210
+## a_SIDS.peruvianum      34.45      0.86    32.81    36.15 1.00     4314     3394
+## b_SIDS.chilense         7.80      1.21     5.47    10.21 1.00     3687     3238
+## b_SIDS.chmielewskii     4.40      1.17     2.11     6.79 1.00     3824     3037
+## b_SIDS.habrochaites     4.82      1.16     2.66     7.15 1.00     4433     3242
+## b_SIDS.pennellii       11.07      1.47     8.11    13.95 1.00     4139     3078
+## b_SIDS.peruvianum       7.73      1.20     5.42    10.04 1.00     3952     3451
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma     8.99      0.20     8.62     9.40 1.00     4735     2940
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).
+```
+
+
+```r
+plot(tomato_m1_brms_2_I)
+```
+
+![](brms_intro_HW_files/figure-html/unnamed-chunk-28-1.png)<!-- -->![](brms_intro_HW_files/figure-html/unnamed-chunk-28-2.png)<!-- -->![](brms_intro_HW_files/figure-html/unnamed-chunk-28-3.png)<!-- -->
 
 * From chapter 9: 8M1 (remember that the problem numbers were offset it is actually called 9M1 in the Nov 24 PDF)
 
@@ -1039,7 +1127,7 @@ b9.1
 plot(b9.1)
 ```
 
-![](brms_intro_HW_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](brms_intro_HW_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
 
 
 #### The uniform prior should be dunif(0,10)
@@ -1111,6 +1199,6 @@ b9.1_unif
 plot(b9.1_unif)
 ```
 
-![](brms_intro_HW_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+![](brms_intro_HW_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
 
 > It looks like the different priors have no detectible influence on the posterior distribution.
