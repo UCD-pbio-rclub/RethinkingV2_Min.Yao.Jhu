@@ -28,7 +28,44 @@ Individual weight expected height 89% interval
 5 54.63
 
 ```{r}
+weights <- c(46.95,43.72,64.78,32.59,54.63)
+```
 
+
+```{r}
+## change from R code 4.42
+# load data again, since it's a long way back
+library(rethinking)
+data(Howell1)
+d <- Howell1
+str(d)
+```
+
+```{r}
+d2 <- d
+str(d2)
+m4H1brm <- brm(height ~ weight, data=d2,
+               prior=c(
+                 set_prior("normal(178, 20)", class = "Intercept"),
+                 set_prior("lognormal(0,1)", class = "b",lb=0),
+                 set_prior("exponential(1)", class = "sigma"))
+               )
+```
+```{r}
+m4H1brm
+```
+```{r}
+plot(m4H1brm)
+```
+
+```{r}
+## predicted responses
+p_m4H1brm <- predict(m4H1brm, newdata = data.frame(weight=weights))
+head(p_m4H1brm)
+```
+```{r}
+pp_m4H1brm <- posterior_predict(m4H1brm, newdata = data.frame(weight=weights))
+head(pp_m4H1brm)
 ```
 
 ### 4H2 Select out all the rows in the Howell1 data with ages below 18 years of age. If you do it right, you should end up with a new data frame with 192 rows in it.
@@ -42,14 +79,53 @@ d <- Howell1
 d4H2 <- d[ d$age < 18 , ]
 str(d4H2)
 ```
-
 #### (a) Fit a linear regression to these data, using quap. Present and interpret the estimates. For every 10 units of increase in weight, how much taller does the model predict a child gets?
 
+```{r}
+m4H2brm <- brm(height ~ weight, data=d4H2,
+               prior=c(
+                 set_prior("normal(178, 20)", class = "Intercept"),
+                 set_prior("lognormal(0,1)", class = "b",lb=0),
+                 set_prior("exponential(1)", class = "sigma"))
+               )
+```
+```{r}
+m4H2brm
+plot(m4H2brm)
+```
+> For every 10 units of increase in weight, the model predict a child gets 27.2 cm taller.
 
 #### (b) Plot the raw data, with height on the vertical axis and weight on the horizontal axis. Super-impose the MAP regression line and 89% HPDI for the mean. Also superimpose the 89% HPDI for predicted heights.
 
+```{r}
+## change from R code 4.54
+# define sequence of weights to compute predictions for
+# these values will be on the horizontal axis
+weight.seq <- seq( from= min(d4H2$weight) , to= max(d4H2$weight) , by=1 )
+
+## predicted responses
+p_m4H2brm <- predict(m4H2brm, newdata = data.frame(weight=weight.seq))
+head(p_m4H2brm)
+df_p_m4H2brm <- data.frame(p_m4H2brm)
+str(df_p_m4H2brm)
+```
+
+```{r}
+## change from R code 4.61
+# plot raw data
+plot( height ~ weight , d4H2 , col=col.alpha(rangi2,1) )
+# draw MAP line
+lines( weight.seq , df_p_m4H2brm$Estimate )
+# draw HPDI region for line
+lines( weight.seq , df_p_m4H2brm$Q2.5 )
+lines( weight.seq , df_p_m4H2brm$Q97.5 )
+
+```
+
 
 #### (c) What aspects of the model fit concern you? Describe the kinds of assumptions you would change, if any, to improve the model. You don’t have to write any new code. Just explain what the model appears to be doing a bad job of, and what you hypothesize would be a better model.
+
+> I think a parabolic (second order) polynomial would be a better model.
 
 
 
@@ -75,6 +151,8 @@ tomato2$trt_number <- as.numeric(as.factor(tomato2$trt))-1
 str(tomato2)
 head(tomato2)
 ```
+
+
 
 * From chapter 9: 8M1 (remember that the problem numbers were offset it is actually called 9M1 in the Nov 24 PDF)
 
