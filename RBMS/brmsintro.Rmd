@@ -1,0 +1,164 @@
+---
+title: "brms intro"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
+Brms uses the standard R formula notation that you may be familiar with from R and lme4 and fits stan models.  You have options for setting priors, etc.  It also has many kinds of glm models and others bells and whistles.  See links further down.  I will illustrate simplest use with a couple of examples from rethinking.
+
+```{r}
+library(rethinking)
+library(brms)
+library(tidyverse)
+```
+
+## A simple model from Chapter 4
+```{r}
+data("Howell1")
+d <- Howell1[Howell1$age>=18,] #match rethinking
+```
+
+### Intercept only model.  Let BRMS pick the priors.
+
+The "1" in the model formula stands for the intercept.
+```{r}
+m4.1brm <- brm(height~1, data=d)
+```
+
+Take a look at the fit, similar to precis(), just by typing the model name.  You can also use `summary(m4.1brm)` and get the same output
+```{r}
+m4.1brm
+```
+
+```{r}
+summary(m4.1brm)
+```
+
+we can plot the posterior distributions and chains with:
+
+```{r}
+plot(m4.1brm)
+```
+
+### what priors were used?
+
+`prior_summary()` retrieves the priors from the model.
+
+```{r}
+prior_summary(m4.1brm)
+```
+
+### what priors could have been set? (can do this before fitting model)
+
+If you want to see your options before fitting a model, use `get_prior()`
+
+```{r}
+get_prior(height ~ 1, data=d)
+```
+
+### how is brms picking these priors?
+
+```{r}
+mean(d$height)
+sd(d$height)
+```
+
+Looks like it must be sampling the data
+
+### set your own priors:
+
+I am switching the prior for sigma from m4.1 in the book, because the uniform prior doesn't converge well.
+
+```{r}
+m4.1brm2 <- brm(height ~ 1, data = d,
+                prior=c(set_prior("normal(178, 20)",
+                                  class="Intercept"),
+                        set_prior("exponential(1)", class="sigma")))
+```
+
+```{r}
+m4.1brm2
+```
+
+```{r}
+plot(m4.1brm2)
+```
+
+
+## Model 4.3
+
+Model 4.3 from the book adds weight as a predictor of height.  Let's start by seeing what prior we could set.
+
+```{r}
+get_prior(height ~ weight, data=d)
+```
+
+"b" priors are for the slopes.  we can either set for the whole class or specify particular coefficients. In this case since we only have one slope that is the same thing.  Note that no prior is listed!  I am not sure what it ends up using but I am pretty sure it is something inappropriate.  __b priors need to be set in brms__
+
+Note that we specify the distribution for the prior using STAN functions.  You can see what is available in the [STAN manual](https://mc-stan.org/docs/2_24/functions-reference/index.html) (See sections for discrete and continuous distributions)
+
+```{r}
+d2 <- d
+d2$weight <- d$weight - mean(d$weight)
+m4.3brm <- brm(height ~ weight, data=d2,
+               prior=c(
+                 set_prior("normal(178, 20)", class = "Intercept"),
+                 set_prior("lognormal(0,1)", class = "b",lb=0),
+                 set_prior("exponential(1)", class = "sigma"))
+               )
+```
+
+```{r}
+m4.3brm
+```
+
+```{r}
+plot(m4.3brm)
+```
+
+## Resources
+
+### brms help functions
+The brms help functions are *very* detailed and helpful:
+
+```{r}
+?brm
+?brmsformula
+?set_prior
+```
+
+### brms vignettes
+The vignettes may be a bit much too swallow at once but they can also be helpful.
+
+```{r}
+vignette(package="brms")
+```
+
+### online tutorial
+Rens Van de Schoot has a series of online tutorials that look quite accessible and helpful:
+
+[getting started](https://www.rensvandeschoot.com/tutorials/brms-started/)  
+[priors](https://www.rensvandeschoot.com/tutorials/brms-priors/)  
+[when to worry](https://www.rensvandeschoot.com/brms-wambs/)  
+[glm](https://www.rensvandeschoot.com/tutorials/generalised-linear-models-with-brms/)
+
+### brms and rethinking
+
+The second edition of rethinking has been [partially translated into brms] (https://bookdown.org/content/4857/)
+
+The first edition of rethinking has been [translated into brms](https://bookdown.org/connect/#/apps/1850/access)
+
+
+# Assignment
+
+Revisit the following homework problems and try to fit the with brms.  Make your first attempt without looking at the rethinking to brms translation, but if you get stuck definitely look!  Compare the coefficients or predictions that you obtain with brms and those with quap or ulam.
+
+* 4H1, 4H2 (you probably need the function `posterior_predict()`)
+* From chapter 8 I assigned a tomato problem from my data "Use the tomato.csv data set and evaluate whether hypocotyl length ("hyp") is affected by shade ("trt"), species ("species") and their interaction."
+* From chapter 9: 8M1 (remember that the problem numbers were offset it is actually called 9M1 in the Nov 24 PDF)
+

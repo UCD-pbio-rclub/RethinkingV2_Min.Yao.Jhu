@@ -269,26 +269,6 @@ m16H1 <- ulam(
         phi ~ lognormal( log(1) , 0.1 ),
         k ~ lognormal( log(2) , 0.25 ),
         theta ~ lognormal( log(5) , 0.25 )
-    ), data=dat_list , chains=4 )
-precis(m16H1,depth=2)
-```
-
-```{r}
-## R code 16.11
-dat_list <- list(
-    n = as.integer( Panda_nuts$nuts_opened ),
-    age = Panda_nuts$age / max(Panda_nuts$age),
-    seconds = Panda_nuts$seconds,
-    sid = ifelse( Panda_nuts$sex=="m" , 1 , 2))
-
-m16H1 <- ulam(
-    alist(
-        n ~ poisson( lambda ),
-        lambda <- a[sid]+seconds*phi*(1-exp(-k*age))^theta,
-        a[sid] ~ dnorm( 0 , 1.5 ),
-        phi ~ lognormal( log(1) , 0.1 ),
-        k ~ lognormal( log(2) , 0.25 ),
-        theta ~ lognormal( log(5) , 0.25 )
     ), data=dat_list , chains=4 , log_lik = T)
 precis(m16H1,depth=2)
 ```
@@ -321,8 +301,11 @@ m16H2 <- ulam(
         sigma_phi ~ dexp(1),
         k ~ lognormal( log(2) , 0.25 ),
         theta ~ lognormal( log(5) , 0.25 )
-    ), data=dat_list , chains=4 )
+    ), data=dat_list , chains=4 , log_lik = T)
 precis(m16H2,depth=2)
+```
+```{r}
+compare(m16.4,m16H1,m16H2)
 ```
 
 #### 16H3 The chapter asserts that a typical, geocentric time series model might be one that uses lag variables. Here you’ll fit such a model and compare it to ODE model in the chapter. An autoregressive time series uses earlier values of the state variables to predict new values of the same variables. These earlier values are called lag variables. You can construct the lag variables here with:
