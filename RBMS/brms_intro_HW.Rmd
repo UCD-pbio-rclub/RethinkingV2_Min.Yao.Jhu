@@ -1,0 +1,93 @@
+---
+title: "brms_intro_HW"
+author: "Min-Yao"
+date: "2020/8/16"
+output: html_document
+---
+
+# Assignment
+
+
+```{r}
+library(rethinking)
+library(brms)
+library(tidyverse)
+```
+
+Revisit the following homework problems and try to fit the with brms.  Make your first attempt without looking at the rethinking to brms translation, but if you get stuck definitely look!  Compare the coefficients or predictions that you obtain with brms and those with quap or ulam.
+
+* 4H1, 4H2 (you probably need the function `posterior_predict()`)
+
+### 4H1, The weights listed below were recorded in the !Kung census, but heights were not recorded for these individuals. Provide predicted heights and 89% intervals (either HPDI or PI) for each of these individuals. That is, fill in the table below, using model-based predictions.
+
+Individual weight expected height 89% interval
+1 46.95
+2 43.72
+3 64.78
+4 32.59
+5 54.63
+
+```{r}
+
+```
+
+### 4H2 Select out all the rows in the Howell1 data with ages below 18 years of age. If you do it right, you should end up with a new data frame with 192 rows in it.
+
+```{r}
+## change from R code 4.42
+# load data again, since it's a long way back
+library(rethinking)
+data(Howell1)
+d <- Howell1
+d4H2 <- d[ d$age < 18 , ]
+str(d4H2)
+```
+
+#### (a) Fit a linear regression to these data, using quap. Present and interpret the estimates. For every 10 units of increase in weight, how much taller does the model predict a child gets?
+
+
+#### (b) Plot the raw data, with height on the vertical axis and weight on the horizontal axis. Super-impose the MAP regression line and 89% HPDI for the mean. Also superimpose the 89% HPDI for predicted heights.
+
+
+#### (c) What aspects of the model fit concern you? Describe the kinds of assumptions you would change, if any, to improve the model. You don’t have to write any new code. Just explain what the model appears to be doing a bad job of, and what you hypothesize would be a better model.
+
+
+
+* From chapter 8 I assigned a tomato problem from my data "Use the tomato.csv data set and evaluate whether hypocotyl length ("hyp") is affected by shade ("trt"), species ("species") and their interaction."
+
+#### 1. Use the tomato.csv (attached) data set and evaluate whether hypocotyl length ("hyp") is affected by shade ("trt"), species ("species") and their interaction.
+
+```{r}
+tomato <- read.csv("Tomato.csv")
+str(tomato)
+head(tomato)
+```
+
+```{r}
+tomato2 <- subset(tomato, select = c(hyp, trt, species))
+str(tomato2)
+head(tomato2)
+```
+
+```{r}
+tomato2$species_number <- as.numeric(as.factor(tomato2$species))
+tomato2$trt_number <- as.numeric(as.factor(tomato2$trt))-1
+str(tomato2)
+head(tomato2)
+```
+
+* From chapter 9: 8M1 (remember that the problem numbers were offset it is actually called 9M1 in the Nov 24 PDF)
+
+#### 8M1. Re-estimate the terrain ruggedness model from the chapter, but now using a uniform prior and an exponential prior for the standard deviation, sigma. The uniform prior should be dunif(0,10) and the exponential should be dexp(1). Do the different priors have any detectible influence on the posterior distribution?
+
+```{r}
+## R code 9.9
+library(rethinking)
+data(rugged)
+d <- rugged
+d$log_gdp <- log(d$rgdppc_2000)
+dd <- d[ complete.cases(d$rgdppc_2000) , ]
+dd$log_gdp_std <- dd$log_gdp / mean(dd$log_gdp)
+dd$rugged_std <- dd$rugged / max(dd$rugged)
+dd$cid <- ifelse( dd$cont_africa==1 , 1 , 2 )
+```

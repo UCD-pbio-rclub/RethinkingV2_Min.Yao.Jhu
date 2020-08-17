@@ -6,7 +6,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+#knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 ```
 
 Brms uses the standard R formula notation that you may be familiar with from R and lme4 and fits stan models.  You have options for setting priors, etc.  It also has many kinds of glm models and others bells and whistles.  See links further down.  I will illustrate simplest use with a couple of examples from rethinking.
@@ -76,8 +76,7 @@ I am switching the prior for sigma from m4.1 in the book, because the uniform pr
 
 ```{r}
 m4.1brm2 <- brm(height ~ 1, data = d,
-                prior=c(set_prior("normal(178, 20)",
-                                  class="Intercept"),
+                prior=c(set_prior("normal(178, 20)", class="Intercept"),
                         set_prior("exponential(1)", class="sigma")))
 ```
 
