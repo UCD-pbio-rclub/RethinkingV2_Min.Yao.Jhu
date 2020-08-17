@@ -2,7 +2,9 @@
 title: "brms_intro_HW"
 author: "Min-Yao"
 date: "2020/8/16"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 # Assignment
@@ -146,13 +148,93 @@ head(tomato2)
 ```
 
 ```{r}
-tomato2$species_number <- as.numeric(as.factor(tomato2$species))
-tomato2$trt_number <- as.numeric(as.factor(tomato2$trt))-1
+tomato2$SID <- as.numeric(as.factor(tomato2$species))
+tomato2$TID <- as.numeric(as.factor(tomato2$trt))-1
 str(tomato2)
 head(tomato2)
+summary(tomato2)
+```
+#### no interaction model
+##### rethinking
+```{r}
+tomato_m1 <- quap(
+  alist(
+    hyp ~ dnorm( mu , sigma ) ,
+    mu <- a[SID] + b*TID ,
+    a[SID] ~ dnorm( 30 , 5 ) ,
+    b ~ dnorm( 0 , 1 ) ,
+    sigma ~ dexp( 1 )) ,
+    data=tomato2 )
+precis(tomato_m1, depth=2)
+```
+
+```{r}
+### interaction model
+tomato_m2 <- quap(
+  alist(
+    hyp ~ dnorm( mu , sigma ) ,
+    mu <- a[SID] + b*TID + bST[SID]*TID,
+    a[SID] ~ dnorm( 30 , 5 ) ,
+    b ~ dnorm( 0 , 1 ) ,
+    bST[SID] ~ dnorm( 0 , 1 ),
+    sigma ~ dexp( 1 )) ,
+    data=tomato2 )
+
+precis(tomato_m2, depth=2)
 ```
 
 
+
+##### brms
+
+
+```{r}
+get_prior(hyp ~ 1 + SID + TID, data=tomato2)
+get_prior(hyp ~ 0 + SID + TID, data=tomato2)
+```
+
+```{r}
+tomato_m1_brms <-
+  brm(data = tomato2, 
+      family = gaussian,
+      hyp ~ 1 + TID,
+      prior = c(prior(normal(30 , 5), class = Intercept),
+                prior(normal(0 , 1), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 8)
+```
+```{r}
+tomato_m1_brms
+```
+```{r}
+# tomato_m1_brms_2 <-
+#   brm(data = tomato2, 
+#       family = gaussian,
+#       hyp ~ 0 + SID + TID,
+#       prior = c(prior(normal(30 , 5), class = b, coef = SID1),
+#                 prior(normal(30 , 5), class = b, coef = SID2),
+#                 prior(normal(30 , 5), class = b, coef = SID3),
+#                 prior(normal(30 , 5), class = b, coef = SID4),
+#                 prior(normal(30 , 5), class = b, coef = SID5),
+#                 prior(normal(0 , 1), class = b),
+#                 prior(exponential(1), class = sigma)),
+#       iter = 2000, warmup = 1000, chains = 4, cores = 4,
+#       seed = 8)
+
+tomato_m1_brms_2 <-
+  brm(data = tomato2, 
+      family = gaussian,
+      hyp ~ 0 + SID + TID,
+      prior = c(prior(normal(30 , 5), class = b , coef = SID),
+                prior(normal(0 , 1), class = b, coef = TID),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 8)
+```
+```{r}
+tomato_m1_brms_2
+```
 
 * From chapter 9: 8M1 (remember that the problem numbers were offset it is actually called 9M1 in the Nov 24 PDF)
 
@@ -163,9 +245,64 @@ head(tomato2)
 library(rethinking)
 data(rugged)
 d <- rugged
-d$log_gdp <- log(d$rgdppc_2000)
-dd <- d[ complete.cases(d$rgdppc_2000) , ]
-dd$log_gdp_std <- dd$log_gdp / mean(dd$log_gdp)
-dd$rugged_std <- dd$rugged / max(dd$rugged)
-dd$cid <- ifelse( dd$cont_africa==1 , 1 , 2 )
 ```
+
+
+```{r}
+d <- 
+  d %>%
+  mutate(log_gdp = log(rgdppc_2000))
+
+dd <-
+  d %>%
+  drop_na(rgdppc_2000) %>% 
+  mutate(log_gdp_std = log_gdp / mean(log_gdp),
+         rugged_std  = rugged / max(rugged),
+         cid         = ifelse(cont_africa == 1, "1", "2")) %>% 
+  mutate(rugged_std_c = rugged_std - mean(rugged_std))
+```
+
+#### exponential prior
+
+```{r}
+b9.1 <- 
+  brm(data = dd, 
+      family = gaussian,
+      bf(log_gdp_std ~ 0 + a + b * (rugged_std - 0.215), 
+         a ~ 0 + cid, 
+         b ~ 0 + cid,
+         nl = TRUE),
+      prior = c(prior(normal(1, 0.1), class = b, coef = cid1, nlpar = a),
+                prior(normal(1, 0.1), class = b, coef = cid2, nlpar = a),
+                prior(normal(0, 0.3), class = b, coef = cid1, nlpar = b),
+                prior(normal(0, 0.3), class = b, coef = cid2, nlpar = b),
+                prior(exponential(1), class = sigma)),
+      chains = 4, cores = 4,
+      seed = 9)
+```
+```{r}
+b9.1
+```
+#### The uniform prior should be dunif(0,10)
+
+```{r}
+b9.1_unif <- 
+  brm(data = dd, 
+      family = gaussian,
+      bf(log_gdp_std ~ 0 + a + b * (rugged_std - 0.215), 
+         a ~ 0 + cid, 
+         b ~ 0 + cid,
+         nl = TRUE),
+      prior = c(prior(normal(1, 0.1), class = b, coef = cid1, nlpar = a),
+                prior(normal(1, 0.1), class = b, coef = cid2, nlpar = a),
+                prior(normal(0, 0.3), class = b, coef = cid1, nlpar = b),
+                prior(normal(0, 0.3), class = b, coef = cid2, nlpar = b),
+                prior(uniform(0,10), class = sigma)),
+      chains = 4, cores = 4,
+      seed = 9)
+```
+```{r}
+b9.1_unif
+```
+
+> It looks like the different priors have no detectible influence on the posterior distribution.
