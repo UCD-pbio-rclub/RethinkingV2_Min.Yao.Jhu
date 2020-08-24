@@ -2,13 +2,10 @@
 title: "BRMS week 2"
 author: "Julin Maloof"
 date: "8/20/2020"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
-```
-
 
 ```{r}
 library(rethinking)
@@ -129,7 +126,7 @@ m1brms <- add_criterion(m1brms, "waic")
 
 in brms, partial pooling on an intercept term is written as `(1|species)`.  in brms language, species is now a grouping factor.
 
-We can't parameterize this quite the same as for rethinking (or at least I can't figure out how to).  Instead we will fit an overal Intercept and then each species will have a deviation from that.
+We can't parameterize this quite the same as for rethinking (or at least I can't figure out how to).  Instead we will fit an overall Intercept and then each species will have a deviation from that.
 
 partial pooling, species intercept:
 
@@ -291,32 +288,4 @@ coef(m4brms, probs=c(0.055, 0.945))
 ```{r}
 precis(m4, depth = 2)
 ```
-
-## Assignment
-
-Redo Megan's Clarkia assignment using brms.  We did this for Feb 14.  I paste her email below:
-
-I've attached some data from a common garden experiment, where plants from 15 different populations were planted out (locations are shown in Figure 1 here if you're curious). One goal for the experiment was to see if temperature of origin affected performance of plants in the common garden. Here are some practice questions, very similar to Julin's from last week. The data set is big-ish. I've already sub-sampled it, but there are still 3250 observations. The models are still running quickly on my computer, but if that's not the case for you, feel free to sub-sample it further. Please let me know if you have any questions.
-
-1. Fit a simple model with effects of temperature difference (temperature_diff_fall) on November germination (nov_germ). Temperature difference is already centered and scaled (i.e., negative values are the smallest temperature differences). Make sure to use the appropriate likelihood for the germination data (0 = no germ, 1  = germ). 
-
-2. Simulate from your priors to see if you've chosen reasonable priors, adjust them if necessary. 
-
-These blocks were set up in the field, and had differences in soil depth, slope, and competitive environment. So maybe a model that includes block will describe the data better. 
-
-3. Fit a model that includes an effect of block (blk), with no pooling.
-
-4. Fit a model that includes block, and allows partial pooling. 
-
-The experiment included many individuals from each of the 15 populations. So, each individual is not an independent representative of a given temperature, but might be similar to other plants from that population for reasons besides temperature. 
-
-5. Build a model that accounts for this by including population (pop) and allowing partial pooling between populations A) without block, and B) with block included as in the model above. How does including population affect the temperature estimate?
-
-6. Compare the five models you built using WAIC. Which fits best?
-
-7. Plot effects of temperature difference for the average block, and also make a plot that includes the variability across blocks.
-
-There are other complexities to this data. For example, there is also some family structure within populations (dam and sire) which could be included as hierarchical effects. There are also other response variables (November size, March survival and size, first flower date, last flower date, fruit number, estimated seed production) that might require different likelihoods (and in some cases treatment for over-dispersion or zero inflation). So if the above problems were too easy and you feel adventurous, you could try analyzing one of these responses instead of germination (you will need to filter out missing observations). 
-
-
 

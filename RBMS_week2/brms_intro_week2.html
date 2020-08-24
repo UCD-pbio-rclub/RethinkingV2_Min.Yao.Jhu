@@ -382,9 +382,50 @@ summary {
 </div>
 
 
-<pre class="r"><code>library(rethinking)
-library(brms)
-library(tidyverse)</code></pre>
+<pre class="r"><code>library(rethinking)</code></pre>
+<pre><code>## Loading required package: rstan</code></pre>
+<pre><code>## Loading required package: StanHeaders</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## rstan (Version 2.21.2, GitRev: 2e1f913d3ca3)</code></pre>
+<pre><code>## For execution on a local, multicore CPU with excess RAM we recommend calling
+## options(mc.cores = parallel::detectCores()).
+## To avoid recompilation of unchanged Stan programs, we recommend calling
+## rstan_options(auto_write = TRUE)</code></pre>
+<pre><code>## Do not specify &#39;-march=native&#39; in &#39;LOCAL_CPPFLAGS&#39; or a Makevars file</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## rethinking (Version 2.12)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rethinking&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     rstudent</code></pre>
+<pre class="r"><code>library(brms)</code></pre>
+<pre><code>## Loading required package: Rcpp</code></pre>
+<pre><code>## Loading &#39;brms&#39; package (version 2.13.5). Useful instructions
+## can be found by typing help(&#39;brms&#39;). A more detailed introduction
+## to the package is available through vignette(&#39;brms_overview&#39;).</code></pre>
+<pre><code>## 
+## Attaching package: &#39;brms&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:rethinking&#39;:
+## 
+##     LOO, stancode, WAIC</code></pre>
+<pre><code>## The following object is masked from &#39;package:rstan&#39;:
+## 
+##     loo</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     ar</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages -------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## √ tibble  3.0.3     √ dplyr   1.0.1
+## √ tidyr   1.1.1     √ stringr 1.4.0
+## √ readr   1.3.1     √ forcats 0.5.0
+## √ purrr   0.3.4</code></pre>
+<pre><code>## -- Conflicts ----------------------------------------------------------------------- tidyverse_conflicts() --
+## x tidyr::extract() masks rstan::extract()
+## x dplyr::filter()  masks stats::filter()
+## x dplyr::lag()     masks stats::lag()
+## x purrr::map()     masks rethinking::map()</code></pre>
 <p>This week I would like to explore how to fit “partial pooling” aka “hierarchical” aka “mixed effect” models on brms. And also binomial and Poisson.</p>
 <div id="resources" class="section level2">
 <h2>Resources</h2>
@@ -392,8 +433,9 @@ library(tidyverse)</code></pre>
 <div id="brms-help-functions" class="section level3">
 <h3>brms help functions</h3>
 <p>The brms help functions are <em>very</em> detailed and helpful:</p>
-<pre class="r"><code>?brm
-?brmsformula
+<pre class="r"><code>?brm</code></pre>
+<pre><code>## starting httpd help server ... done</code></pre>
+<pre class="r"><code>?brmsformula
 ?set_prior
 ?brmsfamily # NEW</code></pre>
 </div>
@@ -424,8 +466,29 @@ vignette(&quot;brms_multilevel&quot;) # NEW, check out the examples</code></pre>
 <h3>rethinking</h3>
 <pre class="r"><code>d &lt;- read_csv(&quot;Tomato.csv&quot;) %&gt;%
   select(hyp, trt, species) %&gt;%
-  na.omit()
-head(d)</code></pre>
+  na.omit()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   shelf = col_character(),
+##   col = col_character(),
+##   acs = col_character(),
+##   trt = col_character(),
+##   date = col_character(),
+##   species = col_character(),
+##   who = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>head(d)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##     hyp trt   species        
+##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;          
+## 1  19.5 H     S. pennellii   
+## 2  31.3 H     S. peruvianum  
+## 3  56.6 H     S. peruvianum  
+## 4  35.2 H     S. chilense    
+## 5  35.3 H     S. chilense    
+## 6  28.7 H     S. chmielewskii</code></pre>
 <p>make indices for the factors:</p>
 <pre class="r"><code>d &lt;- d %&gt;%
   mutate(species_i = as.integer(as.factor(species)),
@@ -441,6 +504,14 @@ m1 &lt;- ulam(flist = alist(
   log_lik = TRUE,
   data=d2, chains = 4, cores = 4, refresh = 0)</code></pre>
 <pre class="r"><code>precis(m1, depth=2)</code></pre>
+<pre><code>##            mean        sd      5.5%     94.5%    n_eff     Rhat4
+## a[1]  31.902239 0.6733076 30.883264 32.969971 1437.347 0.9999848
+## a[2]  29.251706 0.6878745 28.192662 30.389182 1600.993 1.0019778
+## a[3]  28.483019 0.6543389 27.445104 29.537815 1656.420 0.9999498
+## a[4]  25.827618 0.8430627 24.501333 27.211164 1574.646 1.0049290
+## a[5]  35.553220 0.6955942 34.446850 36.667302 1410.262 0.9985121
+## b      5.408489 0.5623940  4.511138  6.267142 1068.665 1.0023884
+## sigma  9.014058 0.1939118  8.709921  9.330995 2030.492 1.0020907</code></pre>
 <p>partial pooling for intercepts</p>
 <pre class="r"><code>d2 &lt;- d %&gt;% select(hyp, species_i, trt_i)
 m2 &lt;- ulam(flist = alist(
@@ -454,7 +525,20 @@ m2 &lt;- ulam(flist = alist(
   log_lik = TRUE,
   data=d2, chains = 4, cores = 4, refresh = 0)</code></pre>
 <pre class="r"><code>precis(m2, depth=2)</code></pre>
+<pre><code>##              mean        sd      5.5%     94.5%     n_eff     Rhat4
+## a[1]    31.987516 0.6784602 30.897325 33.058050 1586.2407 0.9997783
+## a[2]    29.364584 0.6494157 28.329159 30.416502 1354.3464 0.9999343
+## a[3]    28.630476 0.6535912 27.546590 29.658553 1424.7382 0.9990906
+## a[4]    26.166265 0.8496001 24.832627 27.555139 1430.4064 0.9996438
+## a[5]    35.555916 0.6816709 34.451930 36.643697 1286.9081 1.0044500
+## a_bar   29.958715 1.4868933 27.549184 32.213848 1222.8219 1.0020876
+## a_sigma  3.207139 0.9519466  2.042886  4.957749 1382.3022 1.0032989
+## b        5.284926 0.5696202  4.342568  6.196062  961.6577 1.0036535
+## sigma    9.015678 0.1994410  8.702325  9.331997 2251.5427 1.0003963</code></pre>
 <pre class="r"><code>compare(m1, m2)</code></pre>
+<pre><code>##        WAIC       SE     dWAIC       dSE    pWAIC    weight
+## m2 7309.010 57.96632 0.0000000        NA 7.483405 0.5450243
+## m1 7309.371 58.09914 0.3611729 0.8895139 7.764529 0.4549757</code></pre>
 <p>not much gain…</p>
 </div>
 <div id="brms" class="section level3">
@@ -465,32 +549,140 @@ m2 &lt;- ulam(flist = alist(
                         set_prior(&quot;normal(0, 5)&quot;, class=&quot;b&quot;, coef=&quot;trtL&quot;),
                         set_prior(&quot;exponential(1)&quot;, class=&quot;sigma&quot;)),
               data = d,
-              refresh = 0)
-m1brms &lt;- add_criterion(m1brms, &quot;waic&quot;)</code></pre>
+              refresh = 0)</code></pre>
+<pre><code>## Compiling Stan program...</code></pre>
+<pre><code>## Start sampling</code></pre>
+<pre class="r"><code>m1brms &lt;- add_criterion(m1brms, &quot;waic&quot;)</code></pre>
 <p>in brms, partial pooling on an intercept term is written as <code>(1|species)</code>. in brms language, species is now a grouping factor.</p>
-<p>We can’t parameterize this quite the same as for rethinking (or at least I can’t figure out how to). Instead we will fit an overal Intercept and then each species will have a deviation from that.</p>
+<p>We can’t parameterize this quite the same as for rethinking (or at least I can’t figure out how to). Instead we will fit an overall Intercept and then each species will have a deviation from that.</p>
 <p>partial pooling, species intercept:</p>
 <p>check priors:</p>
 <pre class="r"><code>get_prior(hyp ~ (1|species) + trt, data = d)</code></pre>
+<pre><code>##                   prior     class      coef   group resp dpar nlpar bound
+## 1                               b                                        
+## 2                               b      trtL                              
+## 3 student_t(3, 32, 8.5) Intercept                                        
+## 4  student_t(3, 0, 8.5)        sd                                        
+## 5                              sd           species                      
+## 6                              sd Intercept species                      
+## 7  student_t(3, 0, 8.5)     sigma</code></pre>
 <pre class="r"><code>m2brms &lt;- brm(hyp ~  (1|species) + trt ,
               prior = c(set_prior(&quot;exponential(1)&quot;, class = &quot;sd&quot;), # a_sigma
                         set_prior(&quot;normal(25, 5)&quot;, class=&quot;Intercept&quot;), # Overall mean
                         set_prior(&quot;normal(0, 5)&quot;, class=&quot;b&quot;, coef=&quot;trtL&quot;),
                         set_prior(&quot;exponential(1)&quot;, class=&quot;sigma&quot;)),
               data = d,
-              refresh = 0)
-
-m2brms &lt;- add_criterion(m2brms, &quot;waic&quot;)</code></pre>
+              refresh = 0)</code></pre>
+<pre><code>## Compiling Stan program...</code></pre>
+<pre><code>## Start sampling</code></pre>
+<pre class="r"><code>m2brms &lt;- add_criterion(m2brms, &quot;waic&quot;)</code></pre>
 <pre class="r"><code>summary(m1brms, prob=.89)</code></pre>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: hyp ~ -1 + species + trt 
+##    Data: d (Number of observations: 1008) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##                       Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS
+## speciesS.chilense        31.89      0.69    30.82    33.00 1.00     4462
+## speciesS.chmielewskii    29.20      0.65    28.16    30.24 1.00     4782
+## speciesS.habrochaites    28.45      0.64    27.43    29.45 1.00     4598
+## speciesS.pennellii       25.79      0.84    24.48    27.11 1.00     5108
+## speciesS.peruvianum      35.55      0.68    34.47    36.65 1.00     4190
+## trtL                      5.43      0.56     4.53     6.32 1.00     2742
+##                       Tail_ESS
+## speciesS.chilense         3172
+## speciesS.chmielewskii     3080
+## speciesS.habrochaites     3222
+## speciesS.pennellii        2901
+## speciesS.peruvianum       2948
+## trtL                      3156
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS Tail_ESS
+## sigma     9.02      0.20     8.71     9.34 1.00     6511     2551
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <pre class="r"><code>summary(m2brms, prob=.89)</code></pre>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: hyp ~ (1 | species) + trt 
+##    Data: d (Number of observations: 1008) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Group-Level Effects: 
+## ~species (Number of levels: 5) 
+##               Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)     3.28      0.95     2.06     4.99 1.00     1482     1928
+## 
+## Population-Level Effects: 
+##           Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS Tail_ESS
+## Intercept    29.68      1.57    27.08    32.03 1.00     1355     1328
+## trtL          5.25      0.56     4.35     6.15 1.00     2848     1864
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS Tail_ESS
+## sigma     9.01      0.20     8.70     9.34 1.00     2878     2414
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <p>To get the random effect estimates:</p>
 <pre class="r"><code>ranef(m2brms, probs=c(0.055, 0.945))</code></pre>
+<pre><code>## $species
+## , , Intercept
+## 
+##                   Estimate Est.Error       Q5.5      Q94.5
+## S. chilense      2.3141089  1.629726 -0.1892488  5.0125407
+## S. chmielewskii -0.2926085  1.608437 -2.7218990  2.3514391
+## S. habrochaites -1.0359225  1.608750 -3.4266377  1.6472296
+## S. pennellii    -3.5357781  1.643419 -5.9743709 -0.9406736
+## S. peruvianum    5.8610520  1.650408  3.4189578  8.6133340</code></pre>
 <p>estimates including intercept</p>
 <pre class="r"><code>coef(m2brms, probs=c(0.055, 0.945))</code></pre>
+<pre><code>## $species
+## , , Intercept
+## 
+##                 Estimate Est.Error     Q5.5    Q94.5
+## S. chilense     31.99627 0.6785606 30.92426 33.08296
+## S. chmielewskii 29.38955 0.6375130 28.36054 30.41291
+## S. habrochaites 28.64624 0.6569336 27.56232 29.69012
+## S. pennellii    26.14638 0.8397012 24.78526 27.45521
+## S. peruvianum   35.54321 0.6567536 34.49754 36.58951
+## 
+## , , trtL
+## 
+##                 Estimate Est.Error     Q5.5    Q94.5
+## S. chilense     5.246563 0.5620509 4.348227 6.145067
+## S. chmielewskii 5.246563 0.5620509 4.348227 6.145067
+## S. habrochaites 5.246563 0.5620509 4.348227 6.145067
+## S. pennellii    5.246563 0.5620509 4.348227 6.145067
+## S. peruvianum   5.246563 0.5620509 4.348227 6.145067</code></pre>
 <p>compare to rethinking:</p>
 <pre class="r"><code>precis(m2, depth=2)</code></pre>
+<pre><code>##              mean        sd      5.5%     94.5%     n_eff     Rhat4
+## a[1]    31.987516 0.6784602 30.897325 33.058050 1586.2407 0.9997783
+## a[2]    29.364584 0.6494157 28.329159 30.416502 1354.3464 0.9999343
+## a[3]    28.630476 0.6535912 27.546590 29.658553 1424.7382 0.9990906
+## a[4]    26.166265 0.8496001 24.832627 27.555139 1430.4064 0.9996438
+## a[5]    35.555916 0.6816709 34.451930 36.643697 1286.9081 1.0044500
+## a_bar   29.958715 1.4868933 27.549184 32.213848 1222.8219 1.0020876
+## a_sigma  3.207139 0.9519466  2.042886  4.957749 1382.3022 1.0032989
+## b        5.284926 0.5696202  4.342568  6.196062  961.6577 1.0036535
+## sigma    9.015678 0.1994410  8.702325  9.331997 2251.5427 1.0003963</code></pre>
 <p>Compare the two brms fits</p>
 <pre class="r"><code>print(loo_compare(m1brms, m2brms,criterion = &quot;waic&quot;), simplify = FALSE)</code></pre>
+<pre><code>##        elpd_diff se_diff elpd_waic se_elpd_waic p_waic  se_p_waic waic   
+## m2brms     0.0       0.0 -3654.6      29.0          7.6     0.6    7309.1
+## m1brms     0.0       0.5 -3654.6      29.0          7.7     0.6    7309.1
+##        se_waic
+## m2brms    58.1
+## m1brms    58.1</code></pre>
 </div>
 </div>
 <div id="partial-pooling-intercept-and-slope" class="section level2">
@@ -521,10 +713,52 @@ m4 &lt;- ulam(flist = alist(
   Rho ~ lkj_corr(2)),
   log_lik = TRUE,
   data=d2, chains = 4, cores = 4, refresh = 0)</code></pre>
+<pre><code>## Warning: There were 41 divergent transitions after warmup. See
+## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+## to find out why this is a problem and how to eliminate them.</code></pre>
+<pre><code>## Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+<pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
+<pre><code>## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
 <pre class="r"><code>compare(m3, m4)</code></pre>
+<pre><code>##        WAIC       SE    dWAIC      dSE     pWAIC       weight
+## m4 7305.228 58.16133  0.00000       NA 10.756339 9.999999e-01
+## m3 7337.191 58.46993 31.96276 11.81791  8.527379 1.146501e-07</code></pre>
 <p>now partial pooling helps!</p>
 <pre class="r"><code>precis(m3, depth=2)</code></pre>
+<pre><code>##               mean        sd        5.5%     94.5%    n_eff     Rhat4
+## a[1]     33.347304 0.7475604 32.17222321 34.524777 1801.450 0.9993544
+## a[2]     31.303519 0.7498414 30.06655412 32.497903 1793.287 0.9990601
+## a[3]     30.305215 0.7303783 29.11277650 31.466872 2076.031 1.0004271
+## a[4]     27.217844 0.9083406 25.76493390 28.657136 2009.077 0.9993328
+## a[5]     36.976312 0.7063631 35.88577383 38.081521 1898.460 1.0012534
+## b_int[1]  2.513424 0.7804083  1.29750918  3.749589 1816.117 1.0001998
+## b_int[2]  1.270973 0.7790686  0.01937711  2.495966 1661.336 0.9990407
+## b_int[3]  1.445599 0.7759619  0.16968192  2.682506 2100.598 1.0003090
+## b_int[4]  2.720868 0.8589436  1.33535362  4.137305 1762.439 0.9994018
+## b_int[5]  2.609810 0.7684119  1.39365808  3.853655 2036.123 1.0003755
+## sigma     9.139973 0.2043708  8.82406596  9.465068 2324.987 1.0018926</code></pre>
 <pre class="r"><code>precis(m4, depth = 2)</code></pre>
+<pre><code>## 4 matrix parameters hidden. Use depth=3 to show them.</code></pre>
+<pre><code>##                       mean        sd       5.5%     94.5%     n_eff    Rhat4
+## b[1]              5.922617 1.0311975  4.3633821  7.584621  602.0835 1.006887
+## b[2]              4.134780 1.1071203  2.3010043  5.886653  597.3455 1.006776
+## b[3]              4.317812 1.0625541  2.4933616  5.953092  775.9723 1.000127
+## b[4]              6.854479 1.4424164  4.7767365  9.296099  561.6624 1.001304
+## b[5]              6.023669 1.0783355  4.4058316  7.747413  517.3805 1.006988
+## a[1]             31.659742 0.8184750 30.3348158 32.925699  993.0549 1.001174
+## a[2]             29.936593 0.8148432 28.6310759 31.217189  961.6951 1.003464
+## a[3]             29.056045 0.7727487 27.8208509 30.324110 1069.7766 1.000042
+## a[4]             25.369602 1.1294003 23.5640870 27.162105  688.8327 1.002976
+## a[5]             35.159187 0.8276762 33.8594535 36.489007  824.7344 1.002382
+## a_bar            29.792945 1.5240223 27.3795355 32.072574 1195.3878 0.999742
+## b_bar             5.340448 0.9623666  3.7754553  6.819775 1037.7400 1.001638
+## sigma_species[1]  3.260077 0.9205892  2.0455475  4.837029 1266.1027 0.999744
+## sigma_species[2]  1.518916 0.8447197  0.3581364  3.006748  339.9670 1.009460
+## sigma             8.979535 0.2016769  8.6721699  9.315639 1489.6186 1.000846</code></pre>
 </div>
 <div id="brms-1" class="section level3">
 <h3>brms</h3>
@@ -534,11 +768,24 @@ m4 &lt;- ulam(flist = alist(
                         set_prior(&quot;normal(0, 5)&quot;,class  = &quot;b&quot;),
                         set_prior(&quot;exponential(1)&quot;, class=&quot;sigma&quot;)),
               data = d,
-              refresh = 0)
-m3brms &lt;- add_criterion(m3brms, &quot;waic&quot;)</code></pre>
+              refresh = 0)</code></pre>
+<pre><code>## Compiling Stan program...</code></pre>
+<pre><code>## Start sampling</code></pre>
+<pre class="r"><code>m3brms &lt;- add_criterion(m3brms, &quot;waic&quot;)</code></pre>
 <p>Interaction model, partial pooling on intercept and slope.</p>
 <p>what priors?</p>
 <pre class="r"><code>get_prior(hyp ~  trt + (trt|species), data=d)</code></pre>
+<pre><code>##                    prior     class      coef   group resp dpar nlpar bound
+## 1                                b                                        
+## 2                                b      trtL                              
+## 3                 lkj(1)       cor                                        
+## 4                              cor           species                      
+## 5  student_t(3, 32, 8.5) Intercept                                        
+## 6   student_t(3, 0, 8.5)        sd                                        
+## 7                               sd           species                      
+## 8                               sd Intercept species                      
+## 9                               sd      trtL species                      
+## 10  student_t(3, 0, 8.5)     sigma</code></pre>
 <pre class="r"><code>m4brms &lt;- brm(hyp ~  trt + (trt|species) , #(trt|species) is shorthand for (1 + trt | species))
               prior = c(set_prior(&quot;exponential(1)&quot;, class = &quot;sd&quot;), # a_sigma and b_sigma
                         set_prior(&quot;normal(25, 5)&quot;, class=&quot;Intercept&quot;), # Overall mean ~ a_bar
@@ -546,39 +793,127 @@ m3brms &lt;- add_criterion(m3brms, &quot;waic&quot;)</code></pre>
                         set_prior(&quot;exponential(1)&quot;, class=&quot;sigma&quot;),
                         set_prior(&quot;lkj(2)&quot;, class=&quot;cor&quot;)),
               data = d,
-              refresh = 0)
-
-m4brms &lt;- add_criterion(m4brms, &quot;waic&quot;)</code></pre>
+              refresh = 0)</code></pre>
+<pre><code>## Compiling Stan program...</code></pre>
+<pre><code>## Start sampling</code></pre>
+<pre class="r"><code>m4brms &lt;- add_criterion(m4brms, &quot;waic&quot;)</code></pre>
 <pre class="r"><code>summary(m3brms, prob=.89)</code></pre>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: hyp ~ species * trt 
+##    Data: d (Number of observations: 1008) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##                            Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS
+## Intercept                     31.54      0.78    30.29    32.76 1.00     2216
+## speciesS.chmielewskii         -1.06      1.14    -2.86     0.76 1.00     3018
+## speciesS.habrochaites         -2.12      1.09    -3.84    -0.35 1.00     2729
+## speciesS.pennellii            -7.47      1.28    -9.49    -5.39 1.00     2965
+## speciesS.peruvianum            3.62      1.15     1.78     5.49 1.00     2767
+## trtL                           6.07      1.06     4.36     7.73 1.00     2228
+## speciesS.chmielewskii:trtL    -3.00      1.54    -5.42    -0.45 1.00     3033
+## speciesS.habrochaites:trtL    -2.58      1.54    -5.04    -0.16 1.00     2926
+## speciesS.pennellii:trtL        2.83      1.74     0.04     5.54 1.00     2765
+## speciesS.peruvianum:trtL       0.29      1.53    -2.19     2.72 1.00     2489
+##                            Tail_ESS
+## Intercept                      2915
+## speciesS.chmielewskii          2906
+## speciesS.habrochaites          3100
+## speciesS.pennellii             3110
+## speciesS.peruvianum            3037
+## trtL                           2556
+## speciesS.chmielewskii:trtL     3086
+## speciesS.habrochaites:trtL     2933
+## speciesS.pennellii:trtL        3111
+## speciesS.peruvianum:trtL       2724
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS Tail_ESS
+## sigma     8.97      0.20     8.65     9.29 1.00     5113     2828
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <pre class="r"><code>summary(m4brms, prob=.89)</code></pre>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: hyp ~ trt + (trt | species) 
+##    Data: d (Number of observations: 1008) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Group-Level Effects: 
+## ~species (Number of levels: 5) 
+##                     Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)           3.29      0.96     2.06     5.03 1.00     2277     2164
+## sd(trtL)                1.49      0.93     0.20     3.10 1.00     1291     1319
+## cor(Intercept,trtL)    -0.03      0.36    -0.58     0.58 1.00     3139     2629
+## 
+## Population-Level Effects: 
+##           Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS Tail_ESS
+## Intercept    29.66      1.56    27.15    31.94 1.00     1434     1643
+## trtL          5.24      0.97     3.68     6.73 1.00     2187     2073
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-89% CI u-89% CI Rhat Bulk_ESS Tail_ESS
+## sigma     8.98      0.20     8.67     9.30 1.00     4568     2512
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <pre class="r"><code>print(loo_compare(m3brms, m4brms, criterion = &quot;waic&quot;), simplify = FALSE)</code></pre>
+<pre><code>##        elpd_diff se_diff elpd_waic se_elpd_waic p_waic  se_p_waic waic   
+## m3brms     0.0       0.0 -3650.5      29.1         11.0     0.7    7301.1
+## m4brms    -1.9       1.7 -3652.5      29.1         10.4     0.7    7304.9
+##        se_waic
+## m3brms    58.2
+## m4brms    58.2</code></pre>
 <p>not a big difference here. I think because m3brms fit much better than m3(rethinking). Compare the WAICs:</p>
 <pre class="r"><code>compare(m3, m4)</code></pre>
+<pre><code>##        WAIC       SE    dWAIC      dSE     pWAIC       weight
+## m4 7305.228 58.16133  0.00000       NA 10.756339 9.999999e-01
+## m3 7337.191 58.46993 31.96276 11.81791  8.527379 1.146501e-07</code></pre>
 <p>compare the estimates between brms and rethinking for model 4:</p>
 <pre class="r"><code>coef(m4brms, probs=c(0.055, 0.945))</code></pre>
+<pre><code>## $species
+## , , Intercept
+## 
+##                 Estimate Est.Error     Q5.5    Q94.5
+## S. chilense     31.70275 0.7881134 30.44352 32.94503
+## S. chmielewskii 29.95335 0.8069546 28.69702 31.24967
+## S. habrochaites 29.05036 0.7710736 27.86390 30.30082
+## S. pennellii    25.39767 1.1451185 23.54159 27.14532
+## S. peruvianum   35.19970 0.8077677 33.88371 36.47465
+## 
+## , , trtL
+## 
+##                 Estimate Est.Error     Q5.5    Q94.5
+## S. chilense     5.855349  1.027535 4.326784 7.613167
+## S. chmielewskii 4.096169  1.123397 2.196393 5.768388
+## S. habrochaites 4.333292  1.043700 2.525266 5.865919
+## S. pennellii    6.731803  1.491882 4.597500 9.297443
+## S. peruvianum   5.952372  1.060464 4.364142 7.761180</code></pre>
 <pre class="r"><code>precis(m4, depth = 2)</code></pre>
+<pre><code>## 4 matrix parameters hidden. Use depth=3 to show them.</code></pre>
+<pre><code>##                       mean        sd       5.5%     94.5%     n_eff    Rhat4
+## b[1]              5.922617 1.0311975  4.3633821  7.584621  602.0835 1.006887
+## b[2]              4.134780 1.1071203  2.3010043  5.886653  597.3455 1.006776
+## b[3]              4.317812 1.0625541  2.4933616  5.953092  775.9723 1.000127
+## b[4]              6.854479 1.4424164  4.7767365  9.296099  561.6624 1.001304
+## b[5]              6.023669 1.0783355  4.4058316  7.747413  517.3805 1.006988
+## a[1]             31.659742 0.8184750 30.3348158 32.925699  993.0549 1.001174
+## a[2]             29.936593 0.8148432 28.6310759 31.217189  961.6951 1.003464
+## a[3]             29.056045 0.7727487 27.8208509 30.324110 1069.7766 1.000042
+## a[4]             25.369602 1.1294003 23.5640870 27.162105  688.8327 1.002976
+## a[5]             35.159187 0.8276762 33.8594535 36.489007  824.7344 1.002382
+## a_bar            29.792945 1.5240223 27.3795355 32.072574 1195.3878 0.999742
+## b_bar             5.340448 0.9623666  3.7754553  6.819775 1037.7400 1.001638
+## sigma_species[1]  3.260077 0.9205892  2.0455475  4.837029 1266.1027 0.999744
+## sigma_species[2]  1.518916 0.8447197  0.3581364  3.006748  339.9670 1.009460
+## sigma             8.979535 0.2016769  8.6721699  9.315639 1489.6186 1.000846</code></pre>
 </div>
-</div>
-<div id="assignment" class="section level2">
-<h2>Assignment</h2>
-<p>Redo Megan’s Clarkia assignment using brms. We did this for Feb 14. I paste her email below:</p>
-<p>I’ve attached some data from a common garden experiment, where plants from 15 different populations were planted out (locations are shown in Figure 1 here if you’re curious). One goal for the experiment was to see if temperature of origin affected performance of plants in the common garden. Here are some practice questions, very similar to Julin’s from last week. The data set is big-ish. I’ve already sub-sampled it, but there are still 3250 observations. The models are still running quickly on my computer, but if that’s not the case for you, feel free to sub-sample it further. Please let me know if you have any questions.</p>
-<ol style="list-style-type: decimal">
-<li><p>Fit a simple model with effects of temperature difference (temperature_diff_fall) on November germination (nov_germ). Temperature difference is already centered and scaled (i.e., negative values are the smallest temperature differences). Make sure to use the appropriate likelihood for the germination data (0 = no germ, 1 = germ).</p></li>
-<li><p>Simulate from your priors to see if you’ve chosen reasonable priors, adjust them if necessary.</p></li>
-</ol>
-<p>These blocks were set up in the field, and had differences in soil depth, slope, and competitive environment. So maybe a model that includes block will describe the data better.</p>
-<ol start="3" style="list-style-type: decimal">
-<li><p>Fit a model that includes an effect of block (blk), with no pooling.</p></li>
-<li><p>Fit a model that includes block, and allows partial pooling.</p></li>
-</ol>
-<p>The experiment included many individuals from each of the 15 populations. So, each individual is not an independent representative of a given temperature, but might be similar to other plants from that population for reasons besides temperature.</p>
-<ol start="5" style="list-style-type: decimal">
-<li><p>Build a model that accounts for this by including population (pop) and allowing partial pooling between populations A) without block, and B) with block included as in the model above. How does including population affect the temperature estimate?</p></li>
-<li><p>Compare the five models you built using WAIC. Which fits best?</p></li>
-<li><p>Plot effects of temperature difference for the average block, and also make a plot that includes the variability across blocks.</p></li>
-</ol>
-<p>There are other complexities to this data. For example, there is also some family structure within populations (dam and sire) which could be included as hierarchical effects. There are also other response variables (November size, March survival and size, first flower date, last flower date, fruit number, estimated seed production) that might require different likelihoods (and in some cases treatment for over-dispersion or zero inflation). So if the above problems were too easy and you feel adventurous, you could try analyzing one of these responses instead of germination (you will need to filter out missing observations).</p>
 </div>
 
 
