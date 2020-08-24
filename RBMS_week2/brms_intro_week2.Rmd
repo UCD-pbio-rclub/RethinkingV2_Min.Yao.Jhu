@@ -1,0 +1,322 @@
+---
+title: "BRMS week 2"
+author: "Julin Maloof"
+date: "8/20/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+
+```{r}
+library(rethinking)
+library(brms)
+library(tidyverse)
+```
+
+This week I would like to explore how to fit "partial pooling" aka "hierarchical" aka "mixed effect" models on brms.  And also binomial and Poisson.
+
+## Resources
+
+I add a couple of new ones in addition to what I have last week:
+
+### brms help functions
+The brms help functions are *very* detailed and helpful:
+```{r}
+?brm
+?brmsformula
+?set_prior
+?brmsfamily # NEW
+```
+
+### brms vignettes
+The vignettes may be a bit much too swallow at once but they can also be helpful.
+```{r}
+vignette(package="brms")
+vignette("brms_multilevel") # NEW, check out the examples
+```
+
+### online tutorial
+Rens Van de Schoot has a series of online tutorials that look quite accessible and helpful:
+
+[getting started](https://www.rensvandeschoot.com/tutorials/brms-started/)  
+[priors](https://www.rensvandeschoot.com/tutorials/brms-priors/)  
+[when to worry](https://www.rensvandeschoot.com/brms-wambs/)  
+[glm](https://www.rensvandeschoot.com/tutorials/generalised-linear-models-with-brms/)
+
+### brms and rethinking
+
+The second edition of rethinking has been [partially translated into brms](https://bookdown.org/content/4857/)
+
+The first edition of rethinking has been [translated into brms](https://bookdown.org/connect/#/apps/1850/access)
+
+## Partial Pooling: intercept
+
+I will illustrate partial pooling using the tomato data set.  Let's fit a model with partial pooling for intercepts per species:
+
+### rethinking
+
+```{r}
+d <- read_csv("Tomato.csv") %>%
+  select(hyp, trt, species) %>%
+  na.omit()
+head(d)
+```
+
+make indices for the factors:
+```{r}
+d <- d %>%
+  mutate(species_i = as.integer(as.factor(species)),
+         trt_i = as.integer(as.factor(trt))-1L)
+```
+
+no pooling
+```{r}
+d2 <- d %>% select(hyp, species_i, trt_i)
+m1 <- ulam(flist = alist(
+  hyp ~ dnorm(mu, sigma),
+  mu <- a[species_i] + b*trt_i, # one beta coefficient
+  a[species_i] ~ dnorm(25, 5),
+  b ~ dnorm(0, 5),
+  sigma ~ dexp(1)),
+  log_lik = TRUE,
+  data=d2, chains = 4, cores = 4, refresh = 0)
+```
+
+```{r}
+precis(m1, depth=2)
+```
+
+partial pooling for intercepts
+```{r}
+d2 <- d %>% select(hyp, species_i, trt_i)
+m2 <- ulam(flist = alist(
+  hyp ~ dnorm(mu, sigma),
+  mu <- a[species_i] + b*trt_i, # one beta coefficient
+  a[species_i] ~ dnorm(a_bar, a_sigma),
+  a_bar ~ dnorm(25, 5),
+  a_sigma ~ dexp(1),
+  b ~ dnorm(0, 5),
+  sigma ~ dexp(1)),
+  log_lik = TRUE,
+  data=d2, chains = 4, cores = 4, refresh = 0)
+```
+
+```{r}
+precis(m2, depth=2)
+```
+
+```{r}
+compare(m1, m2)
+```
+
+not much gain...
+
+### brms
+
+no pooling (same as last week):
+```{r}
+m1brms <- brm(hyp ~ -1 + species + trt,
+              prior = c(set_prior("normal(25, 5)",class  = "b"),
+                        set_prior("normal(0, 5)", class="b", coef="trtL"),
+                        set_prior("exponential(1)", class="sigma")),
+              data = d,
+              refresh = 0)
+m1brms <- add_criterion(m1brms, "waic")
+```
+
+in brms, partial pooling on an intercept term is written as `(1|species)`.  in brms language, species is now a grouping factor.
+
+We can't parameterize this quite the same as for rethinking (or at least I can't figure out how to).  Instead we will fit an overal Intercept and then each species will have a deviation from that.
+
+partial pooling, species intercept:
+
+check priors:
+
+```{r}
+get_prior(hyp ~ (1|species) + trt, data = d)
+```
+
+```{r}
+m2brms <- brm(hyp ~  (1|species) + trt ,
+              prior = c(set_prior("exponential(1)", class = "sd"), # a_sigma
+                        set_prior("normal(25, 5)", class="Intercept"), # Overall mean
+                        set_prior("normal(0, 5)", class="b", coef="trtL"),
+                        set_prior("exponential(1)", class="sigma")),
+              data = d,
+              refresh = 0)
+
+m2brms <- add_criterion(m2brms, "waic")
+```
+
+```{r}
+summary(m1brms, prob=.89)
+```
+
+```{r}
+summary(m2brms, prob=.89)
+```
+
+To get the random effect estimates:
+
+```{r}
+ranef(m2brms, probs=c(0.055, 0.945))
+```
+
+estimates including intercept
+```{r}
+coef(m2brms, probs=c(0.055, 0.945))
+```
+
+compare to rethinking:
+
+```{r}
+precis(m2, depth=2)
+```
+
+Compare the two brms fits
+```{r}
+print(loo_compare(m1brms, m2brms,criterion = "waic"), simplify = FALSE)
+```
+
+## partial pooling, intercept and slope
+
+### rethinking
+
+interaction model, no pooling
+```{r}
+d2 <- d %>% select(hyp, species_i, trt_i)
+m3 <- ulam(flist = alist(
+  hyp ~ dnorm(mu, sigma),
+  mu <- a[species_i] + b_int[species_i]*trt_i, # a beta coefficent for each species
+  a[species_i] ~ dnorm(25, 5),
+  b_int[species_i] ~ dnorm(0, 1),
+  sigma ~ dexp(1)),
+  data=d2, chains = 4, cores = 4,
+  log_lik = TRUE,
+  refresh=0)
+```
+
+
+interaction model, partial pooling intercept and slope:
+```{r}
+d2 <- d %>% select(hyp, species_i, trt_i)
+m4 <- ulam(flist = alist(
+  hyp ~ dnorm(mu, sigma),
+  mu <- a[species_i] + b[species_i]*trt_i, 
+  c(a, b)[species_i] ~ multi_normal( c(a_bar, b_bar), Rho, sigma_species),
+  a_bar ~ dnorm(25, 5),
+  b_bar ~ dnorm(0, 5),
+  sigma_species ~ dexp(1),
+  sigma ~ dexp(1),
+  Rho ~ lkj_corr(2)),
+  log_lik = TRUE,
+  data=d2, chains = 4, cores = 4, refresh = 0)
+```
+
+```{r}
+compare(m3, m4)
+```
+
+now partial pooling helps!
+
+```{r}
+precis(m3, depth=2)
+```
+
+```{r}
+precis(m4, depth = 2)
+```
+
+
+### brms
+
+Interaction model, no pooling.  I am not reparameterizing to match rethinking because that is a PITA and defeats the advantage of brms.
+
+```{r}
+m3brms <- brm(hyp ~ species * trt,
+              prior = c(set_prior("normal(25, 5)", class="Intercept"),
+                        set_prior("normal(0, 5)",class  = "b"),
+                        set_prior("exponential(1)", class="sigma")),
+              data = d,
+              refresh = 0)
+m3brms <- add_criterion(m3brms, "waic")
+```
+
+
+Interaction model, partial pooling on intercept and slope.
+
+what priors?
+```{r}
+get_prior(hyp ~  trt + (trt|species), data=d)
+```
+
+```{r}
+m4brms <- brm(hyp ~  trt + (trt|species) , #(trt|species) is shorthand for (1 + trt | species))
+              prior = c(set_prior("exponential(1)", class = "sd"), # a_sigma and b_sigma
+                        set_prior("normal(25, 5)", class="Intercept"), # Overall mean ~ a_bar
+                        set_prior("normal(0, 5)", class="b", coef="trtL"), # Overall trt response ~ b_bar
+                        set_prior("exponential(1)", class="sigma"),
+                        set_prior("lkj(2)", class="cor")),
+              data = d,
+              refresh = 0)
+
+m4brms <- add_criterion(m4brms, "waic")
+```
+
+```{r}
+summary(m3brms, prob=.89)
+```
+
+```{r}
+summary(m4brms, prob=.89)
+```
+
+```{r}
+print(loo_compare(m3brms, m4brms, criterion = "waic"), simplify = FALSE)
+```
+not a big difference here.  I think because m3brms fit much better than m3(rethinking).  Compare the WAICs:
+
+```{r}
+compare(m3, m4)
+```
+
+compare the estimates between brms and rethinking for model 4:
+```{r}
+coef(m4brms, probs=c(0.055, 0.945))
+```
+
+```{r}
+precis(m4, depth = 2)
+```
+
+## Assignment
+
+Redo Megan's Clarkia assignment using brms.  We did this for Feb 14.  I paste her email below:
+
+I've attached some data from a common garden experiment, where plants from 15 different populations were planted out (locations are shown in Figure 1 here if you're curious). One goal for the experiment was to see if temperature of origin affected performance of plants in the common garden. Here are some practice questions, very similar to Julin's from last week. The data set is big-ish. I've already sub-sampled it, but there are still 3250 observations. The models are still running quickly on my computer, but if that's not the case for you, feel free to sub-sample it further. Please let me know if you have any questions.
+
+1. Fit a simple model with effects of temperature difference (temperature_diff_fall) on November germination (nov_germ). Temperature difference is already centered and scaled (i.e., negative values are the smallest temperature differences). Make sure to use the appropriate likelihood for the germination data (0 = no germ, 1  = germ). 
+
+2. Simulate from your priors to see if you've chosen reasonable priors, adjust them if necessary. 
+
+These blocks were set up in the field, and had differences in soil depth, slope, and competitive environment. So maybe a model that includes block will describe the data better. 
+
+3. Fit a model that includes an effect of block (blk), with no pooling.
+
+4. Fit a model that includes block, and allows partial pooling. 
+
+The experiment included many individuals from each of the 15 populations. So, each individual is not an independent representative of a given temperature, but might be similar to other plants from that population for reasons besides temperature. 
+
+5. Build a model that accounts for this by including population (pop) and allowing partial pooling between populations A) without block, and B) with block included as in the model above. How does including population affect the temperature estimate?
+
+6. Compare the five models you built using WAIC. Which fits best?
+
+7. Plot effects of temperature difference for the average block, and also make a plot that includes the variability across blocks.
+
+There are other complexities to this data. For example, there is also some family structure within populations (dam and sire) which could be included as hierarchical effects. There are also other response variables (November size, March survival and size, first flower date, last flower date, fruit number, estimated seed production) that might require different likelihoods (and in some cases treatment for over-dispersion or zero inflation). So if the above problems were too easy and you feel adventurous, you could try analyzing one of these responses instead of germination (you will need to filter out missing observations). 
+
+
+
