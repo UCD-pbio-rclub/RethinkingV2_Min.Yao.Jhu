@@ -452,9 +452,6 @@ coef(m5.2)
 
 > modle_multilevel_pop_blk fits best.
 
-```{r}
-loo_compare(m1, m3, m4, m5.1, m5.2, criterion = "waic")
-```
 
 ```{r}
 m1 <- add_criterion(m1, "waic")
@@ -465,6 +462,9 @@ m5.2 <- add_criterion(m5.2, "waic")
 ```
 
 
+```{r}
+loo_compare(m1, m3, m4, m5.1, m5.2, criterion = "waic")
+```
 
 ### 7. Plot effects of temperature difference for the average block, and also make a plot that includes the variability across blocks.
 
