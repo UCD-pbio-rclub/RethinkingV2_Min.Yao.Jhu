@@ -19,23 +19,538 @@ Redo Megan's Clarkia assignment using brms.  We did this for Feb 14.  I paste he
 
 I've attached some data from a common garden experiment, where plants from 15 different populations were planted out (locations are shown in Figure 1 here if you're curious). One goal for the experiment was to see if temperature of origin affected performance of plants in the common garden. Here are some practice questions, very similar to Julin's from last week. The data set is big-ish. I've already sub-sampled it, but there are still 3250 observations. The models are still running quickly on my computer, but if that's not the case for you, feel free to sub-sample it further. Please let me know if you have any questions.
 
-1. Fit a simple model with effects of temperature difference (temperature_diff_fall) on November germination (nov_germ). Temperature difference is already centered and scaled (i.e., negative values are the smallest temperature differences). Make sure to use the appropriate likelihood for the germination data (0 = no germ, 1  = germ). 
+### 1. Fit a simple model with effects of temperature difference (temperature_diff_fall) on November germination (nov_germ). Temperature difference is already centered and scaled (i.e., negative values are the smallest temperature differences). Make sure to use the appropriate likelihood for the germination data (0 = no germ, 1  = germ).
 
-2. Simulate from your priors to see if you've chosen reasonable priors, adjust them if necessary. 
+```{r}
+clarkia <- read.csv("clarkia_transplant_data.csv")
+head(clarkia)
+summary(clarkia)
+str(clarkia)
+```
 
-These blocks were set up in the field, and had differences in soil depth, slope, and competitive environment. So maybe a model that includes block will describe the data better. 
+```{r}
+dat_list <- list(
+    temperature_diff_fall = clarkia$temperature_diff_fall,
+    nov_germ = clarkia$nov_germ)
 
-3. Fit a model that includes an effect of block (blk), with no pooling.
+summary(dat_list)
+str(dat_list)
+```
 
-4. Fit a model that includes block, and allows partial pooling. 
+```{r}
+set.seed(1)
+modle_base <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a + bT*temperature_diff_fall,
+        a ~ dnorm( 0 , 0.5 ),
+        bT ~ dnorm( 0 , 1 )
+    ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
 
-The experiment included many individuals from each of the 15 populations. So, each individual is not an independent representative of a given temperature, but might be similar to other plants from that population for reasons besides temperature. 
+precis( modle_base, depth=2 )
+plot( precis(modle_base,depth=2) )
+```
 
-5. Build a model that accounts for this by including population (pop) and allowing partial pooling between populations A) without block, and B) with block included as in the model above. How does including population affect the temperature estimate?
+### brms
 
-6. Compare the five models you built using WAIC. Which fits best?
+```{r}
+get_prior(nov_germ ~ 1 + temperature_diff_fall, data=dat_list, family = binomial)
+```
 
-7. Plot effects of temperature difference for the average block, and also make a plot that includes the variability across blocks.
+```{r}
+m1 <-
+  brm(data = dat_list, 
+      family = binomial,
+      nov_germ | trials(1) ~ 1 + temperature_diff_fall,
+      prior(normal(0, 0.5), class = Intercept),
+      prior(normal(0, 1), class = b),
+      seed = 11, chains = 4, cores = 4,
+      sample_prior = T)
+```
+
+```{r}
+m1
+plot(m1)
+```
+> the same as rethinking
+
+
+### 2. Simulate from your priors to see if you've chosen reasonable priors, adjust them if necessary.
+
+#### These blocks were set up in the field, and had differences in soil depth, slope, and competitive environment. So maybe a model that includes block will describe the data better.
+
+```{r}
+#from R code 5.4
+set.seed(1)
+prior <- extract.prior( modle_base )
+str(prior)
+
+mu <- link( modle_base , post=prior , data=list( temperature_diff_fall=c(-2,2) ) )
+
+plot( NULL , xlim=c(-2,2) , ylim=c(0,1) )
+for ( i in 1:500 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+```
+
+#### Try a different prior
+
+```{r}
+# set.seed(1)
+# modle_base_s <- ulam(
+#     alist(
+#         nov_germ ~ dbinom( 1 , p ) ,
+#         logit(p) <- a + bT*temperature_diff_fall,
+#         a ~ dnorm( 0 , 1.5 ),
+#         bT ~ dnorm( 0 , 1 )
+#     ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+# 
+# precis( modle_base_s, depth=2 )
+# plot( precis(modle_base_s,depth=2) )
+```
+
+```{r}
+# #from R code 5.4
+# set.seed(1)
+# prior <- extract.prior( modle_base_s )
+# str(prior)
+# 
+# mu <- link( modle_base_s , post=prior , data=list( temperature_diff_fall=c(-2,2) ) )
+# 
+# plot( NULL , xlim=c(-2,2) , ylim=c(0,1) )
+# for ( i in 1:500 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+```
+
+#### Try a larger prior
+
+```{r}
+# set.seed(1)
+# modle_base_l <- ulam(
+#     alist(
+#         nov_germ ~ dbinom( 1 , p ) ,
+#         logit(p) <- a + bT*temperature_diff_fall,
+#         a ~ dnorm( 0 , 10 ),
+#         bT ~ dnorm( 0 , 1 )
+#     ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+# 
+# precis( modle_base_l, depth=2 )
+# plot( precis(modle_base_l,depth=2) )
+```
+
+```{r}
+# #from R code 5.4
+# set.seed(1)
+# prior <- extract.prior( modle_base_l )
+# str(prior)
+# 
+# mu <- link( modle_base_l , post=prior , data=list( temperature_diff_fall=c(-2,2) ) )
+# 
+# plot( NULL , xlim=c(-2,2) , ylim=c(0,1) )
+# for ( i in 1:500 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+```
+
+```{r}
+# compare(modle_base,modle_base_s,modle_base_l)
+```
+
+### brms
+
+#### original
+
+```{r}
+install.packages("wesanderson", dependencies = T)
+library(wesanderson)
+wes_palette("Moonrise2")
+```
+
+
+```{r}
+prior_samples(m1) %>% 
+  mutate(p = inv_logit_scaled(Intercept)) %>% 
+  
+  ggplot(aes(x = p)) +
+  geom_density(fill  = wes_palette("Moonrise2")[4], 
+               size = 0, adjust = 0.1) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab("prior prob pull left")
+```
+
+#### Try a different prior
+
+```{r}
+m2.1 <-
+  brm(data = dat_list, 
+      family = binomial,
+      nov_germ | trials(1) ~ 1 + temperature_diff_fall,
+      prior(normal(0, 1.5), class = Intercept),
+      prior(normal(0, 1), class = b),
+      seed = 11, chains = 4, cores = 4,
+      sample_prior = T)
+```
+
+```{r}
+m2.1
+plot(m2.1)
+```
+
+```{r}
+# wrangle
+bind_rows(prior_samples(m1),
+          prior_samples(m2.1)) %>% 
+  mutate(p = inv_logit_scaled(Intercept),
+         w = factor(rep(c(0.5, 1.5), each = n() / 2),
+                    levels = c(0.5, 1.5))) %>% 
+  
+  # plot
+  ggplot(aes(x = p, fill = w)) +
+  geom_density(size = 0, alpha = 3/4, adjust = 0.1) +
+  scale_fill_manual(expression(italic(w)), values = wes_palette("Moonrise2")[c(4, 1)]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = expression(alpha%~%Normal(0*", "*italic(w))),
+       x = "prior prob pull left")
+```
+
+
+#### Try a larger prior
+
+```{r}
+m2.2 <-
+  brm(data = dat_list, 
+      family = binomial,
+      nov_germ | trials(1) ~ 1 + temperature_diff_fall,
+      prior(normal(0, 10), class = Intercept),
+      prior(normal(0, 1), class = b),
+      seed = 11, chains = 4, cores = 4,
+      sample_prior = T)
+```
+
+```{r}
+m2.2
+plot(m2.2)
+```
+
+```{r}
+# wrangle
+bind_rows(prior_samples(m1),
+          prior_samples(m2.2)) %>% 
+  mutate(p = inv_logit_scaled(Intercept),
+         w = factor(rep(c(0.5, 10), each = n() / 2),
+                    levels = c(0.5, 10))) %>% 
+  
+  # plot
+  ggplot(aes(x = p, fill = w)) +
+  geom_density(size = 0, alpha = 3/4, adjust = 0.1) +
+  scale_fill_manual(expression(italic(w)), values = wes_palette("Moonrise2")[c(4, 1)]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = expression(alpha%~%Normal(0*", "*italic(w))),
+       x = "prior prob pull left")
+```
+
+### 3. Fit a model that includes an effect of block (blk), with no pooling.
+
+```{r}
+dat_list_b <- list(
+    temperature_diff_fall = clarkia$temperature_diff_fall,
+    nov_germ = clarkia$nov_germ,
+    blk = clarkia$blk)
+
+summary(dat_list_b)
+str(dat_list_b)
+```
+
+```{r}
+set.seed(1)
+modle_fixed <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a[blk] + bT*temperature_diff_fall,
+        a[blk] ~ dnorm( 0 , 0.5 ),
+        bT ~ dnorm( 0 , 1 )
+    ) , data=dat_list_b , chains=4 , cores=4 , log_lik=TRUE )
+
+precis( modle_fixed, depth=2 )
+plot( precis(modle_fixed,depth=2) )
+```
+
+### brms
+
+```{r}
+dat_list_b$blkID <- as.character(dat_list_b$blk)
+get_prior(nov_germ ~ 0 + blkID + temperature_diff_fall, data=dat_list_b, family = binomial)
+```
+
+```{r}
+m3 <-
+  brm(data = dat_list_b, 
+      family = binomial,
+      nov_germ | trials(1) ~ 0 + blkID  + temperature_diff_fall,
+      prior = c(prior(normal(0, 0.5), class = b, coef = blkID1),
+                prior(normal(0, 0.5), class = b, coef = blkID2),
+                prior(normal(0, 0.5), class = b, coef = blkID3),
+                prior(normal(0, 0.5), class = b, coef = blkID4),
+                prior(normal(0, 1), class = b, coef = temperature_diff_fall)),
+      seed = 11, chains = 4, cores = 4)
+```
+
+```{r}
+m3
+plot(m3)
+```
+> the same as rethinking result
+
+### 4. Fit a model that includes block, and allows partial pooling.
+
+#### The experiment included many individuals from each of the 15 populations. So, each individual is not an independent representative of a given temperature, but might be similar to other plants from that population for reasons besides temperature.
+
+```{r}
+set.seed(1)
+modle_multilevel_blk <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a[blk] + bT*temperature_diff_fall,
+        a[blk] ~ dnorm( a_bar , sigma ),
+        bT ~ dnorm( 0 , 1 ),
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dat_list_b , chains=4 , cores=4 , log_lik=TRUE )
+
+precis( modle_multilevel_blk, depth=2 )
+plot( precis(modle_multilevel_blk,depth=2) )
+```
+
+### brms
+
+```{r}
+get_prior(nov_germ ~ (1|blkID) + temperature_diff_fall, data=dat_list_b, family = binomial)
+```
+
+```{r}
+m4 <-
+  brm(data = dat_list_b, 
+      family = binomial,
+      nov_germ | trials(1) ~ (1|blkID)  + temperature_diff_fall,
+      prior = c(prior(normal(0, 0.5), class = Intercept),
+                prior(normal(0, 1), class = b, coef = temperature_diff_fall),
+                prior(exponential(1), class = sd)),
+      seed = 11, chains = 4, cores = 4)
+```
+
+```{r}
+m4
+plot(m4)
+coef(m4)
+```
+
+### 5. Build a model that accounts for this by including population (pop) and allowing partial pooling between populations A) without block, and B) with block included as in the model above. How does including population affect the temperature estimate?
+
+```{r}
+dat_list_b_p <- list(
+    temperature_diff_fall = clarkia$temperature_diff_fall,
+    nov_germ = clarkia$nov_germ,
+    blk = clarkia$blk,
+    pop = as.factor(clarkia$pop))
+
+summary(dat_list_b_p)
+str(dat_list_b_p)
+```
+
+#### without block
+
+```{r}
+set.seed(1)
+modle_multilevel_pop <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a[pop] + bT*temperature_diff_fall,
+        a[pop] ~ dnorm( a_bar , sigma ),
+        bT ~ dnorm( 0 , 1 ),
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 )
+    ) , data=dat_list_b_p , chains=4 , cores=4 , log_lik=TRUE )
+
+precis( modle_multilevel_pop, depth=2 )
+plot( precis(modle_multilevel_pop,depth=2) )
+```
+
+#### with block
+
+```{r}
+set.seed(1)
+modle_multilevel_pop_blk <- ulam(
+    alist(
+        nov_germ ~ dbinom( 1 , p ) ,
+        logit(p) <- a[pop] + bT*temperature_diff_fall + bB[blk],
+        a[pop] ~ dnorm( a_bar , sigma ),
+        bT ~ dnorm( 0 , 1 ),
+        bB[blk] ~ dnorm( 0 , sigma_B ),
+        a_bar ~ dnorm( 0 , 1.5 ) ,
+        sigma ~ dexp( 1 ),
+        sigma_B ~ dexp( 1 )
+    ) , data=dat_list_b_p , chains=4 , cores=4 , log_lik=TRUE )
+
+precis( modle_multilevel_pop_blk, depth=2 )
+plot( precis(modle_multilevel_pop_blk,depth=2) )
+```
+
+### brms
+
+#### without block
+
+```{r}
+get_prior(nov_germ ~ (1|pop) + temperature_diff_fall, data=dat_list_b_p, family = binomial)
+```
+
+```{r}
+m5.1 <-
+  brm(data = dat_list_b_p, 
+      family = binomial,
+      nov_germ | trials(1) ~ (1|pop) + temperature_diff_fall,
+      prior = c(prior(normal(0, 0.5), class = Intercept),
+                prior(normal(0, 1), class = b, coef = temperature_diff_fall),
+                prior(exponential(1), class = sd)),
+      seed = 11, chains = 4, cores = 4)
+```
+
+```{r}
+m5.1
+plot(m5.1)
+coef(m5.1)
+```
+
+#### with block
+
+```{r}
+dat_list_b_p$blkID <- as.character(dat_list_b_p$blk)
+```
+
+
+```{r}
+get_prior(nov_germ ~ (1|pop) + (1|blkID) + temperature_diff_fall, data=dat_list_b_p, family = binomial)
+```
+
+```{r}
+m5.2 <-
+  brm(data = dat_list_b_p, 
+      family = binomial,
+      nov_germ | trials(1) ~ (1|pop) + (1|blkID) + temperature_diff_fall,
+      prior = c(prior(normal(0, 0.5), class = Intercept),
+                prior(normal(0, 1), class = b, coef = temperature_diff_fall),
+                prior(exponential(1), class = sd)),
+      seed = 11, chains = 4, cores = 4)
+```
+
+```{r}
+m5.2
+plot(m5.2)
+coef(m5.2)
+```
+> similar to rethinking
+
+### 6. Compare the five models you built using WAIC. Which fits best?
+
+```{r}
+#compare(modle_base, modle_fixed, modle_multilevel_blk, modle_multilevel_pop, modle_multilevel_pop_blk)
+```
+
+> modle_multilevel_pop_blk fits best.
+
+```{r}
+loo_compare(m1, m3, m4, m5.1, m5.2, criterion = "waic")
+```
+
+
+
+
+### 7. Plot effects of temperature difference for the average block, and also make a plot that includes the variability across blocks.
+
+```{r}
+post <- extract.samples(modle_multilevel_pop_blk)
+str(post)
+```
+
+#### Posterior prediction for average cluster.
+
+```{r}
+## change from R code 13.36, temperature_diff_fall=1 
+p_link_1 <- function( blk , temperature_diff_fall=1 ) {
+    logodds <- with( post ,
+        a_bar + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+
+## change from R code 13.37
+p_raw_1 <- sapply( 1:4 , function(i) p_link_1( i ) )
+p_mu_1 <- apply( p_raw_1 , 2 , mean )
+p_ci_1 <- apply( p_raw_1 , 2 , PI )
+
+
+## change from R code 13.36, temperature_diff_fall=0 
+p_link_0 <- function( blk , temperature_diff_fall=0 ) {
+    logodds <- with( post ,
+        a_bar + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+
+## change from R code 13.37
+p_raw_0 <- sapply( 1:4 , function(i) p_link_0( i ) )
+p_mu_0 <- apply( p_raw_0 , 2 , mean )
+p_ci_0 <- apply( p_raw_0 , 2 , PI )
+
+
+## change from R code 13.36, temperature_diff_fall=-1 
+p_link_n1 <- function( blk , temperature_diff_fall=-1 ) {
+    logodds <- with( post ,
+        a_bar + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+
+## change from R code 13.37
+p_raw_n1 <- sapply( 1:4 , function(i) p_link_n1( i ) )
+p_mu_n1 <- apply( p_raw_n1 , 2 , mean )
+p_ci_n1 <- apply( p_raw_n1 , 2 , PI )
+
+plot( NULL , xlab="block" , ylab="November germination" ,
+    ylim=c(0,1) , xaxt="n" , xlim=c(1,4) )
+axis( 1 , at=1:4 , labels=c("B1","B2","B3","B4") )
+lines( 1:4 , p_mu_1 ,col=col.alpha("black",1))
+shade( p_ci_1 , 1:4 )
+lines( 1:4 , p_mu_0 ,col=col.alpha("red",1))
+shade( p_ci_0 , 1:4 )
+lines( 1:4 , p_mu_n1 ,col=col.alpha("blue",1))
+shade( p_ci_n1 , 1:4 )
+```
+
+#### Posterior prediction for new clusters.
+
+```{r}
+## change from R code 13.38, temperature_diff_fall=1
+a_sim <- with( post , rnorm( length(post$a_bar) , a_bar , sigma ) )
+p_link_asim_1 <- function( blk , temperature_diff_fall=1) {
+    logodds <- with( post , a_sim + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+p_raw_asim_1 <- sapply( 1:4 , function(i) p_link_asim_1( i ) )
+
+p_link_asim_0 <- function( blk , temperature_diff_fall=0) {
+    logodds <- with( post , a_sim + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+p_raw_asim_0 <- sapply( 1:4 , function(i) p_link_asim_0( i ) )
+
+p_link_asim_n1 <- function( blk , temperature_diff_fall=-1) {
+    logodds <- with( post , a_sim + bT*temperature_diff_fall + bB[blk] )
+    return( inv_logit(logodds) )
+}
+p_raw_asim_n1 <- sapply( 1:4 , function(i) p_link_asim_n1( i ) )
+
+## R code 13.39
+plot( NULL , xlab="block" , ylab="November germination" ,
+    ylim=c(0,1) , xaxt="n" , xlim=c(1,4) )
+axis( 1 , at=1:4 , labels=c("B1","B2","B3","B4") )
+for ( i in 1:100 ) lines( 1:4 , p_raw_asim_1[i,] , col=col.alpha("black",0.3) , lwd=2 )
+for ( i in 1:100 ) lines( 1:4 , p_raw_asim_0[i,] , col=col.alpha("red",0.3) , lwd=2 )
+for ( i in 1:100 ) lines( 1:4 , p_raw_asim_n1[i,] , col=col.alpha("blue",0.3) , lwd=2 )
+```
+
+
 
 There are other complexities to this data. For example, there is also some family structure within populations (dam and sire) which could be included as hierarchical effects. There are also other response variables (November size, March survival and size, first flower date, last flower date, fruit number, estimated seed production) that might require different likelihoods (and in some cases treatment for over-dispersion or zero inflation). So if the above problems were too easy and you feel adventurous, you could try analyzing one of these responses instead of germination (you will need to filter out missing observations). 
 
