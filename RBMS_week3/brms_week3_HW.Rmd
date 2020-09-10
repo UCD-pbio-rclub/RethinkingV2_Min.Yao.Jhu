@@ -2,7 +2,9 @@
 title: "brms_week3_HW"
 author: "Min-Yao"
 date: "2020/9/9"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ```{r}
@@ -19,20 +21,20 @@ str(data)
 ```
 The Maloof, Gremer, Schmitt, and Strauss labs have a joint project examining variation in life history traits and adaptation in a group of Sierra wildflower species known as Jewelflowers, from the genus Streptanthus and related species.
 
-As part of this project we (meaning Megan with help from many others including John) examined how different species germination rate is affected by temperature and water potential.
+As part of this project we (meaning Megan with help from many others including John) examined how different species germination rate is affected by tempserature and water potential.
 
 The data for water potential zero is shown in this plot:
 
 Each subplot is a different population. Species are denoted by the four letters (e.g. CAAM).  Numbers are appended when there are more than one population per species (e.g. STPO1, STPO2, STPO3).  Different colored lines represent different species.
 
-For this week's assignment we want to model the effect of temperature on germination rate for the different species/populations.
+For this week's assignment we want to model the effect of tempserature on germination rate for the different species/populations.
 
 Handcuffs are off, I am going to let you decide what types of models to use.  (But you might want to look at 11.4 "Censoring and Survival" and 12.1 "Over-dispersed counts" and maybe 12.2 "Zero-inflated outcomes".).  
 
 In the data sheet:
 
 pops: species/population
-temps: temperature
+temps: tempserature
 wps: water potential
 date: date of observation
 total_seeds: number of seeds plated for the experiment
@@ -50,6 +52,174 @@ str(data_wps0)
 ```
 
 
-### 2. Let's start with a single pop "STDI".  Evaluate models relate germination rate to temperature.  Explain your model choice and prior choice.  Try to do this both with ulam and brm.
+### 2. Let's start with a single pop "STDI".  Evaluate models relate germination rate to tempserature.  Explain your model choice and prior choice.  Try to do this both with ulam and brm.
+
+```{r}
+data_wps0_STDI <- data_wps0 %>%
+  filter(pops == "STDI")
+head(data_wps0_STDI)
+summary(data_wps0_STDI)
+str(data_wps0_STDI)
+```
+```{r}
+ggplot(data_wps0_STDI, aes(x = day, y = cumulative_germ, color = as.factor(temps))) +
+  geom_line() +
+  geom_point()
+```
+```{r}
+ggplot(data_wps0_STDI, aes(x = day, y = cumulative_prop_germ, color = as.factor(temps))) +
+  geom_line() +
+  geom_point()
+```
+```{r}
+data_wps0_STDI %>% filter(day==28) %>%
+  ggplot(aes(x=temps,y=cumulative_germ)) +
+  geom_col()
+```
+
+we need one event per row:
+
+```{r}
+one_per_row <- function(df) {
+  total_seed <- max(df$total_seeds, sum(df$germ))
+  newdata <- tibble(id=1:total_seed, germ=0, day=max(df$day))
+  df <- df %>% filter(germ>0)
+  count <- 1
+  if (nrow(df) > 0) {
+    for (i in 1:nrow(df)) { # we look at each row of the df where dataination occured
+      for (j in 1:df$germ[i]) { # now update the newdata to reflect the germiantion of each seed
+        newdata$germ[count] <- 1
+        newdata$day[count]=df$day[i]
+        count <- count+1 # count keeps track of which individual we are at in the new data
+      } # for j
+    } # for i
+  } # if 
+  return(newdata)
+}
+data_wps0_one <- data_wps0 %>% group_by(pops, temps) %>%
+  select(-cumulative_germ) %>% # not needed in this encoding (I think...in any case would need to be recalculated)
+  nest() %>%
+  mutate(newdata=map(data, one_per_row)) %>%
+  select(-data) %>%
+  unnest(newdata)
+head(data_wps0_one)
+summary(data_wps0_one)
+```
+
+```{r}
+data_wps0_one_STDI <- data_wps0_one %>% filter(pops=="STDI") %>% select(-pops)
+head(data_wps0_one_STDI)
+summary(data_wps0_one_STDI)
+```
+### rethinking
+
+```{r}
+d <- list(Germ=data_wps0_one_STDI$germ, 
+          temps=as.numeric(as.factor(data_wps0_one_STDI$temps)),
+          day=data_wps0_one_STDI$day)
+
+m1.1 <- ulam(
+  alist(
+    day | Germ==1 ~ exponential(lambda),
+    day | Germ==0 ~ custom(exponential_lccdf( !Y | lambda)),
+    lambda <- 1.0 / mu,
+    log(mu) <- a[temps],
+    a[temps] ~ normal(0,1)),
+  data=d,
+  chains=4,
+  cores = 4
+)
+```
+```{r}
+precis(m1.1, depth = 2)
+```
+
+The above represent log(mean time to germination)
+
+```{r}
+exp(5.45)
+exp(2.48)
+```
+
+posterior
+```{r}
+preddata <- expand_grid(temps=1:8, day=1:28)
+pred <- link(m1.1, data = preddata)
+str(pred)
+```
+
+mu is average day to germ, lambda is rate parameter.  neither change over time, of course, so having day doesn't really make sense.
+
+```{r}
+preddata$mu <- apply(pred$mu,2,mean)
+preddata$low <- apply(pred$mu,2,HPDI)[1,]
+preddata$high <- apply(pred$mu, 2, HPDI)[2,]
+```
+
+Single temps.  Don't need day
+posterior
+```{r}
+preddata <- expand_grid(temps=3)
+pred <- link(m1.1, data = preddata)
+str(pred)
+```
+
+how to convert to probs? use pexp.
+
+```{r}
+predprobs <- pexp(1:28,rate=pred$lambda[1])
+```
+
+
+```{r}
+#plot(x=1:28,y=predprobs, type="l") # crashes on plot
+```
+
+even though it isn't using day, including day in the prediction data frame will help me keep data in the correct format.  Maybe.
+
+```{r}
+preddata <- expand_grid(temps=1:8, day=1:28)
+pred <- link(m1.1, data = preddata)
+str(pred)
+```
+
+```{r}
+predresults <- preddata %>%
+  mutate(lambda=as.list(as.data.frame(pred$lambda)))
+predresults
+```
+
+```{r}
+predresults <- predresults %>%
+  mutate(probs=map2(day, lambda, ~ pexp(.x, .y)),
+         mu=map_dbl(probs, mean),
+         lower=map_dbl(probs, ~ HPDI(.)[1] %>% unlist()),
+         upper=map_dbl(probs, ~ HPDI(.)[2]) %>% unlist())
+predresults
+```
+
+
+```{r}
+predresults %>% select(-lambda, -probs) %>%
+  mutate(temps=factor(temps, labels=as.character(sort(unique(data_wps0_one_STDI$temps))))) %>%
+  ggplot(aes(x=day,y=mu,color=temps,group=temps)) +
+  geom_line() 
+```
+
+Add realdata:
+
+```{r}
+stdi.plot <- data_wps0 %>% filter(pops=="STDI") %>% 
+  select(day, temps, cumulative_germ, total_seeds) %>%
+  mutate(temps=as.factor(temps),
+         prop_germ=cumulative_germ/total_seeds)
+predresults %>% select(-lambda, -probs) %>%
+  mutate(temps=factor(temps, labels=as.character(sort(unique(data_wps0_one_STDI$temps))))) %>%
+  ggplot(aes(x=day,y=mu,color=temps,group=temps)) +
+  geom_line() +
+  geom_point(aes(y=prop_germ), data=stdi.plot)
+```
+
+Poor!
 
 ### 3. now expand the data set to all species/populations.  Include species/pop (use "pops" as the predictor, don't worry about having a separate predictor for pops nested within species).  is partial pooling appropriate here?
