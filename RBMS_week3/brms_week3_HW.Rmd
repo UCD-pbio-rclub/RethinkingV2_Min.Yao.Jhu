@@ -1,0 +1,55 @@
+---
+title: "brms_week3_HW"
+author: "Min-Yao"
+date: "2020/9/9"
+output: html_document
+---
+
+```{r}
+library(rethinking)
+library(brms)
+library(tidyverse)
+```
+
+```{r}
+data <- read_csv("light_round1_tall.csv")
+head(data)
+summary(data)
+str(data)
+```
+The Maloof, Gremer, Schmitt, and Strauss labs have a joint project examining variation in life history traits and adaptation in a group of Sierra wildflower species known as Jewelflowers, from the genus Streptanthus and related species.
+
+As part of this project we (meaning Megan with help from many others including John) examined how different species germination rate is affected by temperature and water potential.
+
+The data for water potential zero is shown in this plot:
+
+Each subplot is a different population. Species are denoted by the four letters (e.g. CAAM).  Numbers are appended when there are more than one population per species (e.g. STPO1, STPO2, STPO3).  Different colored lines represent different species.
+
+For this week's assignment we want to model the effect of temperature on germination rate for the different species/populations.
+
+Handcuffs are off, I am going to let you decide what types of models to use.  (But you might want to look at 11.4 "Censoring and Survival" and 12.1 "Over-dispersed counts" and maybe 12.2 "Zero-inflated outcomes".).  
+
+In the data sheet:
+
+pops: species/population
+temps: temperature
+wps: water potential
+date: date of observation
+total_seeds: number of seeds plated for the experiment
+germ: the number of germinants found on this day
+day: day of the observation relative to start date of the experiment
+
+### 1.  Subset the data to only include wps==0.  We may look at water potential in a future week.
+
+```{r}
+data_wps0 <- data %>%
+  filter(wps == 0)
+head(data_wps0)
+summary(data_wps0)
+str(data_wps0)
+```
+
+
+### 2. Let's start with a single pop "STDI".  Evaluate models relate germination rate to temperature.  Explain your model choice and prior choice.  Try to do this both with ulam and brm.
+
+### 3. now expand the data set to all species/populations.  Include species/pop (use "pops" as the predictor, don't worry about having a separate predictor for pops nested within species).  is partial pooling appropriate here?
