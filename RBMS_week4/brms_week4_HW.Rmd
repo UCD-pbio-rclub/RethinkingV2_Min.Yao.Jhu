@@ -45,7 +45,10 @@ germone <- germ %>% group_by(pops, temps) %>%
   unnest(newdata)
 germone
 ```
-
+```{r}
+germ.stdi <- germone %>% filter(pops=="STDI") %>% select(-pops)
+germ.stdi
+```
 
 Assignment:
 
