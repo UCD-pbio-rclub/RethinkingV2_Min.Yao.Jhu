@@ -1,0 +1,60 @@
+---
+title: "brms_intro_12.2"
+author: "Min-Yao"
+date: "2020/9/11"
+output: html_document
+---
+
+```{r}
+library(ggthemes)
+library(tidyverse)
+library(rethinking)
+library(brms)
+```
+
+
+## 12.2 Zero-inflated outcomes
+#### 12.2.0.1 Rethinking: Breaking the law.
+### 12.2.1 Example: Zero-inflated Poisson.
+
+```{r}
+# define parameters
+prob_drink <- 0.2  # 20% of days
+rate_work  <- 1    # average 1 manuscript per day
+
+# sample one year of production
+n <- 365
+
+# simulate days monks drink
+set.seed(365)
+drink <- rbinom(n, 1, prob_drink)
+
+# simulate manuscripts completed
+y <- (1 - drink) * rpois(n, rate_work)
+```
+
+```{r}
+d <-
+  tibble(drink = factor(drink, levels = 1:0), 
+         y     = y)
+  
+ggplot(data = d, aes(x = y)) +
+  geom_histogram(aes(fill = drink),
+                 binwidth = 1, size = 1/10, color = "grey92") +
+  scale_fill_manual(values = canva_pal("Green fields")(4)[1:2]) +
+  xlab("Manuscripts completed") +
+  theme(legend.position = "none")
+```
+
+```{r}
+b12.3 <- 
+  brm(data = d, 
+      family = zero_inflated_poisson,
+      y ~ 1,
+      prior = c(prior(normal(-1.5, 1), class = Intercept),
+                prior(beta(2, 6), class = zi)),  # the brms default is beta(1, 1)
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 12) 
+print(b12.3)
+```
+

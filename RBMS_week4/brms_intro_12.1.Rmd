@@ -1,0 +1,518 @@
+---
+title: "brms_intro_12.1"
+author: "Min-Yao"
+date: "2020/9/10"
+output: html_document
+---
+
+# 12 Monsters and Mixtures
+
+## 12.1 Over-dispersed counts
+
+### 12.1.1 Beta-binomial
+
+```{r}
+library(ggthemes)
+```
+
+```{r}
+scales::show_col(canva_pal("Green fields")(4))
+```
+
+```{r}
+canva_pal("Green fields")(4)
+```
+
+```{r}
+canva_pal("Green fields")(4)[3]
+```
+
+```{r}
+library(tidyverse)
+
+theme_set(
+  theme_hc() +
+  theme(axis.ticks.y = element_blank(),
+        plot.background = element_rect(fill = "grey92"))
+)
+
+pbar  <- .5
+theta <- 5
+
+ggplot(data = tibble(x = seq(from = 0, to = 1, by = .01)),
+       aes(x = x, ymin = 0, ymax = rethinking::dbeta2(x, pbar, theta))) +
+  geom_ribbon(fill = canva_pal("Green fields")(4)[1]) +
+  scale_x_continuous("probability space", breaks = c(0, .5, 1)) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  ggtitle(expression(The~beta~distribution),
+          subtitle = expression("Defined in terms of "*mu*" (i.e., pbar) and "*kappa*" (i.e., theta)"))
+```
+
+```{r}
+betaABfromMeanKappa <- function(mean, kappa) {
+  if (mean <= 0 | mean >= 1) stop("must have 0 < mean < 1")
+  if (kappa <= 0) stop("kappa must be > 0")
+  a <- mean * kappa
+  b <- (1.0 - mean) * kappa
+  return(list(a = a, b = b))
+}
+```
+
+```{r}
+betaABfromMeanKappa(mean = pbar, kappa = theta)
+```
+
+```{r}
+ggplot(data = tibble(x = seq(from = 0, to = 1, by = .01)),
+       aes(x = x, ymin = 0, ymax = dbeta(x, 2.5, 2.5))) +
+  geom_ribbon(fill = canva_pal("Green fields")(4)[4]) +
+  scale_x_continuous("probability space", breaks = c(0, .5, 1)) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  ggtitle(expression(The~beta~distribution),
+          subtitle = expression("This time defined in terms of "*alpha*" and "*beta))
+```
+
+```{r}
+# data
+crossing(pbar  = c(.25, .5, .75),
+         theta = c(5, 15, 30)) %>% 
+  expand(nesting(pbar, theta), x = seq(from = 0, to = 1, length.out = 100)) %>% 
+  mutate(density = rethinking::dbeta2(x, pbar, theta),
+         mu      = str_c("mu == ", pbar %>% str_remove(., "0")),
+         kappa   = factor(str_c("kappa == ", theta), 
+                          levels = c("kappa == 30", "kappa == 15", "kappa == 5"))) %>% 
+  
+  # plot
+  ggplot(aes(x = x, ymin = 0, ymax = density)) +
+  geom_ribbon(fill = canva_pal("Green fields")(4)[4]) +
+  scale_x_continuous("probability space", 
+                     breaks = c(0, .5, 1), labels = c("0", ".5", "1")) +
+  scale_y_continuous(NULL, labels = NULL) +
+  theme(axis.ticks.y = element_blank()) +
+  facet_grid(kappa ~ mu, labeller = label_parsed)
+```
+
+```{r}
+library(rethinking)
+data(UCBadmit) 
+d <- 
+  UCBadmit %>% 
+  mutate(gid = ifelse(applicant.gender == "male", "1", "2"))
+```
+
+```{r}
+rm(UCBadmit)
+detach(package:rethinking, unload = T)
+library(brms)
+```
+
+```{r}
+beta_binomial2 <- custom_family(
+  "beta_binomial2", dpars = c("mu", "phi"),
+  links = c("logit", "log"), lb = c(NA, 2),
+  type = "int", vars = "vint1[n]"
+)
+
+stan_funs <- "
+  real beta_binomial2_lpmf(int y, real mu, real phi, int T) {
+    return beta_binomial_lpmf(y | T, mu * phi, (1 - mu) * phi);
+  }
+  int beta_binomial2_rng(real mu, real phi, int T) {
+    return beta_binomial_rng(T, mu * phi, (1 - mu) * phi);
+  }
+"
+
+stanvars <- stanvar(scode = stan_funs, block = "functions")
+```
+
+```{r}
+b12.1 <-
+  brm(data = d, 
+      family = beta_binomial2,  # here's our custom likelihood
+      admit | vint(applications) ~ 0 + gid,
+      prior = c(prior(normal(0, 1.5), class = b),
+                prior(exponential(1), class = phi)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      stanvars = stanvars,  # note our `stanvars`
+      seed = 12)
+```
+
+```{r}
+print(b12.1)
+```
+
+```{r}
+post <- posterior_samples(b12.1)
+head(post)
+```
+
+```{r}
+library(tidybayes)
+
+post %>% 
+  transmute(da = b_gid1 - b_gid2) %>% 
+  mean_qi(.width = .89) %>% 
+  mutate_if(is.double, round, digits = 3)
+```
+
+```{r}
+set.seed(12)
+
+lines <-
+  post %>% 
+  mutate(iter  = 1:n(),
+         p_bar = inv_logit_scaled(b_gid2)) %>% 
+  sample_n(size = 100) %>% 
+  expand(nesting(iter, p_bar, phi),
+         x = seq(from = 0, to = 1, by = .005)) %>% 
+  mutate(density = pmap_dbl(list(x, p_bar, phi), rethinking::dbeta2))
+
+str(lines)
+```
+
+```{r}
+lines %>% 
+  ggplot(aes(x = x, y = density)) + 
+  stat_function(fun = rethinking::dbeta2,
+                args = list(prob  = mean(inv_logit_scaled(post[, "b_gid2"])),
+                            theta = mean(post[, "phi"])),
+                size = 1.5, color = canva_pal("Green fields")(4)[4]) +
+  geom_line(aes(group = iter),
+            alpha = .2, color = canva_pal("Green fields")(4)[4]) +
+  scale_y_continuous(NULL, breaks = NULL, limits = c(0, 3)) +
+  labs(subtitle = "distribution of female admission rates",
+       X = "probability admit")
+```
+
+```{r}
+expose_functions(b12.1, vectorize = TRUE)
+
+# required to use `predict()`
+log_lik_beta_binomial2 <- function(i, prep) {
+  mu     <- prep$dpars$mu[, i]
+  phi    <- prep$dpars$phi
+  trials <- prep$data$vint1[i]
+  y      <- prep$data$Y[i]
+  beta_binomial2_lpmf(y, mu, phi, trials)
+}
+
+posterior_predict_beta_binomial2 <- function(i, prep, ...) {
+  mu     <- prep$dpars$mu[, i]
+  phi    <- prep$dpars$phi
+  trials <- prep$data$vint1[i]
+  beta_binomial2_rng(mu, phi, trials)
+}
+
+# required to use `fitted()`
+posterior_epred_beta_binomial2 <- function(prep) {
+  mu     <- prep$dpars$mu
+  trials <- prep$data$vint1
+  trials <- matrix(trials, nrow = nrow(mu), ncol = ncol(mu), byrow = TRUE)
+  mu * trials
+}
+```
+
+```{r}
+# the prediction intervals
+predict(b12.1) %>%
+  as_tibble() %>% 
+  transmute(ll = Q2.5,
+            ul = Q97.5) %>%
+  bind_cols(
+    # the fitted intervals
+    fitted(b12.1) %>% as_tibble(),
+    # the original data used to fit the model) %>% 
+    b12.1$data
+    ) %>% 
+  mutate(case = 1:12) %>% 
+  
+  # plot!
+  ggplot(aes(x = case)) +
+  geom_linerange(aes(ymin = ll / applications, 
+                     ymax = ul / applications),
+                 color = canva_pal("Green fields")(4)[1], 
+                 size = 2.5, alpha = 1/4) +
+  geom_pointrange(aes(ymin = Q2.5  / applications, 
+                      ymax = Q97.5 / applications, 
+                      y = Estimate/applications),
+                  color = canva_pal("Green fields")(4)[4],
+                  size = 1/2, shape = 1) +
+  geom_point(aes(y = admit/applications),
+             color = canva_pal("Green fields")(4)[2],
+             size = 2) +
+  scale_x_continuous(breaks = 1:12) +
+  scale_y_continuous(breaks = 0:5 / 5, limits = c(0, 1)) +
+  labs(subtitle = "Posterior validation check",
+       caption = expression(italic(Note.)*" A = admittance probability"),
+       y = "A") +
+  theme(axis.ticks.x = element_blank(),
+        legend.position = "none")
+```
+
+### 12.1.2 Negative-binomial or gamma-Poisson.
+
+```{r}
+library(rethinking)
+data(Kline)
+d <- 
+  Kline %>% 
+  mutate(p          = standardize(log(population)),
+         contact_id = ifelse(contact == "high", 2L, 1L),
+         cid        = contact)
+
+print(d)
+```
+
+```{r}
+rm(Kline)
+detach(package:rethinking,  unload = T)
+library(brms)
+```
+
+```{r}
+get_prior(data = d, 
+          family = negbinomial,
+          total_tools ~ 1)
+```
+
+```{r}
+ggplot(data = tibble(x = seq(from = 0, to = 60, by = .1)),
+       aes(x = x)) +
+  geom_ribbon(aes(ymin = 0, ymax = dgamma(x, 0.01, 0.01)),
+              color = "transparent", 
+              fill = canva_pal("Green fields")(4)[2]) +
+  scale_x_continuous(NULL) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  coord_cartesian(xlim = c(0, 50)) +
+  ggtitle(expression(brms~default~gamma(0.01*", "*0.01)~shape~prior))
+```
+
+```{r}
+b12.2a <-
+  brm(data = d, 
+      family = negbinomial,
+      total_tools ~ 1,
+      prior = c(prior(normal(3, 0.5), class = Intercept),  # beta_0
+                prior(gamma(0.01, 0.01), class = shape)),  # alpha
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      seed = 12,
+      file = "fits/b12.02a")
+```
+
+```{r}
+print(b12.2a)
+```
+
+```{r}
+p <-
+  predict(b12.2a,
+          summary = F)
+
+p %>% 
+  str()
+```
+
+```{r}
+p %>% 
+  data.frame() %>% 
+  set_names(d$culture) %>% 
+  pivot_longer(everything(),
+               names_to = "culture",
+               values_to = "lambda") %>% 
+  
+  ggplot(aes(x = lambda)) +
+  geom_density(color = "transparent", fill = canva_pal("Green fields")(4)[2]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  scale_x_continuous(expression(lambda["[culture]"]), breaks = 0:2 * 100) +
+  coord_cartesian(xlim = c(0, 210)) +
+  facet_wrap(~culture, nrow = 2)
+```
+
+```{r}
+post <- posterior_samples(b12.2a)
+
+post %>% 
+  mutate(mu    = exp(b_Intercept),
+         alpha = shape) %>%
+  pivot_longer(mu:alpha,
+               names_to = "parameter") %>% 
+  
+  ggplot(aes(x = value)) +
+  geom_density(color = "transparent", fill = canva_pal("Green fields")(4)[2]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = "Behold our gamma parameters!",
+       x = "posterior") +
+  facet_wrap(~parameter, scales = "free", labeller = label_parsed)
+```
+
+```{r}
+post %>% 
+  mutate(mu    = exp(b_Intercept),
+         alpha = shape) %>%
+  mutate(theta = mu / alpha) %>% 
+  
+  ggplot(aes(x = theta)) +
+  geom_density(color = "transparent", fill = canva_pal("Green fields")(4)[2]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(subtitle = expression(We~define~the~scale~as~theta==mu/alpha),
+       x = "posterior") +
+  coord_cartesian(xlim = c(0, 40))
+```
+
+```{r}
+set.seed(12)
+
+# wrangle to get 200 draws
+post %>% 
+  mutate(iter  = 1:n(),
+         alpha = shape,
+         theta = exp(b_Intercept) / shape) %>%
+  sample_n(size = 200) %>% 
+  expand(nesting(iter, alpha, theta),
+         x = 0:250) %>% 
+  mutate(density = dgamma(x, shape = alpha, scale = theta)) %>% 
+  
+  # plot
+  ggplot(aes(x = x, y = density)) +
+  geom_line(aes(group = iter),
+            alpha = .1, color = canva_pal("Green fields")(4)[4]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(subtitle = expression("200 credible gamma densities for "*lambda),
+       x = expression(lambda)) +
+  coord_cartesian(xlim = c(0, 170),
+                  ylim = c(0, 0.045))
+```
+
+```{r}
+b12.2b <-
+  brm(data = d, 
+      family = negbinomial(link = "identity"),
+      bf(total_tools ~ exp(b0) * population^b1 / g,
+         b0 + b1 ~ 0 + cid,
+         g ~ 1,
+         nl = TRUE),
+      prior = c(prior(normal(1, 1), nlpar = b0),
+                prior(exponential(1), nlpar = b1, lb = 0),
+                prior(exponential(1), nlpar = g, lb = 0),
+                prior(exponential(1), class = shape)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 12,
+      control = list(adapt_delta = .95),
+      file = "fits/b12.02b") 
+```
+
+```{r}
+print(b12.2b)
+```
+
+```{r}
+b12.2b <- add_criterion(b12.2b, "loo")
+```
+
+```{r}
+loo(b12.2b)
+```
+
+```{r}
+d %>% 
+  mutate(k = b12.2b$criteria$loo$diagnostics$pareto_k) %>% 
+  filter(k > .7) %>% 
+  select(culture, k)
+```
+
+```{r}
+b11.11 <- readRDS("fits/b11.11.rds")
+```
+
+```{r}
+# the new data
+nd <-
+  distinct(d, cid) %>% 
+  expand(cid, 
+         population = seq(from = 0, to = 300000, length.out = 100))
+
+p1 <-
+  # compute the expected trajectories
+  fitted(b11.11,
+         newdata = nd,
+         probs = c(.055, .945)) %>%
+  data.frame() %>%
+  bind_cols(nd) %>%
+  
+  # plot
+  ggplot(aes(x = population, group = cid, color = cid)) +
+  geom_smooth(aes(y = Estimate, ymin = Q5.5, ymax = Q94.5, fill = cid),
+              stat = "identity",
+              alpha = 1/4, size = 1/2) +
+  geom_point(data = bind_cols(d, b11.11$criteria$loo$diagnostics),
+             aes(y = total_tools, size = pareto_k),
+             alpha = 4/5) +
+  labs(subtitle = "pure Poisson model",
+       y = "total tools")
+```
+
+```{r}
+# for the annotation
+text <-
+  distinct(d, cid) %>% 
+  mutate(population  = c(150000, 110000),
+         total_tools = c(57, 69),
+         label       = str_c(cid, " contact"))
+
+p2 <-
+  fitted(b12.2b,
+         newdata = nd,
+         probs = c(.055, .945)) %>%
+  data.frame() %>%
+  bind_cols(nd) %>%
+  
+  ggplot(aes(x = population, group = cid, color = cid)) +
+  geom_smooth(aes(y = Estimate, ymin = Q5.5, ymax = Q94.5, fill = cid),
+              stat = "identity",
+              alpha = 1/4, size = 1/2) +
+  geom_point(data = bind_cols(d, b12.2b$criteria$loo$diagnostics),
+             aes(y = total_tools, size = pareto_k),
+             alpha = 4/5) +
+  geom_text(data = text,
+            aes(y = total_tools, label = label)) +
+  scale_y_continuous(NULL, labels = NULL) +
+  labs(subtitle = "gamma-Poisson model")
+```
+
+```{r}
+library(patchwork)
+
+(p1 | p2) &
+  scale_fill_manual(values = canva_pal("Green fields")(4)[c(4, 1)]) &
+  scale_color_manual(values = canva_pal("Green fields")(4)[c(4, 1)]) &
+  scale_size(range = c(2, 5)) &
+  scale_x_continuous("population", breaks = c(0, 50000, 150000, 250000)) &
+  coord_cartesian(xlim = range(d$population),
+                  ylim = range(d$total_tools)) &
+  theme(axis.ticks = element_blank(),
+        legend.position = "none")
+```
+
+```{r}
+predict(b12.2b,
+        summary = F) %>% 
+  data.frame() %>% 
+  set_names(d$culture) %>% 
+  pivot_longer(everything(),
+               names_to = "culture",
+               values_to = "lambda") %>% 
+  left_join(d) %>% 
+  
+  ggplot(aes(x = lambda, y = 0)) +
+  stat_halfeye(point_interval = mean_qi, .width = .5,
+               fill = canva_pal("Green fields")(4)[2],
+               color = canva_pal("Green fields")(4)[1]) +
+  geom_vline(aes(xintercept = total_tools),
+             color = canva_pal("Green fields")(4)[3]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  scale_x_continuous(expression(lambda["[culture]"]), breaks = 0:2 * 100) +
+  coord_cartesian(xlim = c(0, 210)) +
+  facet_wrap(~culture, nrow = 2)
+```
+
+### 12.1.3 Over-dispersion, entropy, and information criteria.
