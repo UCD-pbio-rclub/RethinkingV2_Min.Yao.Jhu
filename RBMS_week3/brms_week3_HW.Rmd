@@ -868,7 +868,7 @@ posterior_coef <- tibble(shape=mu_shape, temps=as.factor(unique(data_wps0_one_ST
                         p=t(mu_p))
 post_plot <- expand_grid(posterior_coef, day=1:28) %>%
   mutate(prop_germ=pgamma(day, shape=mu_shape, rate=rate) * (1-p))
-stdi.plot <- germ %>% filter(pops=="STDI") %>% 
+stdi.plot <- data_wps0 %>% filter(pops=="STDI") %>% 
   select(day, temps, cumulative_germ, total_seeds) %>%
   mutate(temps=as.factor(temps),
          prop_germ=cumulative_germ/total_seeds)
