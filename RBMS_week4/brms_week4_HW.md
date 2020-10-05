@@ -100,7 +100,7 @@ library(tidyverse)
 ```
 
 ```
-## -- Attaching packages ------------------------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --
+## -- Attaching packages ----------------------------------------------------------------------------- tidyverse 1.3.0 --
 ```
 
 ```
@@ -111,7 +111,7 @@ library(tidyverse)
 ```
 
 ```
-## -- Conflicts ---------------------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+## -- Conflicts -------------------------------------------------------------------------------- tidyverse_conflicts() --
 ## x tidyr::extract() masks rstan::extract()
 ## x dplyr::filter()  masks stats::filter()
 ## x dplyr::lag()     masks stats::lag()
@@ -163,6 +163,7 @@ germ
 ## # ... with 3,830 more rows
 ```
 
+#### Convert to one event per row
 
 ```r
 one_per_row <- function(df) {
@@ -207,6 +208,7 @@ germone
 ## 10 CAAM      5    10     0    28
 ## # ... with 9,110 more rows
 ```
+#### STDI only
 
 ```r
 germ.stdi <- germone %>% filter(pops=="STDI") %>% select(-pops)
@@ -238,13 +240,13 @@ germ.stdi
 ## # ... with 386 more rows
 ```
 
-Assignment:
+# Assignment:
 
 You can start from my models if you want to.  The three relevant ones from my code are
 
-### m1.1/m1.2: censored exponential (the worst)
+## m1.1/m1.2: censored exponential (the worst)
 
-#### m1.1: rethinking
+### m1.1: rethinking
 
 exponential rate curve, censoring seed that don't germinate.
 
@@ -273,19 +275,19 @@ precis(m1.1, depth = 2)
 
 ```
 ##          mean        sd     5.5%    94.5%    n_eff     Rhat4
-## a[1] 5.441308 0.3931014 4.859214 6.119978 2262.352 0.9988236
-## a[2] 4.695024 0.2848085 4.272482 5.159395 2361.054 0.9992817
-## a[3] 4.022022 0.2176538 3.683704 4.376322 2247.247 0.9995361
-## a[4] 2.480859 0.1581518 2.242390 2.734211 2903.270 0.9994678
-## a[5] 3.069373 0.1741638 2.805226 3.360603 2713.767 0.9993577
-## a[6] 3.732955 0.1994819 3.431914 4.043900 2692.657 0.9988128
-## a[7] 5.194464 0.3433344 4.687341 5.779571 3077.458 0.9988117
-## a[8] 5.619692 0.4010675 5.027888 6.278359 2462.794 0.9994094
+## a[1] 5.454740 0.3708651 4.894927 6.066141 2675.068 0.9989761
+## a[2] 4.703917 0.2767352 4.289418 5.160302 2692.623 0.9995150
+## a[3] 4.018457 0.2189796 3.677970 4.382773 2777.395 0.9988091
+## a[4] 2.477641 0.1600836 2.235990 2.735896 2501.310 0.9985846
+## a[5] 3.074638 0.1772367 2.796915 3.366283 2662.546 0.9987900
+## a[6] 3.733415 0.1984087 3.425073 4.048695 2509.928 0.9985943
+## a[7] 5.197811 0.3604693 4.660696 5.798506 2134.901 0.9996917
+## a[8] 5.616911 0.3903176 5.025888 6.272231 2771.035 0.9997966
 ```
 
 The above represent log(mean time to germination)
 
-#### m1.2: brms censoring model
+### m1.2: brms censoring model
 
 need to set up indicator for censoring.
 
@@ -353,8 +355,8 @@ m1.2 <- brm(day | cens(cens) ~ 0 + tempsc,
 ## 
 ## SAMPLING FOR MODEL '02cbacdf9a005d8fb72b95a50f9e274d' NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 0.001 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+## Chain 1: Gradient evaluation took 0 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -371,9 +373,9 @@ m1.2 <- brm(day | cens(cens) ~ 0 + tempsc,
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.927 seconds (Warm-up)
-## Chain 1:                0.995 seconds (Sampling)
-## Chain 1:                1.922 seconds (Total)
+## Chain 1:  Elapsed Time: 0.959 seconds (Warm-up)
+## Chain 1:                1.082 seconds (Sampling)
+## Chain 1:                2.041 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '02cbacdf9a005d8fb72b95a50f9e274d' NOW (CHAIN 2).
@@ -396,9 +398,9 @@ m1.2 <- brm(day | cens(cens) ~ 0 + tempsc,
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.985 seconds (Warm-up)
-## Chain 2:                0.986 seconds (Sampling)
-## Chain 2:                1.971 seconds (Total)
+## Chain 2:  Elapsed Time: 1.101 seconds (Warm-up)
+## Chain 2:                1.012 seconds (Sampling)
+## Chain 2:                2.113 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '02cbacdf9a005d8fb72b95a50f9e274d' NOW (CHAIN 3).
@@ -421,15 +423,15 @@ m1.2 <- brm(day | cens(cens) ~ 0 + tempsc,
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 1.002 seconds (Warm-up)
-## Chain 3:                1.005 seconds (Sampling)
-## Chain 3:                2.007 seconds (Total)
+## Chain 3:  Elapsed Time: 0.925 seconds (Warm-up)
+## Chain 3:                0.934 seconds (Sampling)
+## Chain 3:                1.859 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '02cbacdf9a005d8fb72b95a50f9e274d' NOW (CHAIN 4).
 ## Chain 4: 
-## Chain 4: Gradient evaluation took 0.001 seconds
-## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+## Chain 4: Gradient evaluation took 0 seconds
+## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
 ## Chain 4: Adjust your expectations accordingly!
 ## Chain 4: 
 ## Chain 4: 
@@ -446,9 +448,9 @@ m1.2 <- brm(day | cens(cens) ~ 0 + tempsc,
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.986 seconds (Warm-up)
-## Chain 4:                0.916 seconds (Sampling)
-## Chain 4:                1.902 seconds (Total)
+## Chain 4:  Elapsed Time: 1.182 seconds (Warm-up)
+## Chain 4:                1.121 seconds (Sampling)
+## Chain 4:                2.303 seconds (Total)
 ## Chain 4:
 ```
 
@@ -467,14 +469,14 @@ summary(m1.2)
 ## 
 ## Population-Level Effects: 
 ##          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## tempsc05     5.44      0.37     4.78     6.22 1.00     6660     3165
-## tempsc10     4.70      0.29     4.18     5.29 1.00     6514     2943
-## tempsc15     4.03      0.22     3.62     4.48 1.00     7399     3137
-## tempsc20     2.48      0.16     2.18     2.79 1.00     6421     2849
-## tempsc25     3.07      0.17     2.75     3.42 1.00     7660     2817
-## tempsc30     3.74      0.19     3.36     4.14 1.00     7497     3024
-## tempsc35     5.21      0.35     4.56     5.96 1.00     6695     2836
-## tempsc40     5.62      0.39     4.92     6.45 1.00     5912     2542
+## tempsc05     5.45      0.39     4.76     6.27 1.00     7721     2629
+## tempsc10     4.71      0.28     4.20     5.29 1.00     8055     3156
+## tempsc15     4.03      0.23     3.61     4.50 1.00     6958     2776
+## tempsc20     2.48      0.15     2.19     2.80 1.00     7634     3035
+## tempsc25     3.07      0.17     2.74     3.42 1.00     7129     2981
+## tempsc30     3.74      0.20     3.37     4.13 1.00     6963     2767
+## tempsc35     5.20      0.35     4.56     5.92 1.00     7802     2737
+## tempsc40     5.61      0.40     4.89     6.48 1.00     7082     2872
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -552,9 +554,9 @@ m1.5 <- stan(model_code=stanmodel1.5, data=d)
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 3.47 seconds (Warm-up)
-## Chain 1:                2.884 seconds (Sampling)
-## Chain 1:                6.354 seconds (Total)
+## Chain 1:  Elapsed Time: 5.453 seconds (Warm-up)
+## Chain 1:                3.165 seconds (Sampling)
+## Chain 1:                8.618 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL '9064b37d517551d81d83ff3f0e4fe626' NOW (CHAIN 2).
@@ -577,9 +579,9 @@ m1.5 <- stan(model_code=stanmodel1.5, data=d)
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 3.594 seconds (Warm-up)
-## Chain 2:                2.882 seconds (Sampling)
-## Chain 2:                6.476 seconds (Total)
+## Chain 2:  Elapsed Time: 3.907 seconds (Warm-up)
+## Chain 2:                3.321 seconds (Sampling)
+## Chain 2:                7.228 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL '9064b37d517551d81d83ff3f0e4fe626' NOW (CHAIN 3).
@@ -602,9 +604,9 @@ m1.5 <- stan(model_code=stanmodel1.5, data=d)
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 3.706 seconds (Warm-up)
-## Chain 3:                4.513 seconds (Sampling)
-## Chain 3:                8.219 seconds (Total)
+## Chain 3:  Elapsed Time: 3.68 seconds (Warm-up)
+## Chain 3:                3.212 seconds (Sampling)
+## Chain 3:                6.892 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL '9064b37d517551d81d83ff3f0e4fe626' NOW (CHAIN 4).
@@ -627,9 +629,9 @@ m1.5 <- stan(model_code=stanmodel1.5, data=d)
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 4.426 seconds (Warm-up)
-## Chain 4:                3.255 seconds (Sampling)
-## Chain 4:                7.681 seconds (Total)
+## Chain 4:  Elapsed Time: 4.279 seconds (Warm-up)
+## Chain 4:                3.512 seconds (Sampling)
+## Chain 4:                7.791 seconds (Total)
 ## Chain 4:
 ```
 
@@ -639,23 +641,23 @@ precis(m1.5, depth = 2)
 ```
 
 ```
-##             mean        sd       5.5%      94.5%     n_eff     Rhat4
-## a[1]   2.7898745 0.5875093  1.9448791  3.8066779  4567.892 1.0001750
-## a[2]   1.5293946 0.2631441  1.1298289  1.9685423  8708.865 0.9993337
-## a[3]   1.3437965 0.1837119  1.0582902  1.6496333  7724.604 0.9994362
-## a[4]   1.0058462 0.1166088  0.8244339  1.1980887  9783.916 0.9992434
-## a[5]   1.1572450 0.1353861  0.9406932  1.3782561  8662.496 0.9994267
-## a[6]   2.3433414 0.1782864  2.0696810  2.6375083  9337.374 0.9998187
-## a[7]   2.4238360 0.4824830  1.7277458  3.2600938  5541.456 1.0006986
-## a[8]   0.0123213 1.0368482 -1.6202884  1.6652033  8095.644 0.9995685
-## ap[1]  2.4026043 0.5714404  1.4877315  3.2912951  5708.360 1.0002819
-## ap[2]  1.6110297 0.3605727  1.0688242  2.2144860  7815.755 0.9996285
-## ap[3]  0.7932142 0.2940609  0.3338250  1.2743708  8671.378 0.9996611
-## ap[4] -0.9649042 0.3076405 -1.4727753 -0.4925721  9392.686 0.9993312
-## ap[5] -0.2994623 0.2742653 -0.7383062  0.1420762 11752.846 0.9994431
-## ap[6]  0.1695934 0.3026032 -0.3068404  0.6453503  9006.695 0.9994911
-## ap[7]  2.2038830 0.4944290  1.4269446  3.0054120  6956.790 0.9996483
-## ap[8]  2.9203917 0.5253023  2.1146524  3.8049876  7486.001 0.9992444
+##              mean        sd       5.5%      94.5%     n_eff     Rhat4
+## a[1]   2.79401885 0.5924463  1.9274938  3.7996150  5681.177 0.9993761
+## a[2]   1.52621572 0.2686507  1.1231995  1.9762741  7599.334 0.9995718
+## a[3]   1.34575526 0.1820006  1.0684903  1.6443453  8591.169 0.9992636
+## a[4]   1.00710262 0.1159117  0.8262497  1.2039809  7665.100 0.9991796
+## a[5]   1.15528276 0.1336829  0.9461114  1.3719578 10438.192 0.9995927
+## a[6]   2.34336855 0.1809902  2.0645540  2.6409624  6790.611 0.9995166
+## a[7]   2.42496580 0.4809178  1.7358373  3.2626269  4650.114 0.9996092
+## a[8]   0.03337269 1.0102595 -1.5662005  1.6774523  8334.373 0.9991619
+## ap[1]  2.40186337 0.5729135  1.5121562  3.3030042  5408.224 0.9995803
+## ap[2]  1.60772444 0.3504353  1.0715419  2.1851695  7858.920 0.9992536
+## ap[3]  0.78968542 0.2881983  0.3286732  1.2475262  7659.988 0.9996420
+## ap[4] -0.96255008 0.2985942 -1.4324076 -0.4972350  9204.948 0.9998475
+## ap[5] -0.29978855 0.2863277 -0.7673003  0.1601942  9330.850 0.9994665
+## ap[6]  0.16919731 0.3116841 -0.3127336  0.6561786  8500.883 0.9995528
+## ap[7]  2.18688443 0.4797899  1.4549519  2.9481071  6513.347 0.9994265
+## ap[8]  2.91305604 0.5363576  2.1204248  3.8207300  8305.446 0.9994808
 ```
 
 ### m1.7/m1.7a : ZI Gamma (the best)
@@ -777,48 +779,35 @@ precis(m1.7, depth = 2)
 
 ```
 ##                mean         sd       5.5%      94.5%    n_eff     Rhat4
-## shape  2.353210e+00 0.20068741  2.0442091  2.6831005 4781.397 1.0000264
-## a[1]   2.177421e+00 0.25167148  1.7954632  2.5973947 4920.073 1.0001622
-## a[2]   1.436023e+00 0.15392840  1.1950092  1.6941747 4844.108 1.0001233
-## a[3]   1.303146e+00 0.11783173  1.1177640  1.4969536 5564.022 0.9996409
-## a[4]   9.929521e-01 0.07475170  0.8764939  1.1126569 5779.836 0.9996043
-## a[5]   1.135649e+00 0.08258197  1.0062652  1.2697077 5228.105 0.9994393
-## a[6]   2.211690e+00 0.09775070  2.0591970  2.3715131 6319.033 0.9993867
-## a[7]   2.016053e+00 0.22843079  1.6540017  2.3904713 5397.419 1.0001817
-## a[8]  -8.978115e-05 0.50213826 -0.7925012  0.7902565 5816.777 1.0001864
-## ap[1]  3.146916e+00 0.65730749  2.1806813  4.2396253 4567.768 0.9998215
-## ap[2]  1.747468e+00 0.38054992  1.1561457  2.3811398 5999.173 0.9997274
-## ap[3]  8.370440e-01 0.29871046  0.3660776  1.3279054 5690.930 0.9998003
-## ap[4] -1.023893e+00 0.32287702 -1.5471290 -0.5385074 4828.043 0.9992669
-## ap[5] -3.160689e-01 0.27677625 -0.7623944  0.1214093 5541.410 1.0010999
-## ap[6]  2.933310e-01 0.27671015 -0.1428672  0.7385646 4952.784 0.9999935
-## ap[7]  2.689618e+00 0.56634946  1.8357740  3.6798437 5499.838 0.9994569
-## ap[8]  3.641740e+00 0.76744104  2.5154665  4.9820588 3908.684 0.9996319
+## shape  2.3510523774 0.20226950  2.0317559  2.6772539 5177.562 0.9996517
+## a[1]   2.1738565617 0.25170742  1.7902703  2.5853451 5029.957 0.9997999
+## a[2]   1.4315356216 0.15414353  1.1931187  1.6825306 5456.954 0.9994211
+## a[3]   1.3022417440 0.11497867  1.1177958  1.4863140 5238.374 0.9999086
+## a[4]   0.9942321104 0.07596876  0.8725851  1.1153419 5018.538 0.9996424
+## a[5]   1.1354080418 0.08451821  1.0043750  1.2737239 5376.686 0.9995558
+## a[6]   2.2120247716 0.09819040  2.0624272  2.3689821 5614.620 0.9997539
+## a[7]   2.0117807033 0.22244887  1.6633502  2.3734348 4843.761 0.9998593
+## a[8]  -0.0003979289 0.51019406 -0.8169995  0.8101317 5024.113 0.9996683
+## ap[1]  3.1287371145 0.65269753  2.1882467  4.2246663 5271.200 1.0003785
+## ap[2]  1.7420840302 0.39012414  1.1431006  2.3953743 6037.450 0.9992766
+## ap[3]  0.8348639891 0.30317594  0.3576639  1.3243651 6735.630 1.0002113
+## ap[4] -1.0144434992 0.32073488 -1.5399325 -0.5147180 6127.007 1.0000033
+## ap[5] -0.3190143627 0.28909477 -0.7862910  0.1360041 5942.738 0.9995012
+## ap[6]  0.2916216211 0.29023422 -0.1666817  0.7481870 4958.969 0.9999538
+## ap[7]  2.6792820140 0.55050223  1.8588805  3.6184508 5850.294 0.9999154
+## ap[8]  3.6225393480 0.72065655  2.5534515  4.8444074 5128.853 0.9995805
 ```
 
 
 
 ```r
-shinystan::launch_shinystan(m1.7)
-```
-
-```
-## 
-## Launching ShinyStan interface... for large models this  may take some time.
-```
-
-```
-## Loading required package: shiny
-```
-
-```
-## 
-## Listening on http://127.0.0.1:5176
+#shinystan::launch_shinystan(m1.7)
 ```
 
 playing with priors:
 
 Make shape exponential
+
 
 ```r
 d <- list(N=nrow(germ.stdi),
@@ -872,29 +861,197 @@ precis(m1.7a, depth = 2)
 
 ```
 ##               mean         sd       5.5%      94.5%    n_eff     Rhat4
-## shape  2.887889254 0.27349925  2.4664189  3.3236179 5367.130 1.0000498
-## a[1]   2.278615352 0.23849675  1.9112899  2.6601871 5584.517 0.9999013
-## a[2]   1.455577484 0.14119634  1.2342065  1.6848907 6572.584 0.9995436
-## a[3]   1.317090293 0.10232128  1.1554069  1.4831579 6885.831 0.9992963
-## a[4]   0.998160825 0.06939407  0.8883334  1.1102496 5458.607 1.0004525
-## a[5]   1.142795810 0.07601275  1.0239752  1.2662805 6888.607 0.9999769
-## a[6]   2.219390358 0.09002561  2.0782811  2.3634331 6104.004 0.9994170
-## a[7]   2.085744726 0.21667242  1.7521865  2.4383559 5539.847 0.9997416
-## a[8]   0.007793111 0.50416170 -0.7851663  0.8151926 6256.416 0.9995321
-## ap[1]  3.141976675 0.65096383  2.1811192  4.2233416 5001.014 0.9995282
-## ap[2]  1.747328401 0.39459560  1.1511560  2.4008299 4788.451 0.9995695
-## ap[3]  0.831292857 0.29147222  0.3689738  1.3072105 6418.659 0.9993474
-## ap[4] -1.014189931 0.32648554 -1.5450392 -0.4972164 6606.337 0.9995942
-## ap[5] -0.328150328 0.30376524 -0.8165348  0.1586079 5850.944 0.9992194
-## ap[6]  0.302686873 0.28995811 -0.1452210  0.7748388 5306.798 0.9998410
-## ap[7]  2.690270419 0.56166607  1.8488740  3.6599969 4384.709 1.0002338
-## ap[8]  3.672417472 0.76239872  2.5346251  4.9581408 4826.669 0.9997057
+## shape  2.885591358 0.27408092  2.4653942  3.3388947 5124.380 1.0000792
+## a[1]   2.271683236 0.25298263  1.8804857  2.6850731 5554.048 0.9997877
+## a[2]   1.456599101 0.14425302  1.2295260  1.6918382 6246.886 0.9992640
+## a[3]   1.316596693 0.10339760  1.1494007  1.4842652 6827.457 0.9992627
+## a[4]   0.997910368 0.06636120  0.8927786  1.1084874 6905.504 0.9995920
+## a[5]   1.139416717 0.07691877  1.0182439  1.2654467 6838.234 0.9997718
+## a[6]   2.220582297 0.08866945  2.0814824  2.3636050 5733.920 1.0007529
+## a[7]   2.085502170 0.20901174  1.7615096  2.4307126 5972.809 0.9999309
+## a[8]   0.004361216 0.49613516 -0.7866222  0.7890791 5760.195 1.0001255
+## ap[1]  3.141942972 0.63531534  2.2027109  4.2183126 5047.362 1.0003992
+## ap[2]  1.744127879 0.39821653  1.1335942  2.4066096 6125.756 0.9993856
+## ap[3]  0.829741821 0.30033793  0.3633941  1.3229739 6974.318 0.9994748
+## ap[4] -1.017558187 0.30809302 -1.5218066 -0.5295063 6203.161 0.9999324
+## ap[5] -0.315310488 0.27831576 -0.7655266  0.1222670 6482.960 0.9997063
+## ap[6]  0.306174297 0.28590327 -0.1508874  0.7690546 7162.291 0.9993651
+## ap[7]  2.698690338 0.57051620  1.8394798  3.6491491 4516.922 0.9992952
+## ap[8]  3.637578543 0.76274223  2.5157174  4.9352948 5394.495 1.0000797
 ```
 
 
-#### Choose at least one model from above (or your own) to work from. 
-#### From the base model:
+```r
+post <- as.data.frame(m1.7a)
+post_logavgdays <- post %>% select(shape, starts_with("a["
+)) # these are the shape and the log(mean(avg time to germinate))
+mu_rate <- post_logavgdays %>% 
+  mutate(across(-shape, ~ shape*exp(-(.))) ) %>%
+  summarize(across(everything(), mean)) %>% select(-shape) # posterior mean
+mu_rate
+```
+
+```
+##        a[1]      a[2]      a[3]     a[4]      a[5]      a[6]      a[7]     a[8]
+## 1 0.3056671 0.6788714 0.7773009 1.066341 0.9256058 0.3144779 0.3654122 3.247215
+```
+
+```r
+mu_shape <- mean(post$shape)
+post_logitp <- post %>% select(starts_with("ap")) #logit p dormant
+mu_p <- post_logitp %>%
+  summarize_all(mean) %>%
+  mutate_all(inv_logit)
+mu_p
+```
+
+```
+##       ap[1]     ap[2]     ap[3]     ap[4]    ap[5]     ap[6]     ap[7]
+## 1 0.9585901 0.8512106 0.6963003 0.2655033 0.421819 0.5759512 0.9369493
+##       ap[8]
+## 1 0.9743588
+```
+
+```r
+posterior_coef <- tibble(shape=mu_shape, temps=as.factor(unique(germ.stdi$temps)),
+                         rate=t(mu_rate),
+                         p=t(mu_p))
+post_plot1.7a <- expand_grid(posterior_coef, day=1:28) %>%
+  mutate(prop_germ=pgamma(day, shape=mu_shape, rate=rate) * (1-p))
+stdi.plot <- germ %>% filter(pops=="STDI") %>% 
+  select(day, temps, cumulative_germ, total_seeds) %>%
+  mutate(temps=as.factor(temps),
+         prop_germ=cumulative_germ/total_seeds)
+post_plot1.7a %>% 
+  ggplot(aes(x=day,y=prop_germ,color=temps,group=temps)) +
+  geom_line() +
+  geom_point(data=stdi.plot)
+```
+
+![](brms_week4_HW_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+
+### Choose at least one model from above (or your own) to work from. 
+### From the base model:
 
 ### 1) Try using temperature as a continuous predictor.  Perhaps as a quadratic, or perhaps using the equation that Rongkui showed. (Or try both).
+
+
+```r
+d <- list(N=nrow(germ.stdi),
+          germ=germ.stdi$germ,
+          temps=as.vector(scale(germ.stdi$temps)),
+          day=germ.stdi$day)
+
+stanmodel1.7a_quad <-
+  "
+data{
+    int<lower=1> N;  // number of observations
+    int germ[N];
+    vector[N] day;
+    real temps[N];
+}
+parameters{
+    real<lower=0> shape; // should set lower bound
+    real a; // alpha for the gamma curve, one for each temp
+    real ap; // alpha for the proportion dormant, one for each temp
+    real b; // b for the gamma curve, one for each temp
+    real bp; // b for the proportion dormant, one for each temp
+    real c; // c for the gamma curve, one for each temp
+    real cp; // c for the proportion dormant, one for each temp
+}
+model{
+    vector[N] p;
+    vector[N] mu;
+    a ~ normal( 0 , .5 ); //narrow priors to overcome divergent transitions
+    ap ~ normal( 0, 1.5 );
+    b ~ normal( 0 , .5 ); //narrow priors to overcome divergent transitions
+    bp ~ normal( 0, 1.5 );
+    c ~ normal( 0 , .5 ); //narrow priors to overcome divergent transitions
+    cp ~ normal( 0, 1.5 );
+    shape ~ exponential(.5); 
+    for (i in 1:N) {
+        p[i] = ap + bp*temps[i] + cp*(temps[i]^2);
+        p[i] = inv_logit(p[i]);
+    }
+    for ( i in 1:N ) {
+        mu[i] = a + b*temps[i] + c*(temps[i]^2);
+         // apply the inverse link function
+        mu[i] = shape * exp(-(mu[i]));
+    }
+    for ( i in 1:N ) 
+       if ( germ[i] == 0 ) target += log_mix(p[i], 0, gamma_lccdf(day[i] | shape, mu[i]));
+    for ( i in 1:N ) 
+       if ( germ[i] == 1 ) target += log1m(p[i]) + gamma_lpdf(day[i] | shape, mu[i]);
+    for ( i in 1:N ) 
+       if ( germ[i] == 1 ) day[i] ~ gamma( shape, mu[i] );
+}
+"
+m1.7a_quad <- stan(model_code=stanmodel1.7a_quad, data=d, chains=4, cores=4, control=list(adapt_delta=.99))
+```
+
+
+```r
+precis(m1.7a_quad)
+```
+
+```
+##              mean         sd       5.5%      94.5%    n_eff     Rhat4
+## shape  2.86590518 0.26146601  2.4556300  3.3025507 3754.905 0.9997360
+## a      1.10207960 0.05228646  1.0188760  1.1885031 2350.160 1.0003248
+## ap    -0.55759347 0.18426168 -0.8518505 -0.2637496 2549.489 1.0011836
+## b      0.68281087 0.07818375  0.5544965  0.8049264 3383.598 0.9994840
+## bp    -0.01782085 0.23120976 -0.3913496  0.3558076 3257.109 1.0002236
+## c      1.27847154 0.12053034  1.0826843  1.4748738 2174.710 0.9998912
+## cp     2.16455181 0.34269749  1.6133856  2.7179811 2286.124 1.0015174
+```
+
+
+
+```r
+post <- as.data.frame(m1.7a_quad)
+
+predict_post <- function(temp, post, days=1:28) {
+    p <- post$ap + post$bp*temp + post$cp*temp^2
+    p <- inv_logit(p)
+    mu <- post$a + post$b*temp + post$c*temp^2
+    mu <- post$shape*exp(-mu)
+    postparams <- tibble(id = 1:length(p), p=p, mu=mu, shape=post$shape) %>%
+      nest(params=-id)
+    prop_germ <- postparams %>% 
+      mutate(prop_germ=map(params, ~ pgamma(days, shape=.$shape, rate=.$mu) * (1-.$p))) %>% 
+      select(-params) %>% 
+      unnest(prop_germ) %>%
+      mutate(day=rep(days, length.out=nrow(.)))
+}
+
+post_predictions <- tibble(realtemp = unique(germ.stdi$temps)) %>%
+  mutate(scaletemp = scale(realtemp)) %>%
+  mutate(predictions = map(scaletemp, predict_post, post)) %>% unnest(predictions)
+
+post_predictions_summary <- post_predictions %>%
+  group_by(realtemp, day) %>%
+  summarize(low89=HPDI(prop_germ)[1], 
+            high90=HPDI(prop_germ)[2],
+            prop_germ=mean(prop_germ)) %>%
+  mutate(temps=as.factor(realtemp))
+```
+
+```
+## `summarise()` regrouping output by 'realtemp' (override with `.groups` argument)
+```
+
+```r
+stdi.plot <- germ %>% filter(pops=="STDI") %>% 
+  select(day, temps, cumulative_germ, total_seeds) %>%
+  mutate(temps=as.factor(temps),
+         prop_germ=cumulative_germ/total_seeds)
+
+post_predictions_summary %>% 
+  ggplot(aes(x=day,y=prop_germ,color=temps,group=temps)) +
+  geom_line() +
+  geom_point(data=stdi.plot)
+```
+
+![](brms_week4_HW_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
 
 ### 2) Try incorporating multiple populations.

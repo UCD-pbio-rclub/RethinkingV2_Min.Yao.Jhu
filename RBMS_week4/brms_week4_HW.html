@@ -416,12 +416,12 @@ summary {
 ## 
 ##     ar</code></pre>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages ------------------------------------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## -- Attaching packages ----------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
 <pre><code>## √ tibble  3.0.3     √ dplyr   1.0.1
 ## √ tidyr   1.1.1     √ stringr 1.4.0
 ## √ readr   1.3.1     √ forcats 0.5.0
 ## √ purrr   0.3.4</code></pre>
-<pre><code>## -- Conflicts ---------------------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+<pre><code>## -- Conflicts -------------------------------------------------------------------------------- tidyverse_conflicts() --
 ## x tidyr::extract() masks rstan::extract()
 ## x dplyr::filter()  masks stats::filter()
 ## x dplyr::lag()     masks stats::lag()
@@ -458,6 +458,8 @@ summary {
 ##  9 CAAM      5          50     0     9               0
 ## 10 CAAM      5          50     0    10               0
 ## # ... with 3,830 more rows</code></pre>
+<div id="convert-to-one-event-per-row" class="section level4">
+<h4>Convert to one event per row</h4>
 <pre class="r"><code>one_per_row &lt;- function(df) {
   total_seed &lt;- max(df$total_seeds, sum(df$germ))
   newdata &lt;- tibble(id=1:total_seed, germ=0, day=max(df$day))
@@ -496,6 +498,9 @@ germone</code></pre>
 ##  9 CAAM      5     9     0    28
 ## 10 CAAM      5    10     0    28
 ## # ... with 9,110 more rows</code></pre>
+</div>
+<div id="stdi-only" class="section level4">
+<h4>STDI only</h4>
 <pre class="r"><code>germ.stdi &lt;- germone %&gt;% filter(pops==&quot;STDI&quot;) %&gt;% select(-pops)</code></pre>
 <pre><code>## Adding missing grouping variables: `pops`</code></pre>
 <pre class="r"><code>germ.stdi</code></pre>
@@ -514,12 +519,14 @@ germone</code></pre>
 ##  9 STDI      5     9     0    28
 ## 10 STDI      5    10     0    28
 ## # ... with 386 more rows</code></pre>
-<p>Assignment:</p>
+</div>
+<div id="assignment" class="section level1">
+<h1>Assignment:</h1>
 <p>You can start from my models if you want to. The three relevant ones from my code are</p>
-<div id="m1.1m1.2-censored-exponential-the-worst" class="section level3">
-<h3>m1.1/m1.2: censored exponential (the worst)</h3>
-<div id="m1.1-rethinking" class="section level4">
-<h4>m1.1: rethinking</h4>
+<div id="m1.1m1.2-censored-exponential-the-worst" class="section level2">
+<h2>m1.1/m1.2: censored exponential (the worst)</h2>
+<div id="m1.1-rethinking" class="section level3">
+<h3>m1.1: rethinking</h3>
 <p>exponential rate curve, censoring seed that don’t germinate.</p>
 <pre class="r"><code>d &lt;- list(germ=germ.stdi$germ, 
           temps=as.numeric(as.factor(germ.stdi$temps)),
@@ -537,18 +544,18 @@ m1.1 &lt;- ulam(
 )</code></pre>
 <pre class="r"><code>precis(m1.1, depth = 2)</code></pre>
 <pre><code>##          mean        sd     5.5%    94.5%    n_eff     Rhat4
-## a[1] 5.441308 0.3931014 4.859214 6.119978 2262.352 0.9988236
-## a[2] 4.695024 0.2848085 4.272482 5.159395 2361.054 0.9992817
-## a[3] 4.022022 0.2176538 3.683704 4.376322 2247.247 0.9995361
-## a[4] 2.480859 0.1581518 2.242390 2.734211 2903.270 0.9994678
-## a[5] 3.069373 0.1741638 2.805226 3.360603 2713.767 0.9993577
-## a[6] 3.732955 0.1994819 3.431914 4.043900 2692.657 0.9988128
-## a[7] 5.194464 0.3433344 4.687341 5.779571 3077.458 0.9988117
-## a[8] 5.619692 0.4010675 5.027888 6.278359 2462.794 0.9994094</code></pre>
+## a[1] 5.454740 0.3708651 4.894927 6.066141 2675.068 0.9989761
+## a[2] 4.703917 0.2767352 4.289418 5.160302 2692.623 0.9995150
+## a[3] 4.018457 0.2189796 3.677970 4.382773 2777.395 0.9988091
+## a[4] 2.477641 0.1600836 2.235990 2.735896 2501.310 0.9985846
+## a[5] 3.074638 0.1772367 2.796915 3.366283 2662.546 0.9987900
+## a[6] 3.733415 0.1984087 3.425073 4.048695 2509.928 0.9985943
+## a[7] 5.197811 0.3604693 4.660696 5.798506 2134.901 0.9996917
+## a[8] 5.616911 0.3903176 5.025888 6.272231 2771.035 0.9997966</code></pre>
 <p>The above represent log(mean time to germination)</p>
 </div>
-<div id="m1.2-brms-censoring-model" class="section level4">
-<h4>m1.2: brms censoring model</h4>
+<div id="m1.2-brms-censoring-model" class="section level3">
+<h3>m1.2: brms censoring model</h3>
 <p>need to set up indicator for censoring.</p>
 <pre class="r"><code>germ.stdi &lt;- germ.stdi %&gt;%
   mutate(cens=ifelse(germ==0, &quot;right&quot;, &quot;none&quot;),
@@ -589,8 +596,8 @@ germ.stdi</code></pre>
 <pre><code>## 
 ## SAMPLING FOR MODEL &#39;02cbacdf9a005d8fb72b95a50f9e274d&#39; NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 0.001 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+## Chain 1: Gradient evaluation took 0 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -607,9 +614,9 @@ germ.stdi</code></pre>
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.927 seconds (Warm-up)
-## Chain 1:                0.995 seconds (Sampling)
-## Chain 1:                1.922 seconds (Total)
+## Chain 1:  Elapsed Time: 0.959 seconds (Warm-up)
+## Chain 1:                1.082 seconds (Sampling)
+## Chain 1:                2.041 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL &#39;02cbacdf9a005d8fb72b95a50f9e274d&#39; NOW (CHAIN 2).
@@ -632,9 +639,9 @@ germ.stdi</code></pre>
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.985 seconds (Warm-up)
-## Chain 2:                0.986 seconds (Sampling)
-## Chain 2:                1.971 seconds (Total)
+## Chain 2:  Elapsed Time: 1.101 seconds (Warm-up)
+## Chain 2:                1.012 seconds (Sampling)
+## Chain 2:                2.113 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL &#39;02cbacdf9a005d8fb72b95a50f9e274d&#39; NOW (CHAIN 3).
@@ -657,15 +664,15 @@ germ.stdi</code></pre>
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 1.002 seconds (Warm-up)
-## Chain 3:                1.005 seconds (Sampling)
-## Chain 3:                2.007 seconds (Total)
+## Chain 3:  Elapsed Time: 0.925 seconds (Warm-up)
+## Chain 3:                0.934 seconds (Sampling)
+## Chain 3:                1.859 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL &#39;02cbacdf9a005d8fb72b95a50f9e274d&#39; NOW (CHAIN 4).
 ## Chain 4: 
-## Chain 4: Gradient evaluation took 0.001 seconds
-## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 10 seconds.
+## Chain 4: Gradient evaluation took 0 seconds
+## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0 seconds.
 ## Chain 4: Adjust your expectations accordingly!
 ## Chain 4: 
 ## Chain 4: 
@@ -682,9 +689,9 @@ germ.stdi</code></pre>
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.986 seconds (Warm-up)
-## Chain 4:                0.916 seconds (Sampling)
-## Chain 4:                1.902 seconds (Total)
+## Chain 4:  Elapsed Time: 1.182 seconds (Warm-up)
+## Chain 4:                1.121 seconds (Sampling)
+## Chain 4:                2.303 seconds (Total)
 ## Chain 4:</code></pre>
 <pre class="r"><code>summary(m1.2)</code></pre>
 <pre><code>##  Family: exponential 
@@ -696,19 +703,18 @@ germ.stdi</code></pre>
 ## 
 ## Population-Level Effects: 
 ##          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## tempsc05     5.44      0.37     4.78     6.22 1.00     6660     3165
-## tempsc10     4.70      0.29     4.18     5.29 1.00     6514     2943
-## tempsc15     4.03      0.22     3.62     4.48 1.00     7399     3137
-## tempsc20     2.48      0.16     2.18     2.79 1.00     6421     2849
-## tempsc25     3.07      0.17     2.75     3.42 1.00     7660     2817
-## tempsc30     3.74      0.19     3.36     4.14 1.00     7497     3024
-## tempsc35     5.21      0.35     4.56     5.96 1.00     6695     2836
-## tempsc40     5.62      0.39     4.92     6.45 1.00     5912     2542
+## tempsc05     5.45      0.39     4.76     6.27 1.00     7721     2629
+## tempsc10     4.71      0.28     4.20     5.29 1.00     8055     3156
+## tempsc15     4.03      0.23     3.61     4.50 1.00     6958     2776
+## tempsc20     2.48      0.15     2.19     2.80 1.00     7634     3035
+## tempsc25     3.07      0.17     2.74     3.42 1.00     7129     2981
+## tempsc30     3.74      0.20     3.37     4.13 1.00     6963     2767
+## tempsc35     5.20      0.35     4.56     5.92 1.00     7802     2737
+## tempsc40     5.61      0.40     4.89     6.48 1.00     7082     2872
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
 ## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
-</div>
 </div>
 <div id="m1.5-zi-exponential" class="section level3">
 <h3>m1.5: ZI exponential</h3>
@@ -776,9 +782,9 @@ m1.5 &lt;- stan(model_code=stanmodel1.5, data=d)</code></pre>
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 3.47 seconds (Warm-up)
-## Chain 1:                2.884 seconds (Sampling)
-## Chain 1:                6.354 seconds (Total)
+## Chain 1:  Elapsed Time: 5.453 seconds (Warm-up)
+## Chain 1:                3.165 seconds (Sampling)
+## Chain 1:                8.618 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL &#39;9064b37d517551d81d83ff3f0e4fe626&#39; NOW (CHAIN 2).
@@ -801,9 +807,9 @@ m1.5 &lt;- stan(model_code=stanmodel1.5, data=d)</code></pre>
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 3.594 seconds (Warm-up)
-## Chain 2:                2.882 seconds (Sampling)
-## Chain 2:                6.476 seconds (Total)
+## Chain 2:  Elapsed Time: 3.907 seconds (Warm-up)
+## Chain 2:                3.321 seconds (Sampling)
+## Chain 2:                7.228 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL &#39;9064b37d517551d81d83ff3f0e4fe626&#39; NOW (CHAIN 3).
@@ -826,9 +832,9 @@ m1.5 &lt;- stan(model_code=stanmodel1.5, data=d)</code></pre>
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 3.706 seconds (Warm-up)
-## Chain 3:                4.513 seconds (Sampling)
-## Chain 3:                8.219 seconds (Total)
+## Chain 3:  Elapsed Time: 3.68 seconds (Warm-up)
+## Chain 3:                3.212 seconds (Sampling)
+## Chain 3:                6.892 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL &#39;9064b37d517551d81d83ff3f0e4fe626&#39; NOW (CHAIN 4).
@@ -851,28 +857,28 @@ m1.5 &lt;- stan(model_code=stanmodel1.5, data=d)</code></pre>
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 4.426 seconds (Warm-up)
-## Chain 4:                3.255 seconds (Sampling)
-## Chain 4:                7.681 seconds (Total)
+## Chain 4:  Elapsed Time: 4.279 seconds (Warm-up)
+## Chain 4:                3.512 seconds (Sampling)
+## Chain 4:                7.791 seconds (Total)
 ## Chain 4:</code></pre>
 <pre class="r"><code>precis(m1.5, depth = 2)</code></pre>
-<pre><code>##             mean        sd       5.5%      94.5%     n_eff     Rhat4
-## a[1]   2.7898745 0.5875093  1.9448791  3.8066779  4567.892 1.0001750
-## a[2]   1.5293946 0.2631441  1.1298289  1.9685423  8708.865 0.9993337
-## a[3]   1.3437965 0.1837119  1.0582902  1.6496333  7724.604 0.9994362
-## a[4]   1.0058462 0.1166088  0.8244339  1.1980887  9783.916 0.9992434
-## a[5]   1.1572450 0.1353861  0.9406932  1.3782561  8662.496 0.9994267
-## a[6]   2.3433414 0.1782864  2.0696810  2.6375083  9337.374 0.9998187
-## a[7]   2.4238360 0.4824830  1.7277458  3.2600938  5541.456 1.0006986
-## a[8]   0.0123213 1.0368482 -1.6202884  1.6652033  8095.644 0.9995685
-## ap[1]  2.4026043 0.5714404  1.4877315  3.2912951  5708.360 1.0002819
-## ap[2]  1.6110297 0.3605727  1.0688242  2.2144860  7815.755 0.9996285
-## ap[3]  0.7932142 0.2940609  0.3338250  1.2743708  8671.378 0.9996611
-## ap[4] -0.9649042 0.3076405 -1.4727753 -0.4925721  9392.686 0.9993312
-## ap[5] -0.2994623 0.2742653 -0.7383062  0.1420762 11752.846 0.9994431
-## ap[6]  0.1695934 0.3026032 -0.3068404  0.6453503  9006.695 0.9994911
-## ap[7]  2.2038830 0.4944290  1.4269446  3.0054120  6956.790 0.9996483
-## ap[8]  2.9203917 0.5253023  2.1146524  3.8049876  7486.001 0.9992444</code></pre>
+<pre><code>##              mean        sd       5.5%      94.5%     n_eff     Rhat4
+## a[1]   2.79401885 0.5924463  1.9274938  3.7996150  5681.177 0.9993761
+## a[2]   1.52621572 0.2686507  1.1231995  1.9762741  7599.334 0.9995718
+## a[3]   1.34575526 0.1820006  1.0684903  1.6443453  8591.169 0.9992636
+## a[4]   1.00710262 0.1159117  0.8262497  1.2039809  7665.100 0.9991796
+## a[5]   1.15528276 0.1336829  0.9461114  1.3719578 10438.192 0.9995927
+## a[6]   2.34336855 0.1809902  2.0645540  2.6409624  6790.611 0.9995166
+## a[7]   2.42496580 0.4809178  1.7358373  3.2626269  4650.114 0.9996092
+## a[8]   0.03337269 1.0102595 -1.5662005  1.6774523  8334.373 0.9991619
+## ap[1]  2.40186337 0.5729135  1.5121562  3.3030042  5408.224 0.9995803
+## ap[2]  1.60772444 0.3504353  1.0715419  2.1851695  7858.920 0.9992536
+## ap[3]  0.78968542 0.2881983  0.3286732  1.2475262  7659.988 0.9996420
+## ap[4] -0.96255008 0.2985942 -1.4324076 -0.4972350  9204.948 0.9998475
+## ap[5] -0.29978855 0.2863277 -0.7673003  0.1601942  9330.850 0.9994665
+## ap[6]  0.16919731 0.3116841 -0.3127336  0.6561786  8500.883 0.9995528
+## ap[7]  2.18688443 0.4797899  1.4549519  2.9481071  6513.347 0.9994265
+## ap[8]  2.91305604 0.5363576  2.1204248  3.8207300  8305.446 0.9994808</code></pre>
 </div>
 <div id="m1.7m1.7a-zi-gamma-the-best" class="section level3">
 <h3>m1.7/m1.7a : ZI Gamma (the best)</h3>
@@ -973,29 +979,24 @@ model{
 m1.7 &lt;- stan(model_code=stanmodel1.7, data=d, chains=4, cores=4, control=list(adapt_delta=.99))</code></pre>
 <pre class="r"><code>precis(m1.7, depth = 2)</code></pre>
 <pre><code>##                mean         sd       5.5%      94.5%    n_eff     Rhat4
-## shape  2.353210e+00 0.20068741  2.0442091  2.6831005 4781.397 1.0000264
-## a[1]   2.177421e+00 0.25167148  1.7954632  2.5973947 4920.073 1.0001622
-## a[2]   1.436023e+00 0.15392840  1.1950092  1.6941747 4844.108 1.0001233
-## a[3]   1.303146e+00 0.11783173  1.1177640  1.4969536 5564.022 0.9996409
-## a[4]   9.929521e-01 0.07475170  0.8764939  1.1126569 5779.836 0.9996043
-## a[5]   1.135649e+00 0.08258197  1.0062652  1.2697077 5228.105 0.9994393
-## a[6]   2.211690e+00 0.09775070  2.0591970  2.3715131 6319.033 0.9993867
-## a[7]   2.016053e+00 0.22843079  1.6540017  2.3904713 5397.419 1.0001817
-## a[8]  -8.978115e-05 0.50213826 -0.7925012  0.7902565 5816.777 1.0001864
-## ap[1]  3.146916e+00 0.65730749  2.1806813  4.2396253 4567.768 0.9998215
-## ap[2]  1.747468e+00 0.38054992  1.1561457  2.3811398 5999.173 0.9997274
-## ap[3]  8.370440e-01 0.29871046  0.3660776  1.3279054 5690.930 0.9998003
-## ap[4] -1.023893e+00 0.32287702 -1.5471290 -0.5385074 4828.043 0.9992669
-## ap[5] -3.160689e-01 0.27677625 -0.7623944  0.1214093 5541.410 1.0010999
-## ap[6]  2.933310e-01 0.27671015 -0.1428672  0.7385646 4952.784 0.9999935
-## ap[7]  2.689618e+00 0.56634946  1.8357740  3.6798437 5499.838 0.9994569
-## ap[8]  3.641740e+00 0.76744104  2.5154665  4.9820588 3908.684 0.9996319</code></pre>
-<pre class="r"><code>shinystan::launch_shinystan(m1.7)</code></pre>
-<pre><code>## 
-## Launching ShinyStan interface... for large models this  may take some time.</code></pre>
-<pre><code>## Loading required package: shiny</code></pre>
-<pre><code>## 
-## Listening on http://127.0.0.1:5176</code></pre>
+## shape  2.3510523774 0.20226950  2.0317559  2.6772539 5177.562 0.9996517
+## a[1]   2.1738565617 0.25170742  1.7902703  2.5853451 5029.957 0.9997999
+## a[2]   1.4315356216 0.15414353  1.1931187  1.6825306 5456.954 0.9994211
+## a[3]   1.3022417440 0.11497867  1.1177958  1.4863140 5238.374 0.9999086
+## a[4]   0.9942321104 0.07596876  0.8725851  1.1153419 5018.538 0.9996424
+## a[5]   1.1354080418 0.08451821  1.0043750  1.2737239 5376.686 0.9995558
+## a[6]   2.2120247716 0.09819040  2.0624272  2.3689821 5614.620 0.9997539
+## a[7]   2.0117807033 0.22244887  1.6633502  2.3734348 4843.761 0.9998593
+## a[8]  -0.0003979289 0.51019406 -0.8169995  0.8101317 5024.113 0.9996683
+## ap[1]  3.1287371145 0.65269753  2.1882467  4.2246663 5271.200 1.0003785
+## ap[2]  1.7420840302 0.39012414  1.1431006  2.3953743 6037.450 0.9992766
+## ap[3]  0.8348639891 0.30317594  0.3576639  1.3243651 6735.630 1.0002113
+## ap[4] -1.0144434992 0.32073488 -1.5399325 -0.5147180 6127.007 1.0000033
+## ap[5] -0.3190143627 0.28909477 -0.7862910  0.1360041 5942.738 0.9995012
+## ap[6]  0.2916216211 0.29023422 -0.1666817  0.7481870 4958.969 0.9999538
+## ap[7]  2.6792820140 0.55050223  1.8588805  3.6184508 5850.294 0.9999154
+## ap[8]  3.6225393480 0.72065655  2.5534515  4.8444074 5128.853 0.9995805</code></pre>
+<pre class="r"><code>#shinystan::launch_shinystan(m1.7)</code></pre>
 <p>playing with priors:</p>
 <p>Make shape exponential</p>
 <pre class="r"><code>d &lt;- list(N=nrow(germ.stdi),
@@ -1041,35 +1042,166 @@ model{
 m1.7a &lt;- stan(model_code=stanmodel1.7a, data=d, chains=4, cores=4, control=list(adapt_delta=.99))</code></pre>
 <pre class="r"><code>precis(m1.7a, depth = 2)</code></pre>
 <pre><code>##               mean         sd       5.5%      94.5%    n_eff     Rhat4
-## shape  2.887889254 0.27349925  2.4664189  3.3236179 5367.130 1.0000498
-## a[1]   2.278615352 0.23849675  1.9112899  2.6601871 5584.517 0.9999013
-## a[2]   1.455577484 0.14119634  1.2342065  1.6848907 6572.584 0.9995436
-## a[3]   1.317090293 0.10232128  1.1554069  1.4831579 6885.831 0.9992963
-## a[4]   0.998160825 0.06939407  0.8883334  1.1102496 5458.607 1.0004525
-## a[5]   1.142795810 0.07601275  1.0239752  1.2662805 6888.607 0.9999769
-## a[6]   2.219390358 0.09002561  2.0782811  2.3634331 6104.004 0.9994170
-## a[7]   2.085744726 0.21667242  1.7521865  2.4383559 5539.847 0.9997416
-## a[8]   0.007793111 0.50416170 -0.7851663  0.8151926 6256.416 0.9995321
-## ap[1]  3.141976675 0.65096383  2.1811192  4.2233416 5001.014 0.9995282
-## ap[2]  1.747328401 0.39459560  1.1511560  2.4008299 4788.451 0.9995695
-## ap[3]  0.831292857 0.29147222  0.3689738  1.3072105 6418.659 0.9993474
-## ap[4] -1.014189931 0.32648554 -1.5450392 -0.4972164 6606.337 0.9995942
-## ap[5] -0.328150328 0.30376524 -0.8165348  0.1586079 5850.944 0.9992194
-## ap[6]  0.302686873 0.28995811 -0.1452210  0.7748388 5306.798 0.9998410
-## ap[7]  2.690270419 0.56166607  1.8488740  3.6599969 4384.709 1.0002338
-## ap[8]  3.672417472 0.76239872  2.5346251  4.9581408 4826.669 0.9997057</code></pre>
-<div id="choose-at-least-one-model-from-above-or-your-own-to-work-from." class="section level4">
-<h4>Choose at least one model from above (or your own) to work from.</h4>
+## shape  2.885591358 0.27408092  2.4653942  3.3388947 5124.380 1.0000792
+## a[1]   2.271683236 0.25298263  1.8804857  2.6850731 5554.048 0.9997877
+## a[2]   1.456599101 0.14425302  1.2295260  1.6918382 6246.886 0.9992640
+## a[3]   1.316596693 0.10339760  1.1494007  1.4842652 6827.457 0.9992627
+## a[4]   0.997910368 0.06636120  0.8927786  1.1084874 6905.504 0.9995920
+## a[5]   1.139416717 0.07691877  1.0182439  1.2654467 6838.234 0.9997718
+## a[6]   2.220582297 0.08866945  2.0814824  2.3636050 5733.920 1.0007529
+## a[7]   2.085502170 0.20901174  1.7615096  2.4307126 5972.809 0.9999309
+## a[8]   0.004361216 0.49613516 -0.7866222  0.7890791 5760.195 1.0001255
+## ap[1]  3.141942972 0.63531534  2.2027109  4.2183126 5047.362 1.0003992
+## ap[2]  1.744127879 0.39821653  1.1335942  2.4066096 6125.756 0.9993856
+## ap[3]  0.829741821 0.30033793  0.3633941  1.3229739 6974.318 0.9994748
+## ap[4] -1.017558187 0.30809302 -1.5218066 -0.5295063 6203.161 0.9999324
+## ap[5] -0.315310488 0.27831576 -0.7655266  0.1222670 6482.960 0.9997063
+## ap[6]  0.306174297 0.28590327 -0.1508874  0.7690546 7162.291 0.9993651
+## ap[7]  2.698690338 0.57051620  1.8394798  3.6491491 4516.922 0.9992952
+## ap[8]  3.637578543 0.76274223  2.5157174  4.9352948 5394.495 1.0000797</code></pre>
+<pre class="r"><code>post &lt;- as.data.frame(m1.7a)
+post_logavgdays &lt;- post %&gt;% select(shape, starts_with(&quot;a[&quot;
+)) # these are the shape and the log(mean(avg time to germinate))
+mu_rate &lt;- post_logavgdays %&gt;% 
+  mutate(across(-shape, ~ shape*exp(-(.))) ) %&gt;%
+  summarize(across(everything(), mean)) %&gt;% select(-shape) # posterior mean
+mu_rate</code></pre>
+<pre><code>##        a[1]      a[2]      a[3]     a[4]      a[5]      a[6]      a[7]     a[8]
+## 1 0.3056671 0.6788714 0.7773009 1.066341 0.9256058 0.3144779 0.3654122 3.247215</code></pre>
+<pre class="r"><code>mu_shape &lt;- mean(post$shape)
+post_logitp &lt;- post %&gt;% select(starts_with(&quot;ap&quot;)) #logit p dormant
+mu_p &lt;- post_logitp %&gt;%
+  summarize_all(mean) %&gt;%
+  mutate_all(inv_logit)
+mu_p</code></pre>
+<pre><code>##       ap[1]     ap[2]     ap[3]     ap[4]    ap[5]     ap[6]     ap[7]
+## 1 0.9585901 0.8512106 0.6963003 0.2655033 0.421819 0.5759512 0.9369493
+##       ap[8]
+## 1 0.9743588</code></pre>
+<pre class="r"><code>posterior_coef &lt;- tibble(shape=mu_shape, temps=as.factor(unique(germ.stdi$temps)),
+                         rate=t(mu_rate),
+                         p=t(mu_p))
+post_plot1.7a &lt;- expand_grid(posterior_coef, day=1:28) %&gt;%
+  mutate(prop_germ=pgamma(day, shape=mu_shape, rate=rate) * (1-p))
+stdi.plot &lt;- germ %&gt;% filter(pops==&quot;STDI&quot;) %&gt;% 
+  select(day, temps, cumulative_germ, total_seeds) %&gt;%
+  mutate(temps=as.factor(temps),
+         prop_germ=cumulative_germ/total_seeds)
+post_plot1.7a %&gt;% 
+  ggplot(aes(x=day,y=prop_germ,color=temps,group=temps)) +
+  geom_line() +
+  geom_point(data=stdi.plot)</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
-<div id="from-the-base-model" class="section level4">
-<h4>From the base model:</h4>
+<div id="choose-at-least-one-model-from-above-or-your-own-to-work-from." class="section level3">
+<h3>Choose at least one model from above (or your own) to work from.</h3>
 </div>
+<div id="from-the-base-model" class="section level3">
+<h3>From the base model:</h3>
 </div>
 <div id="try-using-temperature-as-a-continuous-predictor.-perhaps-as-a-quadratic-or-perhaps-using-the-equation-that-rongkui-showed.-or-try-both." class="section level3">
 <h3>1) Try using temperature as a continuous predictor. Perhaps as a quadratic, or perhaps using the equation that Rongkui showed. (Or try both).</h3>
+<pre class="r"><code>d &lt;- list(N=nrow(germ.stdi),
+          germ=germ.stdi$germ,
+          temps=as.vector(scale(germ.stdi$temps)),
+          day=germ.stdi$day)
+
+stanmodel1.7a_quad &lt;-
+  &quot;
+data{
+    int&lt;lower=1&gt; N;  // number of observations
+    int germ[N];
+    vector[N] day;
+    real temps[N];
+}
+parameters{
+    real&lt;lower=0&gt; shape; // should set lower bound
+    real a; // alpha for the gamma curve, one for each temp
+    real ap; // alpha for the proportion dormant, one for each temp
+    real b; // b for the gamma curve, one for each temp
+    real bp; // b for the proportion dormant, one for each temp
+    real c; // c for the gamma curve, one for each temp
+    real cp; // c for the proportion dormant, one for each temp
+}
+model{
+    vector[N] p;
+    vector[N] mu;
+    a ~ normal( 0 , .5 ); //narrow priors to overcome divergent transitions
+    ap ~ normal( 0, 1.5 );
+    b ~ normal( 0 , .5 ); //narrow priors to overcome divergent transitions
+    bp ~ normal( 0, 1.5 );
+    c ~ normal( 0 , .5 ); //narrow priors to overcome divergent transitions
+    cp ~ normal( 0, 1.5 );
+    shape ~ exponential(.5); 
+    for (i in 1:N) {
+        p[i] = ap + bp*temps[i] + cp*(temps[i]^2);
+        p[i] = inv_logit(p[i]);
+    }
+    for ( i in 1:N ) {
+        mu[i] = a + b*temps[i] + c*(temps[i]^2);
+         // apply the inverse link function
+        mu[i] = shape * exp(-(mu[i]));
+    }
+    for ( i in 1:N ) 
+       if ( germ[i] == 0 ) target += log_mix(p[i], 0, gamma_lccdf(day[i] | shape, mu[i]));
+    for ( i in 1:N ) 
+       if ( germ[i] == 1 ) target += log1m(p[i]) + gamma_lpdf(day[i] | shape, mu[i]);
+    for ( i in 1:N ) 
+       if ( germ[i] == 1 ) day[i] ~ gamma( shape, mu[i] );
+}
+&quot;
+m1.7a_quad &lt;- stan(model_code=stanmodel1.7a_quad, data=d, chains=4, cores=4, control=list(adapt_delta=.99))</code></pre>
+<pre class="r"><code>precis(m1.7a_quad)</code></pre>
+<pre><code>##              mean         sd       5.5%      94.5%    n_eff     Rhat4
+## shape  2.86590518 0.26146601  2.4556300  3.3025507 3754.905 0.9997360
+## a      1.10207960 0.05228646  1.0188760  1.1885031 2350.160 1.0003248
+## ap    -0.55759347 0.18426168 -0.8518505 -0.2637496 2549.489 1.0011836
+## b      0.68281087 0.07818375  0.5544965  0.8049264 3383.598 0.9994840
+## bp    -0.01782085 0.23120976 -0.3913496  0.3558076 3257.109 1.0002236
+## c      1.27847154 0.12053034  1.0826843  1.4748738 2174.710 0.9998912
+## cp     2.16455181 0.34269749  1.6133856  2.7179811 2286.124 1.0015174</code></pre>
+<pre class="r"><code>post &lt;- as.data.frame(m1.7a_quad)
+
+predict_post &lt;- function(temp, post, days=1:28) {
+    p &lt;- post$ap + post$bp*temp + post$cp*temp^2
+    p &lt;- inv_logit(p)
+    mu &lt;- post$a + post$b*temp + post$c*temp^2
+    mu &lt;- post$shape*exp(-mu)
+    postparams &lt;- tibble(id = 1:length(p), p=p, mu=mu, shape=post$shape) %&gt;%
+      nest(params=-id)
+    prop_germ &lt;- postparams %&gt;% 
+      mutate(prop_germ=map(params, ~ pgamma(days, shape=.$shape, rate=.$mu) * (1-.$p))) %&gt;% 
+      select(-params) %&gt;% 
+      unnest(prop_germ) %&gt;%
+      mutate(day=rep(days, length.out=nrow(.)))
+}
+
+post_predictions &lt;- tibble(realtemp = unique(germ.stdi$temps)) %&gt;%
+  mutate(scaletemp = scale(realtemp)) %&gt;%
+  mutate(predictions = map(scaletemp, predict_post, post)) %&gt;% unnest(predictions)
+
+post_predictions_summary &lt;- post_predictions %&gt;%
+  group_by(realtemp, day) %&gt;%
+  summarize(low89=HPDI(prop_germ)[1], 
+            high90=HPDI(prop_germ)[2],
+            prop_germ=mean(prop_germ)) %&gt;%
+  mutate(temps=as.factor(realtemp))</code></pre>
+<pre><code>## `summarise()` regrouping output by &#39;realtemp&#39; (override with `.groups` argument)</code></pre>
+<pre class="r"><code>stdi.plot &lt;- germ %&gt;% filter(pops==&quot;STDI&quot;) %&gt;% 
+  select(day, temps, cumulative_germ, total_seeds) %&gt;%
+  mutate(temps=as.factor(temps),
+         prop_germ=cumulative_germ/total_seeds)
+
+post_predictions_summary %&gt;% 
+  ggplot(aes(x=day,y=prop_germ,color=temps,group=temps)) +
+  geom_line() +
+  geom_point(data=stdi.plot)</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="try-incorporating-multiple-populations." class="section level3">
 <h3>2) Try incorporating multiple populations.</h3>
+</div>
+</div>
 </div>
 
 
