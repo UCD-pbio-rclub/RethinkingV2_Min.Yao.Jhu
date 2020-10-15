@@ -381,10 +381,11 @@ precis(m1.7a_quad)
 
 ```{r}
 post <- as.data.frame(m1.7a_quad)
+
 predict_post <- function(temp, post, days=1:28) {
-    p <- post$ap + post$bp*temp + post$bpq*temp^2
+    p <- post$ap + post$bp*temp + post$cp*temp^2
     p <- inv_logit(p)
-    mu <- post$a + post$bg*temp + post$bgq*temp^2
+    mu <- post$a + post$b*temp + post$c*temp^2
     mu <- post$shape*exp(-mu)
     postparams <- tibble(id = 1:length(p), p=p, mu=mu, shape=post$shape) %>%
       nest(params=-id)
@@ -394,19 +395,23 @@ predict_post <- function(temp, post, days=1:28) {
       unnest(prop_germ) %>%
       mutate(day=rep(days, length.out=nrow(.)))
 }
+
 post_predictions <- tibble(realtemp = unique(germ.stdi$temps)) %>%
   mutate(scaletemp = scale(realtemp)) %>%
   mutate(predictions = map(scaletemp, predict_post, post)) %>% unnest(predictions)
+
 post_predictions_summary <- post_predictions %>%
   group_by(realtemp, day) %>%
   summarize(low89=HPDI(prop_germ)[1], 
             high90=HPDI(prop_germ)[2],
             prop_germ=mean(prop_germ)) %>%
   mutate(temps=as.factor(realtemp))
+
 stdi.plot <- germ %>% filter(pops=="STDI") %>% 
   select(day, temps, cumulative_germ, total_seeds) %>%
   mutate(temps=as.factor(temps),
          prop_germ=cumulative_germ/total_seeds)
+
 post_predictions_summary %>% 
   ggplot(aes(x=day,y=prop_germ,color=temps,group=temps)) +
   geom_line() +
