@@ -36,7 +36,7 @@ one_per_row <- function(df) {
   } # if 
   return(newdata)
 }
-germone <- germ %>% group_by(pops, temps) %>%
+germone <- germ %>% group_by(wps, temps) %>%
   select(-cumulative_germ) %>% # not needed in this encoding (I think...in any case would need to be recalculated)
   nest() %>%
   mutate(newdata=map(data, one_per_row)) %>%
