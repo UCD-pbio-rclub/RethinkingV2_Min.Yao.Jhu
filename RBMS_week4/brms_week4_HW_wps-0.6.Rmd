@@ -1,10 +1,8 @@
 ---
-title: "brms_week4_HW"
+title: "brm_week4_germination_wps-0.6"
 author: "Min-Yao"
-date: "2020/9/10"
-output: 
-  html_document: 
-    keep_md: yes
+date: "2020/10/20"
+output: html_document
 ---
 
 ```{r}
@@ -13,9 +11,10 @@ library(brms)
 library(tidyverse)
 ```
 
+### wps = -0.6
 ```{r}
 germ <- read_csv("light_round1_tall.csv") %>%
-  filter(wps == 0) %>%
+  filter(wps == -0.6) %>%
   select(pops, temps, total_seeds, germ, day, cumulative_germ)
 germ
 ```
@@ -46,6 +45,7 @@ germone <- germ %>% group_by(pops, temps) %>%
   unnest(newdata)
 germone
 ```
+
 #### STDI only
 ```{r}
 germ.stdi <- germone %>% filter(pops=="STDI") %>% select(-pops)
@@ -56,184 +56,7 @@ germ.stdi
 
 You can start from my models if you want to.  The three relevant ones from my code are
 
-## m1.1/m1.2: censored exponential (the worst)
-
-### m1.1: rethinking
-
-exponential rate curve, censoring seed that don't germinate.
-
-```{r}
-d <- list(germ=germ.stdi$germ, 
-          temps=as.numeric(as.factor(germ.stdi$temps)),
-          day=germ.stdi$day)
-m1.1 <- ulam(
-  alist(
-    day | germ==1 ~ exponential( lambda),
-    day | germ==0 ~ custom(exponential_lccdf( !Y | lambda)),
-    lambda <- 1.0 / mu,
-    log(mu) <- a[temps],
-    a[temps] ~ normal(0,1)),
-  data=d,
-  chains=4,
-  cores = 4
-)
-```
-
-```{r}
-precis(m1.1, depth = 2)
-```
-
-The above represent log(mean time to germination)
-
-### m1.2: brms censoring model
-
-need to set up indicator for censoring.
-```{r}
-germ.stdi <- germ.stdi %>%
-  mutate(cens=ifelse(germ==0, "right", "none"),
-         tempsc=as.character(temps) %>% str_pad(width=2, pad="0"))
-germ.stdi
-```
-
-```{r}
-get_prior(day | cens(cens) ~ 0 + tempsc, family = exponential, data=germ.stdi)
-```
-
-
-```{r}
-m1.2 <- brm(day | cens(cens) ~ 0 + tempsc,
-            family = exponential(),
-            set_prior("normal(0,1)", class="b"),
-            data = germ.stdi, )
-```
-
-```{r}
-summary(m1.2)
-```
-
-### m1.5: ZI exponential
-
-Try to write a model with different dormancy probs for the different temps.
-```{r}
-d <- list(N=nrow(germ.stdi),
-          germ=germ.stdi$germ,
-          temps=as.numeric(as.factor(germ.stdi$temps)),
-          day=germ.stdi$day)
-stanmodel1.5 <-
-  "
-data{
-    int<lower=1> N;  // number of observations
-    int germ[N];
-    vector[N] day;
-    int temps[N];
-}
-parameters{
-    vector[8] a; // alpha for the exponential curve, one for each temp
-    vector[8] ap; // alpha for the proportion dormant, one for each temp
-}
-model{
-    vector[N] p;
-    vector[N] lambda;
-    vector[N] mu;
-    a ~ normal( 0 , 1 );
-    ap ~ normal( 0, 1 );
-    for (i in 1:N) {
-        p[i] = ap[temps[i]];
-        p[i] = inv_logit(p[i]); // inverse link function
-    }
-    for ( i in 1:N ) {
-        mu[i] = a[temps[i]];
-        mu[i] = exp(mu[i]); // inverse link function
-    }
-    for ( i in 1:N ) {
-        lambda[i] = 1/mu[i];
-    }
-    for ( i in 1:N ) 
-        if ( germ[i] == 0 ) target += log_mix(p[i], 0, exponential_lccdf(day[i] | lambda[i]));
-    for ( i in 1:N ) 
-        if ( germ[i] == 1 ) target += log1m(p[i]) +  exponential_lpdf(day[i] | lambda[i]);
-    for ( i in 1:N ) 
-        if ( germ[i] == 1 ) day[i] ~ exponential( lambda[i] );
-}
-"
-m1.5 <- stan(model_code=stanmodel1.5, data=d)
-```
-
-```{r}
-precis(m1.5, depth = 2)
-```
-
 ### m1.7/m1.7a : ZI Gamma (the best)
-
-Look at gamma stancode from brms:
-
-```{r}
-make_stancode(day ~ tempsc, 
-             family="Gamma",
-             prior=set_prior("normal(0,1)"),
-             data=germ.stdi,
-             sample=FALSE)
-```
-
-
-Try developing a ZI gamma model:
-
-stan uses that gamma(alpha, beta) parameterization where "alpha" is shape" and "beta" is "rate".  So try having the shape be the same for all temps.
-```{r}
-d <- list(N=nrow(germ.stdi),
-          germ=germ.stdi$germ,
-          temps=as.numeric(as.factor(germ.stdi$temps)),
-          day=germ.stdi$day)
-stanmodel1.7 <-
-  "
-data{
-    int<lower=1> N;  // number of observations
-    int germ[N];
-    vector[N] day;
-    int temps[N];
-}
-parameters{
-    real<lower=0> shape; // should set lower bound
-    vector[8] a; // alpha for the gamma curve, one for each temp
-    vector[8] ap; // alpha for the proportion dormant, one for each temp
-}
-model{
-    vector[N] p;
-    vector[N] mu;
-    a ~ normal( 0 , .5 ); //narrow priors to overcome divergent transitions
-    ap ~ normal( 0, 1.5 ); 
-    shape ~ normal(0, .5); //narrow priors to overcome divergent transitions
-    for (i in 1:N) {
-        p[i] = ap[temps[i]];
-        p[i] = inv_logit(p[i]);
-    }
-    for ( i in 1:N ) {
-        mu[i] = a[temps[i]];
-         // apply the inverse link function
-        mu[i] = shape * exp(-(mu[i]));
-    }
-    for ( i in 1:N ) 
-       if ( germ[i] == 0 ) target += log_mix(p[i], 0, gamma_lccdf(day[i] | shape, mu[i]));
-    for ( i in 1:N ) 
-       if ( germ[i] == 1 ) target += log1m(p[i]) + gamma_lpdf(day[i] | shape, mu[i]);
-    for ( i in 1:N ) 
-       if ( germ[i] == 1 ) day[i] ~ gamma( shape, mu[i] );
-}
-"
-m1.7 <- stan(model_code=stanmodel1.7, data=d, chains=4, cores=4, control=list(adapt_delta=.99))
-``` 
-
-
-```{r}
-precis(m1.7, depth = 2)
-```
-
-
-```{r}
-#shinystan::launch_shinystan(m1.7)
-```
-
-playing with priors:
 
 Make shape exponential
 
@@ -280,7 +103,6 @@ model{
 "
 m1.7a <- stan(model_code=stanmodel1.7a, data=d, chains=4, cores=4, control=list(adapt_delta=.99))
 ``` 
-
 
 ```{r}
 precis(m1.7a, depth = 2)
@@ -417,92 +239,3 @@ post_predictions_summary %>%
   geom_line() +
   geom_point(data=stdi.plot)
 ```
-
-### 2) Try incorporating multiple populations.
-
-```{r}
-d <- list(N=nrow(germone),
-          germ=germone$germ,
-          temps=as.numeric(as.factor(germone$temps)),
-          pops=as.numeric(as.factor(germone$pops)),
-          day=germone$day)
-
-str(d)
-
-stanmodel1.7_m <-
-  "
-data{
-    int<lower=1> N;  // number of observations
-    int germ[N];
-    vector[N] day;
-    int temps[N];
-    int pops[N];
-}
-parameters{
-    real<lower=0> shape; // should set lower bound
-    vector[8] a; // alpha for the gamma curve, one for each temp
-    vector[8] ap; // alpha for the proportion dormant, one for each temp
-    vector[24] b; // b for the gamma curve, one for each pop
-    vector[24] bp; // b for the proportion dormant, one for each pop
-}
-model{
-    vector[N] p;
-    vector[N] mu;
-    a ~ normal( 0 , .5 ); //narrow priors to overcome divergent transitions
-    ap ~ normal( 0, 1.5 ); 
-    b ~ normal( 0 , .5 ); //narrow priors to overcome divergent transitions
-    bp ~ normal( 0, 1.5 ); 
-    shape ~ exponential(.5); 
-    for (i in 1:N) {
-        p[i] = ap[temps[i]]+bp[pops[i]];
-        p[i] = inv_logit(p[i]);
-    }
-    for ( i in 1:N ) {
-        mu[i] = a[temps[i]]+b[pops[i]];
-         // apply the inverse link function
-        mu[i] = shape * exp(-(mu[i]));
-    }
-    for ( i in 1:N ) 
-       if ( germ[i] == 0 ) target += log_mix(p[i], 0, gamma_lccdf(day[i] | shape, mu[i]));
-    for ( i in 1:N ) 
-       if ( germ[i] == 1 ) target += log1m(p[i]) + gamma_lpdf(day[i] | shape, mu[i]);
-    for ( i in 1:N ) 
-       if ( germ[i] == 1 ) day[i] ~ gamma( shape, mu[i] );
-}
-"
-m1.7_m <- stan(model_code=stanmodel1.7_m, data=d, chains=4, cores=4, control=list(adapt_delta=.99))
-``` 
-
-```{r}
-precis(m1.7_m, depth = 2)
-```
-
-```{r}
-post <- as.data.frame(m1.7_m)
-post_logavgdays <- post %>% select(shape, starts_with("a["
-)) # these are the shape and the log(mean(avg time to germinate))
-mu_rate <- post_logavgdays %>% 
-  mutate(across(-shape, ~ shape*exp(-(.))) ) %>%
-  summarize(across(everything(), mean)) %>% select(-shape) # posterior mean
-mu_rate
-mu_shape <- mean(post$shape)
-post_logitp <- post %>% select(starts_with("ap")) #logit p dormant
-mu_p <- post_logitp %>%
-  summarize_all(mean) %>%
-  mutate_all(inv_logit)
-mu_p
-posterior_coef <- tibble(shape=mu_shape, temps=as.factor(unique(germone$temps)),
-                         rate=t(mu_rate),
-                         p=t(mu_p))
-post_plot1.7_m <- expand_grid(posterior_coef, day=1:28) %>%
-  mutate(prop_germ=pgamma(day, shape=mu_shape, rate=rate) * (1-p))
-stdi.plot <- germ %>% filter(pops=="STDI") %>% 
-  select(day, temps, cumulative_germ, total_seeds) %>%
-  mutate(temps=as.factor(temps),
-         prop_germ=cumulative_germ/total_seeds)
-post_plot1.7_m %>% 
-  ggplot(aes(x=day,y=prop_germ,color=temps,group=temps)) +
-  geom_line() +
-  geom_point(data=stdi.plot)
-```
-
