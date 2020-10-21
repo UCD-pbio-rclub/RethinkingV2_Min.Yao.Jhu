@@ -2,7 +2,9 @@
 title: "brm_week4_germination_wps-0.6"
 author: "Min-Yao"
 date: "2020/10/20"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ```{r}

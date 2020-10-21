@@ -1,7 +1,7 @@
 ---
-title: "brms_week4_HW_wps"
+title: "brm_week4_germination_wps-0.3"
 author: "Min-Yao"
-date: "2020/10/20"
+date: "2020/10/21"
 output: 
   html_document: 
     keep_md: yes
@@ -13,10 +13,11 @@ library(brms)
 library(tidyverse)
 ```
 
-### include wps
+### wps = -0.3
 ```{r}
 germ <- read_csv("light_round1_tall.csv") %>%
-  select(pops, temps, wps, total_seeds, germ, day, cumulative_germ)
+  filter(wps == -0.3) %>%
+  select(pops, temps, total_seeds, germ, day, cumulative_germ)
 germ
 ```
 
@@ -38,7 +39,7 @@ one_per_row <- function(df) {
   } # if 
   return(newdata)
 }
-germone <- germ %>% group_by(wps, temps, pops) %>%
+germone <- germ %>% group_by(pops, temps) %>%
   select(-cumulative_germ) %>% # not needed in this encoding (I think...in any case would need to be recalculated)
   nest() %>%
   mutate(newdata=map(data, one_per_row)) %>%
@@ -198,6 +199,7 @@ model{
 m1.7a_quad <- stan(model_code=stanmodel1.7a_quad, data=d, chains=4, cores=4, control=list(adapt_delta=.99))
 ``` 
 
+
 ```{r}
 precis(m1.7a_quad)
 ```
@@ -241,90 +243,3 @@ post_predictions_summary %>%
   geom_point(data=stdi.plot)
 ```
 
-### 2) Try incorporating water potential
-
-```{r}
-d <- list(N=nrow(germone),
-          germ=germone$germ,
-          temps=as.numeric(as.factor(germone$temps)),
-          wps=as.numeric(as.factor(germone$wps)),
-          day=germone$day)
-
-str(d)
-
-stanmodel1.7_m <-
-  "
-data{
-    int<lower=1> N;  // number of observations
-    int germ[N];
-    vector[N] day;
-    int temps[N];
-    int wps[N];
-}
-parameters{
-    real<lower=0> shape; // should set lower bound
-    vector[8] a; // alpha for the gamma curve, one for each temp
-    vector[8] ap; // alpha for the proportion dormant, one for each temp
-    vector[3] b; // b for the gamma curve, one for each wps
-    vector[3] bp; // b for the proportion dormant, one for each wps
-}
-model{
-    vector[N] p;
-    vector[N] mu;
-    a ~ normal( 0 , .5 ); //narrow priors to overcome divergent transitions
-    ap ~ normal( 0, 1.5 ); 
-    b ~ normal( 0 , .5 ); //narrow priors to overcome divergent transitions
-    bp ~ normal( 0, 1.5 ); 
-    shape ~ exponential(.5); 
-    for (i in 1:N) {
-        p[i] = ap[temps[i]]+bp[wps[i]];
-        p[i] = inv_logit(p[i]);
-    }
-    for ( i in 1:N ) {
-        mu[i] = a[temps[i]]+b[wps[i]];
-         // apply the inverse link function
-        mu[i] = shape * exp(-(mu[i]));
-    }
-    for ( i in 1:N ) 
-       if ( germ[i] == 0 ) target += log_mix(p[i], 0, gamma_lccdf(day[i] | shape, mu[i]));
-    for ( i in 1:N ) 
-       if ( germ[i] == 1 ) target += log1m(p[i]) + gamma_lpdf(day[i] | shape, mu[i]);
-    for ( i in 1:N ) 
-       if ( germ[i] == 1 ) day[i] ~ gamma( shape, mu[i] );
-}
-"
-m1.7_m <- stan(model_code=stanmodel1.7_m, data=d, chains=4, cores=4, control=list(adapt_delta=.99))
-``` 
-
-```{r}
-precis(m1.7_m, depth = 2)
-```
-
-```{r}
-post <- as.data.frame(m1.7_m)
-post_logavgdays <- post %>% select(shape, starts_with("a["
-)) # these are the shape and the log(mean(avg time to germinate))
-mu_rate <- post_logavgdays %>% 
-  mutate(across(-shape, ~ shape*exp(-(.))) ) %>%
-  summarize(across(everything(), mean)) %>% select(-shape) # posterior mean
-mu_rate
-mu_shape <- mean(post$shape)
-post_logitp <- post %>% select(starts_with("ap")) #logit p dormant
-mu_p <- post_logitp %>%
-  summarize_all(mean) %>%
-  mutate_all(inv_logit)
-mu_p
-posterior_coef <- tibble(shape=mu_shape, temps=as.factor(unique(germone$temps)),
-                         rate=t(mu_rate),
-                         p=t(mu_p))
-post_plot1.7_m <- expand_grid(posterior_coef, day=1:28) %>%
-  mutate(prop_germ=pgamma(day, shape=mu_shape, rate=rate) * (1-p))
-stdi.plot <- germ %>% filter(pops=="STDI") %>% 
-  select(day, temps, cumulative_germ, total_seeds) %>%
-  mutate(temps=as.factor(temps),
-         prop_germ=cumulative_germ/total_seeds)
-post_plot1.7_m %>% 
-  ggplot(aes(x=day,y=prop_germ,color=temps,group=temps)) +
-  geom_line() +
-  geom_point(data=stdi.plot)
-```
