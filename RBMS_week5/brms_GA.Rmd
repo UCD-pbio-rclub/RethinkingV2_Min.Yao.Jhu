@@ -1,5 +1,5 @@
 ---
-title: "brms_farred"
+title: "brms_GA"
 author: "Min-Yao"
 date: "2020/10/28"
 output: 
@@ -17,10 +17,9 @@ library(brms)
 ```
 
 ```{r}
-farred <- read_csv("FarRed.csv")
-head(farred)
+GA <- read_csv("GA.csv")
+head(GA)
 ```
-
 
 ```{r}
 sem <- function(x) {
@@ -28,7 +27,7 @@ sem <- function(x) {
   sd(x)/sqrt(length(x)-1)
 }
 
-farred %>% group_by(genotype, concentration) %>%
+GA %>% group_by(genotype, concentration) %>%
   summarize(mlength=mean(length, na.rm=TRUE), 
             sem=sem(length),
             ymin=mlength-sem, 
@@ -38,12 +37,11 @@ farred %>% group_by(genotype, concentration) %>%
   geom_line() +
   geom_errorbar(aes(ymin=ymin, ymax=ymax), width=.1) +
   scale_x_log10() +
-  geom_jitter(alpha=.2, data=farred)
+  geom_jitter(alpha=.2, data=GA)
 ```
 
-
 ```{r}
-farred %>% group_by(genotype, concentration) %>%
+GA %>% group_by(genotype, concentration) %>%
   summarize(mlength=mean(length, na.rm=TRUE), 
             sem=sem(length),
             ymin=mlength-sem, 
@@ -52,29 +50,28 @@ farred %>% group_by(genotype, concentration) %>%
   ggplot(aes(x=genotype, y=length, color=concentration) ) +
   geom_violin() +
   geom_errorbar(aes(ymin=ymin, ymax=ymax), width=.1) +
-  geom_jitter(alpha=.2, data=farred)
+  geom_jitter(alpha=.2, data=GA)
 ```
 
-
 ```{r}
-farred.small <- farred %>% filter(concentration >0)
-farred.small %>% group_by(genotype, concentration) %>%
+GA.small <- GA %>% filter(concentration >0)
+GA.small %>% group_by(genotype, concentration) %>%
   summarize(mlength=mean(length, na.rm=TRUE), 
             sem=sem(length),
             ymin=mlength-sem, 
             ymax=mlength+sem) %>%  
   rename(length=mlength) %>%
   ggplot(aes(x=concentration, y=length, color=genotype) ) +
-  geom_area() +
+  geom_line() +
   geom_errorbar(aes(ymin=ymin, ymax=ymax), width=.1) +
   scale_x_log10() +
-  geom_jitter(alpha=.2, data=farred.small)
+  geom_jitter(alpha=.2, data=GA.small)
 ```
 
 
 ```{r}
-farred.small <- farred %>% filter(concentration >0)
-farred.small %>% group_by(genotype, concentration) %>%
+GA.small <- GA %>% filter(concentration >0)
+GA.small %>% group_by(genotype, concentration) %>%
   summarize(mlength=mean(length, na.rm=TRUE), 
             sem=sem(length),
             ymin=mlength-sem, 
@@ -83,15 +80,15 @@ farred.small %>% group_by(genotype, concentration) %>%
   ggplot(aes(x=genotype, y=length, color=concentration) ) +
   geom_violin() +
   geom_errorbar(aes(ymin=ymin, ymax=ymax), width=.1) +
-  geom_jitter(alpha=.5, data=farred.small)
+  geom_jitter(alpha=.5, data=GA.small)
 ```
 
 ## with brms
 ```{r}
-farred.small <- farred.small %>% mutate(lc = log10(concentration))
+GA.small <- GA.small %>% mutate(lc = log10(concentration))
 m1 <- brm(length ~ genotype*lc,
           prior = set_prior("normal(0,1)"),
-          data = farred.small,
+          data = GA.small,
           cores = 4)
 ```
 
@@ -101,18 +98,15 @@ summary(m1)
 
 ```{r}
 get_prior(length ~ 0 + (concentration|genotype),
-          data = farred.small,
+          data = GA.small,
           cores=4)
 ```
 
 ```{r}
 m2 <- brm(length ~ 0 + (concentration|genotype),
-          data = farred.small)
+          data = GA.small)
 ```
 
 ```{r}
 summary(m2)
 ```
-
-
-
