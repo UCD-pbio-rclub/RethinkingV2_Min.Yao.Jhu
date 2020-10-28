@@ -1,0 +1,115 @@
+---
+title: "brms_week6_HW_brms_wps"
+author: "Min-Yao"
+date: "2020/10/28"
+output: html_document
+---
+
+```{r}
+library(rethinking)
+library(brms)
+library(tidyverse)
+```
+
+
+```{r}
+germ <- read_csv("light_round1_tall.csv") %>%
+  filter(wps == 0) %>%
+  select(pops, temps, total_seeds, germ, day, cumulative_germ)
+germ
+```
+
+#### Convert to one event per row
+```{r}
+one_per_row <- function(df) {
+  total_seed <- max(df$total_seeds, sum(df$germ))
+  newdata <- tibble(id=1:total_seed, germ=0, day=max(df$day))
+  df <- df %>% filter(germ>0)
+  count <- 1
+  if (nrow(df) > 0) {
+    for (i in 1:nrow(df)) { # we look at each row of the df where germination occured
+      for (j in 1:df$germ[i]) { # now update the newdata to reflect the germiantion of each seed
+        newdata$germ[count] <- 1
+        newdata$day[count]=df$day[i]
+        count <- count+1 # count keeps track of which individual we are at in the new data
+      } # for j
+    } # for i
+  } # if 
+  return(newdata)
+}
+germone <- germ %>% group_by(pops, temps) %>%
+  select(-cumulative_germ) %>% # not needed in this encoding (I think...in any case would need to be recalculated)
+  nest() %>%
+  mutate(newdata=map(data, one_per_row)) %>%
+  select(-data) %>%
+  unnest(newdata)
+germone
+```
+
+#### STDI only
+```{r}
+germ.stdi <- germone %>% filter(pops=="STDI") %>% select(-pops)
+germ.stdi
+```
+
+### m1.2: brms censoring model
+
+need to set up indicator for censoring.
+```{r}
+germ.stdi <- germ.stdi %>%
+  mutate(cens=ifelse(germ==0, "right", "none"),
+         tempsc=as.character(temps) %>% str_pad(width=2, pad="0"))
+germ.stdi
+```
+
+```{r}
+get_prior(day | cens(cens) ~ 0 + tempsc, family = exponential, data=germ.stdi)
+```
+
+```{r}
+m1.2 <- brm(day | cens(cens) ~ 0 + tempsc,
+            family = exponential(),
+            set_prior("normal(0,1)", class="b"),
+            data = germ.stdi, )
+```
+
+```{r}
+summary(m1.2)
+```
+
+```{r}
+predict(m1.2) %>% head
+```
+
+```{r}
+predict(m1.2, newdata = expand_grid(tempsc=unique(germ.stdi$tempsc), cens=c("none", "right")))
+```
+
+```{r}
+plot(1:28,pexp(1:28, 1/exp(2.48)), type="l", col="red")
+lines(1:28,pexp(1:28, 1/exp(5.60)), type="l", col="blue")
+#crashes
+```
+
+```{r}
+get_prior( day | cens(cens) ~ 0 + tempsc,
+           family = Gamma(),
+           data = germ.stdi)
+```
+
+```{r}
+m1.3 <- brm(day | cens(cens) ~ 0 + tempsc,
+            family = Gamma(),
+            set_prior("normal(0,1)", class="b", lb=0),
+            data = germ.stdi)
+```
+
+```{r}
+summary(m1.3)
+```
+
+```{r}
+newdata <- expand_grid(tempsc=unique(germ.stdi$tempsc), cens=c("none", "right"))
+cbind(newdata, predict(m1.3, newdata = newdata))
+```
+

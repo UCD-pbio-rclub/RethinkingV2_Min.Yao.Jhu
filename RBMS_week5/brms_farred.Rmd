@@ -1,0 +1,20 @@
+---
+title: "brms_farred"
+author: "Min-Yao"
+date: "2020/10/28"
+output: html_document
+---
+
+#### Work on the attached data set from Maloof (2001).  It is a series of growth response curves, either in response to different light or hormone treatments.  The question you want to answer is whether there are differences in response slopes between the genotypes.  Note that the responses tend to be ~ log-linear with respect to the treatment.  I would recommend picking one of the treatments that approximates (log) linear such as blue, red, or GA.  You may want to truncate the data to only retain the linear part. But if you want to get fancy don't truncate and/or try some of the more challenging treatments (e.g. white).
+
+
+```{r}
+library(tidyverse)
+library(rethinking)
+library(brms)
+```
+
+```{r}
+blue <- read_csv("FarRed.csv")
+head(blue)
+```

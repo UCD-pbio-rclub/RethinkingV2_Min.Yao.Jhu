@@ -1,0 +1,111 @@
+---
+title: "brms_week6_blue"
+author: "Min-Yao"
+date: "2020/10/28"
+output: html_document
+---
+
+#### Work on the attached data set from Maloof (2001).  It is a series of growth response curves, either in response to different light or hormone treatments.  The question you want to answer is whether there are differences in response slopes between the genotypes.  Note that the responses tend to be ~ log-linear with respect to the treatment.  I would recommend picking one of the treatments that approximates (log) linear such as blue, red, or GA.  You may want to truncate the data to only retain the linear part. But if you want to get fancy don't truncate and/or try some of the more challenging treatments (e.g. white).
+
+
+```{r}
+library(tidyverse)
+library(rethinking)
+library(brms)
+```
+
+```{r}
+blue <- read_csv("Blue.csv")
+head(blue)
+```
+
+```{r}
+sem <- function(x) {
+  x <- na.omit(x) 
+  sd(x)/sqrt(length(x)-1)
+}
+
+blue %>% group_by(genotype, concentration) %>%
+  summarize(mlength=mean(length, na.rm=TRUE), 
+            sem=sem(length),
+            ymin=mlength-sem, 
+            ymax=mlength+sem) %>%  
+  rename(length=mlength) %>%
+  ggplot(aes(x=concentration, y=length, color=genotype) ) +
+  geom_smooth() +
+  geom_errorbar(aes(ymin=ymin, ymax=ymax), width=.1) +
+  scale_x_log10() +
+  geom_jitter(alpha=.2, data=blue)
+```
+
+```{r}
+blue %>% group_by(genotype, concentration) %>%
+  summarize(mlength=mean(length, na.rm=TRUE), 
+            sem=sem(length),
+            ymin=mlength-sem, 
+            ymax=mlength+sem) %>%  
+  rename(length=mlength) %>%
+  ggplot(aes(x=genotype, y=length, color=concentration) ) +
+  geom_violin() +
+  geom_errorbar(aes(ymin=ymin, ymax=ymax), width=.1) +
+  geom_jitter(alpha=.2, data=blue)
+```
+
+
+```{r}
+blue.small <- blue %>% filter(concentration >0)
+blue.small %>% group_by(genotype, concentration) %>%
+  summarize(mlength=mean(length, na.rm=TRUE), 
+            sem=sem(length),
+            ymin=mlength-sem, 
+            ymax=mlength+sem) %>%  
+  rename(length=mlength) %>%
+  ggplot(aes(x=concentration, y=length, color=genotype) ) +
+  geom_smooth() +
+  geom_errorbar(aes(ymin=ymin, ymax=ymax), width=.1) +
+  scale_x_log10() +
+  geom_jitter(alpha=.2, data=blue.small)
+```
+
+```{r}
+blue.small <- blue %>% filter(concentration >0)
+blue.small %>% group_by(genotype, concentration) %>%
+  summarize(mlength=mean(length, na.rm=TRUE), 
+            sem=sem(length),
+            ymin=mlength-sem, 
+            ymax=mlength+sem) %>%  
+  rename(length=mlength) %>%
+  ggplot(aes(x=genotype, y=length, color=concentration) ) +
+  geom_violin() +
+  geom_errorbar(aes(ymin=ymin, ymax=ymax), width=.1) +
+  geom_jitter(alpha=.5, data=blue.small)
+```
+
+
+## with brms
+```{r}
+blue.small <- blue.small %>% mutate(lc = log10(concentration))
+m1 <- brm(length ~ genotype*lc,
+          prior = set_prior("normal(0,1)"),
+          data = blue.small,
+          cores = 4)
+```
+
+```{r}
+summary(m1)
+```
+
+```{r}
+get_prior(length ~ 0 + (concentration|genotype),
+          data = blue.small,
+          cores=4)
+```
+
+
+```{r}
+m2 <- brm(length ~ 0 + (concentration|genotype),
+          data = blue.small)
+```
+```{r}
+summary(m2)
+```
