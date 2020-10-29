@@ -65,7 +65,7 @@ farred.small %>% group_by(genotype, concentration) %>%
             ymax=mlength+sem) %>%  
   rename(length=mlength) %>%
   ggplot(aes(x=concentration, y=length, color=genotype) ) +
-  geom_area() +
+  geom_line() +
   geom_errorbar(aes(ymin=ymin, ymax=ymax), width=.1) +
   scale_x_log10() +
   geom_jitter(alpha=.2, data=farred.small)
@@ -94,6 +94,7 @@ m1 <- brm(length ~ genotype*lc,
           data = farred.small,
           cores = 4)
 ```
+
 
 ```{r}
 summary(m1)
